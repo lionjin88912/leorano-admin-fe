@@ -1,0 +1,13 @@
+// app global css in SCSS form
+
+@import 'quasar.variables';
+
+@import 'base/typography';
+@import 'base/normalize';
+@import 'base/abstract';
+@import 'base/size';
+
+@import 'utils/helper';
+@import 'components';
+@import 'table';
+@import 'dialog';

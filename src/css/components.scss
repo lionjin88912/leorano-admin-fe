@@ -1,0 +1,31 @@
+.dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: $rounded-max;
+}
+
+.custom-form {
+  &_label {
+    display: inline-block;
+    padding-bottom: 8px;
+    font-size: 16px;
+    font-weight: 500;
+  }
+}
+
+.q-textarea {
+  .q-field__control-container textarea {
+    resize: none;
+  }
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active,
+textarea:-webkit-autofill,
+select:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 1000px white inset !important;
+  -webkit-background-clip: text !important;
+}

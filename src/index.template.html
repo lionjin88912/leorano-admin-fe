@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>
+    <%= productName %>
+  </title>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self';
+      connect-src 'self' * http://localhost:8087 http://admin.uat.leorano.actinc.io http://admin.stage.leorano.actinc.io https://admin.roartrips.com http://admin.stage.leorano.actinc.io https://admin-api.roartrips.com https://maps.googleapis.com http://admin-api.stage.leorano.actinc.io http://admin-api.uat.leorano.actinc.io http://admin-api.uat.leorano.actinc.io:8087 ;
+      script-src 'self' * 'unsafe-eval' 'unsafe-inline' https://maps.googleapis.com;
+      style-src 'self' * 'unsafe-inline' https://fonts.googleapis.com;
+      font-src 'self' * data: https://fonts.gstatic.com;
+      img-src 'self' * data: blob: https://maps.gstatic.com https://maps.googleapis.com https://ca.slack-edge.com https://leorano-uat.s3.ap-northeast-1.amazonaws.com https://leorano-stage.s3.ap-northeast-1.amazonaws.com https://leorano-local.s3.ap-northeast-1.amazonaws.com
+       https://media.iceportal.com https://travelport.leonardocontentcloud.com https://static-new.lhw.com/;
+      frame-src 'self' *;">
+
+
+
+  <meta charset="utf-8">
+  <meta name="description" content="<%= productDescription %>">
+  <meta name="format-detection" content="telephone=no">
+  <meta name="msapplication-tap-highlight" content="no">
+  <meta name="viewport"
+    content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width<% if (ctx.mode.cordova || ctx.mode.capacitor) { %>, viewport-fit=cover<% } %>">
+
+  <link rel="icon" type="image/png" sizes="128x128" href="icons/favicon-128x128.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="icons/favicon-96x96.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16x16.png">
+  <link rel="icon" type="image/ico" href="favicon.ico">
+</head>
+
+<body>
+  <!-- DO NOT touch the following DIV -->
+  <div id="q-app"></div>
+</body>
+
+</html>

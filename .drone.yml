@@ -1,0 +1,162 @@
+kind: pipeline
+name: Build
+
+steps:
+  - name: 'notify - build'
+    image: plugins/slack
+    settings:
+      room: general
+      webhook:
+        from_secret: slack_webhook
+      username: Drone CI
+      template: Running...🏃🏃🏃
+    when:
+      event:
+        - push
+      branch:
+        - master
+        - staging
+        - '*-*-release'
+
+  - name: build-uat
+    image: plugins/ecr
+    environment:
+      ENV: ${DRONE_SOURCE_BRANCH^^}
+      BRANCH_NAME: ${DRONE_BRANCH}
+      CMD_NAME: leorano_admin_fe
+      CONFIG_DEBUG: false
+      SSH_PRIVATE_KEY:
+        from_secret: ssh_private_key
+      BUILD_VERSION: ${DRONE_BUILD_NUMBER}
+      COMMIT_ID: ${DRONE_COMMIT}
+      API_URL: 'https://admin.uat.leorano.actinc.io/api/'
+      ACCESS_TOKEN_JWT:
+        from_secret: uat_access_token_jwt_secret
+      REFRESH_TOKEN_JWT:
+        from_secret: uat_refresh_token_jwt_secret
+
+    settings:
+      build_args_from_env:
+        - ENV
+        - CMD_NAME
+        - CONFIG_DEBUG
+        - SSH_PRIVATE_KEY
+        - BUILD_VERSION
+        - COMMIT_ID
+        - API_URL
+      access_key:
+        from_secret: aws_access_key
+      secret_key:
+        from_secret: aws_secret_key
+      registry: 777582934669.dkr.ecr.ap-northeast-1.amazonaws.com
+      repo: leorano_admin_fe-master
+      region: ap-northeast-1
+      tags:
+        - v${DRONE_BUILD_NUMBER}
+        - latest
+    when:
+      event:
+        - push
+      branch:
+        - master
+  - name: build-staging
+    image: plugins/ecr
+    environment:
+      ENV: ${DRONE_SOURCE_BRANCH^^}
+      BRANCH_NAME: ${DRONE_BRANCH}
+      CMD_NAME: leorano_admin_fe
+      CONFIG_DEBUG: false
+      SSH_PRIVATE_KEY:
+        from_secret: ssh_private_key
+      BUILD_VERSION: ${DRONE_BUILD_NUMBER}
+      COMMIT_ID: ${DRONE_COMMIT}
+      API_URL: 'https://admin.stage.leorano.actinc.io/api/'
+      ACCESS_TOKEN_JWT:
+        from_secret: uat_access_token_jwt_secret
+      REFRESH_TOKEN_JWT:
+        from_secret: uat_refresh_token_jwt_secret
+
+    settings:
+      build_args_from_env:
+        - ENV
+        - CMD_NAME
+        - CONFIG_DEBUG
+        - SSH_PRIVATE_KEY
+        - BUILD_VERSION
+        - COMMIT_ID
+        - API_URL
+      access_key:
+        from_secret: aws_access_key
+      secret_key:
+        from_secret: aws_secret_key
+      registry: 777582934669.dkr.ecr.ap-northeast-1.amazonaws.com
+      repo: leorano_admin_fe_stage-master
+      region: ap-northeast-1
+      tags:
+        - v${DRONE_BUILD_NUMBER}
+        - latest
+    when:
+      event:
+        - push
+      branch:
+        - staging
+  - name: 'build-release'
+    image: plugins/ecr
+    environment:
+      ENV: prod
+      BRANCH_NAME: ${DRONE_BRANCH}
+      CMD_NAME: leorano_admin_fe
+      CONFIG_DEBUG: false
+      SSH_PRIVATE_KEY:
+        from_secret: ssh_private_key
+      BUILD_VERSION: ${DRONE_BUILD_NUMBER}
+      COMMIT_ID: ${DRONE_COMMIT}
+      API_URL: 'https://admin.roartrips.com/api/'
+      ACCESS_TOKEN_JWT:
+        from_secret: uat_access_token_jwt_secret
+      REFRESH_TOKEN_JWT:
+        from_secret: uat_refresh_token_jwt_secret
+
+    settings:
+      build_args_from_env:
+        - ENV
+        - CMD_NAME
+        - CONFIG_DEBUG
+        - SSH_PRIVATE_KEY
+        - BUILD_VERSION
+        - COMMIT_ID
+        - API_URL
+      access_key:
+        from_secret: aws_access_key
+      secret_key:
+        from_secret: aws_secret_key
+      registry: 777582934669.dkr.ecr.ap-northeast-1.amazonaws.com
+      repo: leorano_admin_fe-release
+      region: ap-northeast-1
+      tags:
+        - v${DRONE_BUILD_NUMBER}
+        - latest
+    when:
+      branch:
+        - '*-*-release'
+      event:
+        - push
+  - name: 'notify - finish'
+    image: plugins/slack
+    settings:
+      room: general
+      webhook:
+        from_secret: slack_webhook
+      username: Drone CI
+      template: >
+        Drone: <{{ build.link }}| Build #{{ build.number }} > {{#success build.status}} ✅ {{ else }} ❌ {{/success}}
+    when:
+      status:
+        - success
+        - failure
+      event:
+        - push
+      branch:
+        - master
+        - staging
+        - '*-*-release'

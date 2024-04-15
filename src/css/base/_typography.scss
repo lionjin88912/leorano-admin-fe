@@ -1,0 +1,9 @@
+@each $name, $size in $textSizes {
+  .text-#{$name} {
+    font-size: $size !important;
+  }
+}
+
+.text-uderline {
+  text-decoration: underline;
+}

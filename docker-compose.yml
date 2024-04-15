@@ -1,0 +1,15 @@
+version: "3.8"
+
+services:
+  uat:
+    container_name: 'uat'
+    image: 777582934669.dkr.ecr.ap-northeast-1.amazonaws.com/leorano_api-master:latest
+    ports:
+      - "8083:80"
+    tty: true
+  stage:
+    container_name: 'stage'
+    image: 777582934669.dkr.ecr.ap-northeast-1.amazonaws.com/leorano_api_stage-master:latest
+    ports:
+      - "8084:80"
+    tty: true

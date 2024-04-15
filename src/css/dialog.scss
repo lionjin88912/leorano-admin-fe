@@ -1,0 +1,29 @@
+.common-dialog {
+  &.q-dialog {
+    .q-card {
+      min-width: 250px;
+      padding: 0px 12px 12px;
+
+      .sticky-top {
+        position: sticky;
+        top: 0px;
+        background-color: #fff;
+        width: 100%;
+        z-index: 1;
+      }
+
+      .sticky-bottom {
+        position: sticky;
+        bottom: 0px;
+        background-color: #fff;
+        width: 100%;
+      }
+
+      .dialog-button {
+        width: calc(100% / 2 - 100px);
+        min-width: 80px;
+        max-width: 120px;
+      }
+    }
+  }
+}

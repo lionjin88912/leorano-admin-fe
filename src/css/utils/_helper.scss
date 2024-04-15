@@ -1,0 +1,18 @@
+@each $name, $rounded in $roundedPalettes {
+  .#{$name} {
+    border-radius: $rounded !important;
+  }
+}
+
+.overflow-none {
+  overflow: unset;
+}
+
+.flex-1 {
+  display: flex;
+  flex: 1;
+}
+.flex-50 {
+  display: flex;
+  flex: 0.5;
+}
