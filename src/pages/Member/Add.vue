@@ -9,7 +9,7 @@
         </div>
         <q-btn type="submit" color="primary" label="新增" />
       </div>
-      <q-table v-if="isSubmit" class="data-table" :columns="addColumns" :rows="data" :rows-per-page-options="[50, 20, 10]" row-key="name" no-data-label="無新增資料">
+      <q-table v-if="!isSubmit" class="data-table" :columns="addColumns" :rows="data" :rows-per-page-options="[50, 20, 10]" row-key="name" no-data-label="無新增資料">
         <template v-slot:body-cell="props">
           <q-td :props="props">
             <q-input v-model="props.row[props.col.name]" type="text" dense borderless :rules="props.col.name != 'note' ? rules.required : []" />
