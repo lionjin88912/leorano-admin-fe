@@ -84,6 +84,7 @@ export const RequestUsers = (data) => baseService.get(`/users/list`, { params: d
 export const RequestRegisterRecord = (id) => baseService.get(`/registerRecord/${id}`)
 
 export const RequestUser = (id) => baseService.get(`/users/${id}`)
+export const CreateUser = (data) => baseService.post('/users/create', data)
 
 export const GetLoyalty = () => baseService.get(`/hotel/group/hasLoyalty`)
 
