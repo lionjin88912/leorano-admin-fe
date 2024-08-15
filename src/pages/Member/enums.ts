@@ -107,6 +107,84 @@ const tabArr: {
   { text: 'Former', val: 'Former' },
 ]
 
+const addColumns: tableColumn = [
+  {
+    name: 'status',
+    label: '新增狀態',
+    field: 'status',
+    align: 'left',
+  },
+  {
+    name: 'last_name',
+    label: '*姓氏',
+    field: 'last_name',
+    align: 'left',
+  },
+  {
+    name: 'first_name',
+    label: '*名字',
+    field: 'first_name',
+    align: 'left',
+  },
+  {
+    name: 'gender',
+    label: '*性別',
+    field: 'gender',
+    align: 'left',
+  },
+  {
+    name: 'title',
+    label: '*稱謂',
+    field: 'title',
+    align: 'left',
+  },
+  {
+    name: 'email',
+    label: '*E-mail',
+    field: 'email',
+    align: 'left',
+  },
+  {
+    name: 'phone',
+    label: '*電話(手機)',
+    field: 'phone',
+    align: 'left',
+  },
+  {
+    name: 'membership_code',
+    label: '*會籍',
+    field: 'membership_code',
+    align: 'left',
+  },
+  {
+    name: 'note',
+    label: '備註',
+    field: 'note',
+    align: 'left',
+  },
+]
+
+/**
+ * 新增狀態
+ */
+const addStatus: {
+  label: string
+  color: 'gray' | 'green' | 'red'
+}[] = [
+  {
+    label: '待新增',
+    color: 'gray'
+  }, 
+  {
+    label: '已新增',
+    color: 'green'
+  }, 
+  {
+    label: '新增失敗',
+    color: 'red'
+  }
+]
+
 const editTab: {
   val: string | number
   text: string
@@ -235,4 +313,4 @@ export const TitleOptions = ['Mr', 'Mrs', 'Miss', 'Mx']
  */
 export const SexualOptions = ['Male', 'Female', 'Unspecified', 'Undisclosed']
 
-export { columns, tabArr, editTab, benefitColumns, langColumns }
+export { columns, tabArr, addColumns, addStatus, editTab, benefitColumns, langColumns }
