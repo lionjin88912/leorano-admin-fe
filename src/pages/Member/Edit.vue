@@ -15,6 +15,7 @@
             </div>
           </q-img>
           <InfoRow>
+            <q-toggle v-model="userStatus" checked-icon="check" color="green" unchecked-icon="clear" :label="userStatus" true-value="啟用" false-value="停用" />
             <div class="info-field q-gutter-md">
               <q-input v-model="data.first_name" label='名' dense outlined />
               <q-input v-model="data.last_name" label='姓氏' dense outlined />
@@ -216,6 +217,19 @@ const getData = async () => {
     }
   }) || []
 }
+
+const userStatus = computed({
+  get: () => {
+    return data.value.deleted_at ? '停用' : '啟用';
+  },
+  set: (val) => {
+    if (val == '啟用') {
+      data.value.deleted_at = null
+    } else {
+      data.value.deleted_at = new Date().toISOString()
+    }
+  }
+})
 
 const birthday = computed(() => {
   return getDateString(data.value.birthday, 'YYYY-MM-DD')

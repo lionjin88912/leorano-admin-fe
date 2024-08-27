@@ -10,7 +10,12 @@
       </q-input>
       <q-space />
     </q-form>
-    <TabComponent :tabArr='tabArr' @update:model-value="handleClick"></TabComponent>
+    <div class="flex justify-between">
+      <TabComponent :tabArr='tabArr' @update:model-value="handleClick"></TabComponent>
+      <div class=" q-gutter-sm">
+        <q-btn label="新增會員" color="primary" @click="goToAdd()" />
+      </div>
+    </div>
     <TableComponent ref="tableRef" :propsFilter='propsFilter' :columns='columns' :handleCallApi='RequestUsers'>
       <template v-slot:body-cell-user_number='props'>
         <q-td class="link" @click="goToEdit(props.row.user_id)">
@@ -74,6 +79,10 @@ const doSearch = () => {
 
 const handleClick = (tabItem) => {
   filter.membership = tabItem.val
+}
+
+const goToAdd = () => {
+  router.push({ name: 'AddMember' })
 }
 
 const goToEdit = (id) => {

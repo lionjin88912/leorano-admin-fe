@@ -74,6 +74,15 @@ const routes: RouteRecordRaw[] = [
             component: () => import('pages/Member/index.vue'),
           },
           {
+            path: 'add',
+            name: 'AddMember',
+            meta: {
+              root: { title: '會員管理' },
+              title: '新增會員',
+            },
+            component: () => import('pages/Member/Add.vue'),
+          },
+          {
             path: ':id',
             name: 'EditMember',
             meta: {
