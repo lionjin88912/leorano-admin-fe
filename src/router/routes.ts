@@ -152,6 +152,25 @@ const routes: RouteRecordRaw[] = [
             component: () => import('src/pages/orders/hotel/Detail.vue'),
           },
           {
+            path: 'customized',
+            name: 'CustomizedOrderList',
+            meta: {
+              root: { title: '訂單管理' },
+              title: '客製訂單列表',
+            },
+            component: () => import('src/pages/orders/customized/index.vue'),
+          },
+          {
+            path: 'customized/:orderNumber',
+            name: 'CustomizedOrderDetail',
+            meta: {
+              root: { title: '訂單管理' },
+              parent: { title: '客製訂單列表', path: '/orders/customized' },
+              title: '客製訂單明細',
+            },
+            component: () => import('src/pages/orders/customized/Detail.vue'),
+          },
+          {
             path: 'member',
             name: 'MemberOrderList',
             meta: {
