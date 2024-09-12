@@ -109,13 +109,6 @@ const onDeleteConfirm = async (data) => {
   const [err, res] = await to(deleteCustomizedOrder(data.id));
   $q.loading.hide();
 
-  if (err) {
-    $q.notify({
-      type: 'negative',
-      message: '客製訂單刪除失敗'
-    })
-    return;
-  }
   doSearch();
 }
 
@@ -141,21 +134,22 @@ const goCustomizedOrder = (orderNumber) => {
 
 const sendVoucher = async (item) => {
   $q.loading.show();
-  console.log('sendVoucher', item);
   const [err, res] = await to(getCustomizedOrderVoucher(item.id));
   $q.loading.hide();
 
   if (res) {
     $q.notify({
       type: 'positive',
-      message: '客製訂單憑證已發送'
+      message: '客製訂單憑證已發送',
+      position: 'top'
     });
     return;
   }
   if (err) {
     $q.notify({
       type: 'negative',
-      message: '客製訂單憑證發送失敗'
+      message: '客製訂單憑證發送失敗',
+      position: 'top'
     })
     console.error('send customized order voucher error:', err);
     return;
