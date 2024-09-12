@@ -77,6 +77,12 @@ export const hotelColumns: TableColumn = [
 
 export const customizedColumns: TableColumn = [
   {
+    name: 'order_number',
+    label: '訂單編號',
+    field: 'order_number',
+    align: 'left',
+  },
+  {
     name: 'title',
     label: '訂單名稱',
     field: 'title',

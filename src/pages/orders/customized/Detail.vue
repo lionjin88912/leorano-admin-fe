@@ -205,30 +205,12 @@ const addOrder = async () => {
   let valid = await validate();
   if (valid) {
     const [err, res]: [any, any] = await to(createCustomizedOrder(data));
-    if (err) {
-      $q.notify({
-        type: 'negative',
-        message: '客製訂單新增失敗'
-      });
-    }
-    if (res) {
-      router.push({
-        name: 'CustomizedOrderDetail',
-        params: { orderNumber: res.data.order_id }
-      });
-    }
   }
 	$q.loading.hide();
 }
 const saveOrder = async () => {
 	$q.loading.show();
 	const [err, res]: [any, any] = await to(updateCustomizedOrder(orderNumber, data));
-	if (err) {
-		$q.notify({
-      type: 'negative',
-      message: '客製訂單更新失敗'
-		});
-	}
 	$q.loading.hide();
 }
 /* 新增/編輯訂單 End */
