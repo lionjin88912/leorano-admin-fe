@@ -127,7 +127,7 @@ export const customizedColumns: TableColumn = [
   },
 ]
 
-export const customizedMemberColumns: TableColumn = [
+export const userColumns: TableColumn = [
   {
     name: 'id',
     label: '會員編號',
