@@ -170,19 +170,24 @@
         </div>
       </InfoRow>
       <InfoRow title="訂購人資料">
-        <div class="info-field">
-          <div class="info-field-label">姓名</div>
-          <div v-if="model.user.first_name" class="info-field-text">
-            {{ model.user.first_name }} {{ model.user.last_name }}
+        <div class="row items-start q-gutter-lg">
+          <div>
+            <div class="info-field">
+              <div class="info-field-label">姓名</div>
+              <div v-if="model.user.first_name" class="info-field-text">
+                {{ model.user.first_name }} {{ model.user.last_name }}
+              </div>
+            </div>
+            <div class="info-field">
+              <div class="info-field-label">Email</div>
+              <div class="info-field-text">{{ model.user.email }}</div>
+            </div>
+            <div class="info-field">
+              <div class="info-field-label">Phone</div>
+              <div class="info-field-text">{{ model.user.phone }}</div>
+            </div>
           </div>
-        </div>
-        <div class="info-field">
-          <div class="info-field-label">Email</div>
-          <div class="info-field-text">{{ model.user.email }}</div>
-        </div>
-        <div class="info-field">
-          <div class="info-field-label">Phone</div>
-          <div class="info-field-text">{{ model.user.phone }}</div>
+          <q-btn color="primary" label="修改訂購人" @click="onUpdateUser" />
         </div>
       </InfoRow>
       <InfoRow title="入住人資料">
@@ -219,16 +224,18 @@
       </InfoRow>
     </div>
     <CancelOrderDialog ref="cancelOrderRef" @confirm="onCancelConfirm"></CancelOrderDialog>
+    <UserDialog ref="userDialogRef" @confirm="onUpdateUserConfirm" />
   </div>
 </template>
 <script setup lang="ts">
 import { useQuasar } from 'quasar';
 import { ref, reactive, computed, watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router';
-import { getHotelOrder, cancelHotelOrder } from 'src/api'
+import { getHotelOrder, cancelHotelOrder, updateHotelOrderUser } from 'src/api'
 import InfoRow from '../components/InfoRow.vue';
 import RawDataInfo from 'src/pages/HotelList/plan/RawDataInfo.vue';
 import CancelOrderDialog from '../components/CancelOrderDialog.vue';
+import UserDialog from '../components/UserDialog.vue';
 import BreadCrumbs from 'src/components/BreadCrumbs.vue';
 import { getDateString, getCurrencyFormat, getDateStringNoTz, isDateBefore } from 'src/utils/helpers';
 import _ from 'lodash';
@@ -305,6 +312,28 @@ const onCancelConfirm = async (data: any) => {
     return;
   }
   getData();
+}
+
+const userDialogRef = ref();
+const onUpdateUser = () => {
+  userDialogRef.value.show({
+    data: {
+      id: model.value.user.id,
+      title: model.value.user.title,
+      name: model.value.user.first_name + model.value.user.last_name,
+      email: model.value.user.email
+    }
+  });
+}
+
+const onUpdateUserConfirm = async (data: any) => {
+  $q.loading.show();
+  if (model.value.user.id !== data) {
+    const [err, res] = await to(updateHotelOrderUser(model.value.order_number, {
+      user_id: data
+    }));
+  }
+  $q.loading.hide();
 }
 
 const hasBreakfast = computed(() => {

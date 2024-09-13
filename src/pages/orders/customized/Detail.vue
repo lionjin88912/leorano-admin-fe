@@ -5,11 +5,7 @@
     <q-form ref="form">
       <InfoRow title="訂購人">
         <div class="q-my-md">
-          <q-input v-model="keyword" placeholder="會員姓名、Email、電話" :debounce="500" clearable dense outlined />
-          <q-table v-if="keyword" class="data-table q-mt-sm" :columns="customizedMemberColumns" :rows="member.options" :rows-per-page-options="[10]" row-key="name" no-data-label="查無會員資料" v-model:selected="member.selected" selection="single" dense />
-          <div v-if="member.selected.length > 0" class="row q-gutter-md q-mt-none">
-            <q-input v-for="column in customizedMemberColumns" :key="column.name" v-model="member.selected[0][column.field]" :label="column.label" :rules="rules.member" class="col" dense outlined readonly />
-          </div>
+          <UserSelector v-model="data.member_id" :order-member="member" :required="true" />
         </div>
       </InfoRow>
       <InfoRow title="訂單資訊">
@@ -52,14 +48,14 @@
 
 <script setup lang="ts">
 import { useQuasar } from 'quasar';
-import { ref, reactive, computed, watch, onMounted } from 'vue'
+import { ref, reactive, watch, onMounted } from 'vue'
 import { router } from 'src/router';
-import { customizedMemberColumns, customizedOrderTypeOptions, defaultQuestions } from '../enums';
-import { getCustomizedOrder, getMemberList, createCustomizedOrder, updateCustomizedOrder } from 'src/api';
+import { customizedOrderTypeOptions, defaultQuestions } from '../enums';
+import { getCustomizedOrder, createCustomizedOrder, updateCustomizedOrder } from 'src/api';
 import { useRoute } from 'vue-router';
 import BreadCrumbs from 'src/components/BreadCrumbs.vue';
 import InfoRow from '../components/InfoRow.vue';
-import { isEmpty, messages } from 'src/utils/validators';
+import UserSelector from '../components/UserSelector.vue';
 import to from 'await-to-js';
 import { type } from 'os';
 
@@ -87,14 +83,7 @@ const data: Order = reactive({
 	content: [],
 });
 
-const rules = computed(() => {
-  return {
-    member: [
-      val => !isEmpty(val) || messages.requiredInput()
-    ],
-  }
-});
-
+const member = ref([]);
 onMounted(async () => {
 	changeOrderType();
 	if (!isNaN(orderNumber)) {
@@ -106,7 +95,7 @@ onMounted(async () => {
 			data.voucher_number = order.voucher;
 			data.type = order.type;
 			data.content = order.content;
-			member.selected = [order.member];
+			member.value = order.member;
 		} else {
 			isNewOrder.value = true;
 		}
@@ -124,47 +113,6 @@ const getData = async () => {
   }
 	return res.data;
 }
-
-/* 查詢會員 Start */
-const member = reactive({
-	options: [],
-	selected: [{
-    id: '',
-    title: '',
-    name: '',
-    email: '',
-  }],
-});
-
-const keyword = ref('');
-watch(keyword, (newVal, oldVal) => {
-	if (newVal !== oldVal) {
-	  searchMember();
-	}
-});
-
-const searchMember = async () => {
-	let params = {};
-	if (keyword.value !== '') {
-		params = {
-			keyword: keyword.value,
-		};
-	}
-	const [err, res]: [any, any] = await to(getMemberList(params));
-
-	if (res && res.data.length > 0) {
-		member.options = res.data;
-	}
-}
-/* 查詢會員 End */
-
-/* 變更訂購人 Start */
-watch(() => member.selected, (newVal, oldVal) => {
-	if (newVal !== oldVal) {
-		data.member_id = newVal[0].id;
-	}
-});
-/* 變更訂購人 End */
 
 /* 變更訂單類型 Start */
 const changeOrderType = () => {
@@ -205,6 +153,11 @@ const addOrder = async () => {
   let valid = await validate();
   if (valid) {
     const [err, res]: [any, any] = await to(createCustomizedOrder(data));
+  } else {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
   }
 	$q.loading.hide();
 }
