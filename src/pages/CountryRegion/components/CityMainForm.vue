@@ -21,7 +21,7 @@
             <q-tooltip>定位</q-tooltip>
           </template>
         </q-input>
-        <q-input class="edit-form-field small q-pr-md" v-model="model.code" label="簡碼 *" :rules="rules.code"
+        <q-input class="edit-form-field small q-pr-md" v-model="model.code" label="簡碼"
           hide-bottom-space lazy-rules dense outlined></q-input>
       </div>
       <div class="flex">
@@ -161,9 +161,6 @@ const markers = computed(() => {
 const rules = computed(() => {
   return {
     name: [
-      val => !isEmpty(val) || messages.requiredInput()
-    ],
-    code: [
       val => !isEmpty(val) || messages.requiredInput()
     ],
     tz: [
