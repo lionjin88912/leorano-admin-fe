@@ -289,12 +289,15 @@ const doExcelExport = async () => {
   $q.loading.show({ message: "導出Excel資料" });
   let datas = [];
   await loadExportData(datas, 1);
+  for (let row of datas) {
+    row.usd_total_price = await getUsdTotalPrice(row)
+  }
   $q.loading.hide();
 
   // 整理資料
   const headers = [
     "訂單編號", "酒店確認編號", "酒店取消編號", "訂單日期", "訂單狀態",
-    "酒店名稱", "預定入住日", "預定退房日", "訂單金額", "訂購人",
+    "酒店名稱", "預定入住日", "預定退房日", "訂單金額", "訂單金額(原幣)", "訂購人",
     "訂購人Email"
   ]
   let excelDatas = datas.map(d => {
@@ -310,6 +313,7 @@ const doExcelExport = async () => {
       d.total_price
         ? `${d.total_price.slice(0, 3)} ${getCurrencyFormat(d.total_price.slice(3))}`
         : '',
+      d.usd_total_price,
       `${d.user.first_name} ${d.user.last_name}`,
       d.user.email
     ]
@@ -319,7 +323,7 @@ const doExcelExport = async () => {
   const ws = XLSX.utils.aoa_to_sheet(excelDatas);
   const wsCols = [
     { wpx: 120 }, { wpx: 120 }, { wpx: 120 }, { wpx: 80 }, { wpx: 100 },
-    { wpx: 160 }, { wpx: 80 }, { wpx: 80 }, { wpx: 100 }, { wpx: 120 },
+    { wpx: 160 }, { wpx: 80 }, { wpx: 80 }, { wpx: 100 }, { wpx: 100 }, { wpx: 120 },
     { wpx: 200 },
   ]
   ws['!cols'] = wsCols;
@@ -364,12 +368,15 @@ const totalPrice = computed(() => (row) => {
 })
 
 const getUsdTotalPrice = async (row) => {
+  if (!row.total_price) {
+    return null
+  }
   const origCurrency = row.total_price.slice(0, 3)
   const targetCurrency = 'USD'
   const amount = row.total_price.slice(3)
   const rate = await metaStore.getExchangeRate(origCurrency, targetCurrency)
   const targetPrice = _.round(amount * rate, 2)
-  return `${targetCurrency} ${targetPrice}`
+  return `${targetCurrency} ${getCurrencyFormat(targetPrice)}`
 }
 
 watch(filter, (newVal) => {
