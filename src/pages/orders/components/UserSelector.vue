@@ -1,7 +1,7 @@
 <template>
   <div>
     <q-input v-model="keyword" placeholder="會員姓名、Email、電話" :debounce="500" clearable dense outlined />
-    <q-table v-if="keyword" class="data-table q-mt-sm" :columns="userColumns" :rows="options" :rows-per-page-options="[10]" row-key="name" no-data-label="查無會員資料" v-model:selected="selected" selection="single" dense />
+    <q-table v-if="keyword" class="data-table q-mt-sm" :columns="userColumns" :rows="options" :loading="loading" :rows-per-page-options="pagination.perPage" v-model:pagination="pagination" row-key="id" no-data-label="查無會員資料" v-model:selected="selected" selection="single" @request="onRequest" dense />
     <div class="row q-gutter-md q-mt-none">
       <q-input v-for="column in userColumns" :key="column.name" v-model="memberInfo[column.field]" :label="column.label" :rules="rules.member" class="col" dense outlined readonly />
     </div>
@@ -14,7 +14,6 @@ import { userColumns } from '../enums';
 import { getMemberList } from 'src/api';
 import { isEmpty, messages } from 'src/utils/validators';
 import to from 'await-to-js';
-import { on } from 'cluster';
 
 const props = defineProps({
   modelValue: {
@@ -42,27 +41,41 @@ const rules = computed(() => {
   }
 });
 
-const options = ref([]);
+const pagination = ref({
+  page: 1,
+  rowsPerPage: 10,
+  rowsNumber: 0,
+  perPage: [10],
+});
 
 const keyword = ref('');
 watch(keyword, (newVal, oldVal) => {
-	if (newVal !== oldVal) {
+	if (newVal != '' && newVal !== oldVal) {
+    pagination.value.page = 1;
 	  searchMember();
 	}
 });
 
+const loading = ref(false)
+const options = ref([])
 const searchMember = async () => {
-	let params = {};
-	if (keyword.value !== '') {
-		params = {
-			keyword: keyword.value,
-		};
-	}
-	const [err, res]: [any, any] = await to(getMemberList(params));
+  loading.value = true;
+	const [err, res]: [any, any] = await to(getMemberList({
+    page: pagination.value.page,
+    limit: pagination.value.rowsPerPage,
+    search: keyword.value,
+	}));
 
-	if (res && res.data.length > 0) {
+	if (res && res.data) {
 		options.value = res.data;
+    pagination.value.rowsNumber = res.paging.total_rows;
 	}
+  loading.value = false;
+}
+
+const onRequest = (props) => {
+  pagination.value.page = props.pagination.page;
+  searchMember()
 }
 
 const emit = defineEmits(['update:modelValue']);
