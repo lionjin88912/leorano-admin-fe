@@ -318,7 +318,7 @@ const userDialogRef = ref();
 const onUpdateUser = () => {
   userDialogRef.value.show({
     data: {
-      id: model.value.user.id,
+      id: model.value.user_id,
       title: model.value.user.title,
       name: model.value.user.first_name + model.value.user.last_name,
       email: model.value.user.email
@@ -334,6 +334,7 @@ const onUpdateUserConfirm = async (data: any) => {
     }));
   }
   $q.loading.hide();
+  getData();
 }
 
 const hasBreakfast = computed(() => {
