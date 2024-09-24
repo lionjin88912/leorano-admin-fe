@@ -192,6 +192,25 @@ const routes: RouteRecordRaw[] = [
         ],
       },
       {
+        path: '/accounting',
+        redirect: { name: 'AccountingList' },
+        meta: {
+          requiresPermission: true,
+          permissionCode: 'accounting',
+        },
+        children: [
+          {
+            path: 'order/hotel',
+            name: 'AccountingHotelOrderList',
+            meta: {
+              root: { title: '訂單對帳管理' },
+              title: '飯店訂單對帳',
+            },
+            component: () => import('src/pages/Accounting/index.vue'),
+          },
+        ],
+      },
+      {
         path: '/promotions',
         redirect: { name: 'PromotionMembershipList' },
         meta: {

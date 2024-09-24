@@ -114,6 +114,8 @@ export const cancelMemberOrder = (orderNumber, data) =>
   baseService.delete(`/order/membership/${orderNumber}/cancel`, { data })
 export const refundMemberOrder = (orderNumber, data) =>
   baseService.delete(`/order/membership/${orderNumber}/refund`, { data })
+// 訂單對帳管理
+export const getAccountingList = (data) => baseService.get('/accounting/order/hotel', { params: data })
 // 行銷碼管理
 // 會籍活動
 export const getPromoMembershipList = (params) =>
