@@ -222,6 +222,27 @@
           </div>
         </div>
       </InfoRow>
+      <InfoRow title="訂單利潤">
+        <div class="info-field">
+          <div class="info-field-label">每日房價</div>
+          <div class="info-field-text">
+            {{ model.Profit.room_price[0].Base }}
+          </div>
+        </div>
+        <div class="info-field">
+          <div class="info-field-label q-mt-sm">利潤百分比</div>
+          <q-form ref="profitForm" class="flex items-start q-gutter-sm">
+            <q-input type="number" placeholder="請輸入利潤百分比" v-model.number="model.Profit.percent" outlined dense min="0" :rules="rules.profit" class="order-profit" />
+            <q-btn color="primary" label="設定利潤" @click="onUpdateProfit" />
+          </q-form>
+        </div>
+        <div class="info-field">
+          <div class="info-field-label">利潤</div>
+          <div class="info-field-text">
+            {{ model.Profit.profit }}
+          </div>
+        </div>
+      </InfoRow>
     </div>
     <CancelOrderDialog ref="cancelOrderRef" @confirm="onCancelConfirm"></CancelOrderDialog>
     <UserDialog ref="userDialogRef" @confirm="onUpdateUserConfirm" />
@@ -231,7 +252,7 @@
 import { useQuasar } from 'quasar';
 import { ref, reactive, computed, watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router';
-import { getHotelOrder, cancelHotelOrder, updateHotelOrderUser } from 'src/api'
+import { getHotelOrder, cancelHotelOrder, updateHotelOrderUser, updateHotelOrderProfit } from 'src/api'
 import InfoRow from '../components/InfoRow.vue';
 import RawDataInfo from 'src/pages/HotelList/plan/RawDataInfo.vue';
 import CancelOrderDialog from '../components/CancelOrderDialog.vue';
@@ -336,6 +357,25 @@ const onUpdateUserConfirm = async (data: any) => {
   $q.loading.hide();
   getData();
 }
+const rules = computed(() => {
+  return {
+    profit: [
+      val => !val || /^[0-9]*\.?[0-9]{0,1}$/.test(val) || '只能輸入到小數第一位'
+    ],
+  }
+})
+
+const profitForm = ref();
+const onUpdateProfit = async () => {
+  if (await profitForm.value.validate()) {
+    $q.loading.show();
+      const [err, res] = await to(updateHotelOrderProfit(model.value.order_number, {
+        profit_percent: model.value.Profit.percent
+      }));
+    $q.loading.hide();
+    getData();
+  }
+}
 
 const hasBreakfast = computed(() => {
   return model.value.book_code?.plan?.has_breakfast;
@@ -411,5 +451,9 @@ onMounted(() => {
   color: $grey-7;
   padding: 2px 12px;
   font-size: 16px;
+}
+:deep(.order-profit .q-field__control) {
+  height: 36px;
+  line-height: 36px;
 }
 </style>
