@@ -98,6 +98,7 @@ export const getHotelOrder = (orderNumber) => baseService.get(`/order/bookings/$
 export const cancelHotelOrder = (orderNumber, data) =>
   baseService.delete(`/order/bookings/${orderNumber}/cancel`, { data })
 export const updateHotelOrderUser = (id, data) => baseService.put(`/order/hotel/changeUser/${id}`, data)
+export const updateHotelOrderProfit = (id, data) => baseService.put(`/order/hotel/profit/${id}`, data)
 // 訂單管理-客製訂單
 export const getCustomizedOrderList = (data) => baseService.get('/order/customized/list', { params: data })
 export const getCustomizedOrderVoucher = (id) => baseService.get(`/order/customized/voucher/${id}`)
