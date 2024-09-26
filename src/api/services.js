@@ -43,7 +43,7 @@ baseService.interceptors.response.use(
   },
   (error) => {
     const appStore = useAppStore()
-    appStore.catchApi({ code: error.response.status, message: error.response.data.error })
+    appStore.catchApi({ code: error.response.data.code, message: error.response.data.data })
     return Promise.reject(error.response)
   }
 )

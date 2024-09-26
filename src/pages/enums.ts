@@ -60,8 +60,15 @@ const menus: Menu[] = [
     to: 'orders',
     children: [
       { label: '酒店訂單', to: '/orders/hotel' },
+      { label: '客製訂單', to: '/orders/customized' },
       { label: '會籍訂單', to: '/orders/member' },
     ],
+  },
+  {
+    label: '訂單對帳管理',
+    module: 'accounting',
+    to: 'accounting',
+    children: [{ label: '飯店訂單對帳', to: '/accounting/order/hotel' }],
   },
   {
     label: '行銷碼管理',

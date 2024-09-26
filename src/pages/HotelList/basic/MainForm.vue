@@ -23,7 +23,7 @@
         </div>
         <div class="col-6">
           <label class="custom-form_label">TP Hotel Code *</label>
-          <q-input outlined dense v-model="model.hotelCode" :rules="rules.hotelCode" />
+          <q-input outlined dense v-model="model.hotelCode" :rules="rules.hotelCode" :error="!apiRule.isValid" :error-message="apiRule.message" />
         </div>
         <div class="col-12">
           <label class="custom-form_label">酒店描述</label>
@@ -143,6 +143,9 @@ const props = defineProps({
       return {};
     },
   },
+  apiRule: {
+    type: Object
+  }
 });
 
 const gmapRef = ref();

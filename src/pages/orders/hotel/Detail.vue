@@ -170,19 +170,24 @@
         </div>
       </InfoRow>
       <InfoRow title="訂購人資料">
-        <div class="info-field">
-          <div class="info-field-label">姓名</div>
-          <div v-if="model.user.first_name" class="info-field-text">
-            {{ model.user.first_name }} {{ model.user.last_name }}
+        <div class="row items-start q-gutter-lg">
+          <div>
+            <div class="info-field">
+              <div class="info-field-label">姓名</div>
+              <div v-if="model.user.first_name" class="info-field-text">
+                {{ model.user.first_name }} {{ model.user.last_name }}
+              </div>
+            </div>
+            <div class="info-field">
+              <div class="info-field-label">Email</div>
+              <div class="info-field-text">{{ model.user.email }}</div>
+            </div>
+            <div class="info-field">
+              <div class="info-field-label">Phone</div>
+              <div class="info-field-text">{{ model.user.phone }}</div>
+            </div>
           </div>
-        </div>
-        <div class="info-field">
-          <div class="info-field-label">Email</div>
-          <div class="info-field-text">{{ model.user.email }}</div>
-        </div>
-        <div class="info-field">
-          <div class="info-field-label">Phone</div>
-          <div class="info-field-text">{{ model.user.phone }}</div>
+          <q-btn color="primary" label="修改訂購人" @click="onUpdateUser" />
         </div>
       </InfoRow>
       <InfoRow title="入住人資料">
@@ -217,18 +222,41 @@
           </div>
         </div>
       </InfoRow>
+      <InfoRow title="訂單利潤">
+        <div class="info-field">
+          <div class="info-field-label">每日房價</div>
+          <div class="info-field-text">
+            {{ model.Profit.room_price[0].Base }}
+          </div>
+        </div>
+        <div class="info-field">
+          <div class="info-field-label q-mt-sm">利潤百分比</div>
+          <q-form ref="profitForm" class="flex items-start q-gutter-sm">
+            <q-input type="number" placeholder="請輸入利潤百分比" v-model.number="model.Profit.percent" outlined dense min="0" :rules="rules.profit" class="order-profit" />
+            <q-btn color="primary" label="設定利潤" @click="onUpdateProfit" />
+          </q-form>
+        </div>
+        <div class="info-field">
+          <div class="info-field-label">利潤</div>
+          <div class="info-field-text">
+            {{ model.Profit.profit }}
+          </div>
+        </div>
+      </InfoRow>
     </div>
     <CancelOrderDialog ref="cancelOrderRef" @confirm="onCancelConfirm"></CancelOrderDialog>
+    <UserDialog ref="userDialogRef" @confirm="onUpdateUserConfirm" />
   </div>
 </template>
 <script setup lang="ts">
 import { useQuasar } from 'quasar';
 import { ref, reactive, computed, watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router';
-import { getHotelOrder, cancelHotelOrder } from 'src/api'
+import { getHotelOrder, cancelHotelOrder, updateHotelOrderUser, updateHotelOrderProfit } from 'src/api'
 import InfoRow from '../components/InfoRow.vue';
 import RawDataInfo from 'src/pages/HotelList/plan/RawDataInfo.vue';
 import CancelOrderDialog from '../components/CancelOrderDialog.vue';
+import UserDialog from '../components/UserDialog.vue';
 import BreadCrumbs from 'src/components/BreadCrumbs.vue';
 import { getDateString, getCurrencyFormat, getDateStringNoTz, isDateBefore } from 'src/utils/helpers';
 import _ from 'lodash';
@@ -307,6 +335,48 @@ const onCancelConfirm = async (data: any) => {
   getData();
 }
 
+const userDialogRef = ref();
+const onUpdateUser = () => {
+  userDialogRef.value.show({
+    data: {
+      id: model.value.user_id,
+      title: model.value.user.title,
+      name: model.value.user.first_name + model.value.user.last_name,
+      email: model.value.user.email
+    }
+  });
+}
+
+const onUpdateUserConfirm = async (data: any) => {
+  $q.loading.show();
+  if (model.value.user.id !== data) {
+    const [err, res] = await to(updateHotelOrderUser(model.value.order_number, {
+      user_id: data
+    }));
+  }
+  $q.loading.hide();
+  getData();
+}
+const rules = computed(() => {
+  return {
+    profit: [
+      val => !val || /^[0-9]*\.?[0-9]{0,1}$/.test(val) || '只能輸入到小數第一位'
+    ],
+  }
+})
+
+const profitForm = ref();
+const onUpdateProfit = async () => {
+  if (await profitForm.value.validate()) {
+    $q.loading.show();
+      const [err, res] = await to(updateHotelOrderProfit(model.value.order_number, {
+        profit_percent: model.value.Profit.percent
+      }));
+    $q.loading.hide();
+    getData();
+  }
+}
+
 const hasBreakfast = computed(() => {
   return model.value.book_code?.plan?.has_breakfast;
 })
@@ -381,5 +451,9 @@ onMounted(() => {
   color: $grey-7;
   padding: 2px 12px;
   font-size: 16px;
+}
+:deep(.order-profit .q-field__control) {
+  height: 36px;
+  line-height: 36px;
 }
 </style>

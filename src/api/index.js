@@ -97,6 +97,17 @@ export const getHotelOrderList = (data) => baseService.get('/order/bookings', { 
 export const getHotelOrder = (orderNumber) => baseService.get(`/order/bookings/${orderNumber}`)
 export const cancelHotelOrder = (orderNumber, data) =>
   baseService.delete(`/order/bookings/${orderNumber}/cancel`, { data })
+export const updateHotelOrderUser = (id, data) => baseService.put(`/order/hotel/changeUser/${id}`, data)
+export const updateHotelOrderProfit = (id, data) => baseService.put(`/order/hotel/profit/${id}`, data)
+// 訂單管理-客製訂單
+export const getCustomizedOrderList = (data) => baseService.get('/order/customized/list', { params: data })
+export const getCustomizedOrderVoucher = (id) => baseService.get(`/order/customized/voucher/${id}`)
+export const deleteCustomizedOrder = (id) => baseService.delete(`/order/customized/${id}`)
+export const getCustomizedOrder = (id) => baseService.get(`/order/customized/${id}`)
+export const createCustomizedOrder = (data) => baseService.post(`/order/customized`, data)
+export const updateCustomizedOrder = (id, data) => baseService.put(`/order/customized/${id}`, data)
+export const getMemberList = (data) => baseService.get('/users/search', { params: data })
+export const getMember = (id) => baseService.get(`/member/${id}`)
 // 訂單管理-酒店訂單
 export const getMemberOrderList = (data) => baseService.get('/order/membership', { params: data })
 export const getMemberOrder = (orderNumber) => baseService.get(`/order/membership/${orderNumber}`)
@@ -104,6 +115,8 @@ export const cancelMemberOrder = (orderNumber, data) =>
   baseService.delete(`/order/membership/${orderNumber}/cancel`, { data })
 export const refundMemberOrder = (orderNumber, data) =>
   baseService.delete(`/order/membership/${orderNumber}/refund`, { data })
+// 訂單對帳管理
+export const getAccountingList = (data) => baseService.get('/accounting/order/hotel', { params: data })
 // 行銷碼管理
 // 會籍活動
 export const getPromoMembershipList = (params) =>
