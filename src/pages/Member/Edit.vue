@@ -25,7 +25,14 @@
               <q-select v-model="data.gender" :options="SexualOptions" label='性別' style="min-width:170px;" dense
                 outlined />
               <q-select v-model="data.title" :options="TitleOptions" label='稱謂' style="min-width:170px;" dense outlined />
-              <q-input v-model="birthday" label='生日' dense outlined />
+              <q-field v-model="data.birthday" label="生日" style="min-width:170px;" dense outlined>
+                <template #default>
+                  <DatePicker :date="data.birthday" :format="'YYYY-MM-DDTHH:mm:ss[Z]'" @updated="(val) => data.birthday = val" />
+                </template>
+                <template v-slot:control>
+                  <div>{{ getDateString(data.birthday, 'YYYY-MM-DD') }}</div>
+                </template>
+              </q-field>
             </div>
           </InfoRow>
         </div>
@@ -138,6 +145,7 @@ import { getDateString } from 'src/utils/helpers';
 import InfoRow from '../orders/components/InfoRow.vue';
 import { TitleOptions, SexualOptions } from './enums';
 import Confirm from 'src/components/dialog/Confirm.vue';
+import DatePicker from 'src/components/DatePicker.vue';
 
 const to = require('await-to-js').default
 const $q = useQuasar();
@@ -231,9 +239,6 @@ const userStatus = computed({
   }
 })
 
-const birthday = computed(() => {
-  return getDateString(data.value.birthday, 'YYYY-MM-DD')
-})
 const expiredAt = computed(() => {
   if (data.value.MembershipRecords && data.value.MembershipRecords.length > 0) {
     return getDateString(data.value.MembershipRecords[0].expired_at, "YYYY-MM-DD")

@@ -16,10 +16,10 @@
             </q-tabs>
             <q-separator></q-separator>
           </div> -->
-          <q-scroll-area class="content-scroll">
+          <q-scroll-area ref="scrollAreaRef" class="content-scroll">
             <q-tab-panels v-model="state.currentTab" keep-alive animated>
               <q-tab-panel name="main" class="q-px-none">
-                <main-form ref="mainForm" :data="state.model"></main-form>
+                <main-form ref="mainForm" :data="state.model" :apiRule="hotelCodeRule"></main-form>
               </q-tab-panel>
               <!-- <q-tab-panel name="lang" class="q-px-none">
                 <div class="flex items-center justify-center q-gutter-md q-pb-md">
@@ -81,6 +81,7 @@ const show = async ({ data }) => {
     state.title = '新增酒店基本資料';
     state.mode = EditMode.New;
     state.model = createEmptyModel();
+    resetHotelCodeRule();
   }
 };
 
@@ -109,6 +110,10 @@ const createEmptyModel = () => {
   }
 }
 
+function resetHotelCodeRule() {
+  hotelCodeRule.isValid = true;
+}
+
 const isEdit = computed(() => {
   return state.mode === EditMode.Edit;
 })
@@ -128,6 +133,11 @@ const doSubmit = () => {
   }
 }
 
+const scrollAreaRef = ref(null)
+const hotelCodeRule = reactive({
+  isValid: true,
+  message: 'TP Hotel Code 重複，請更換編號'
+})
 const doMainSubmit = async () => {
   if (!await mainForm.value.validate()) {
     console.warn("表單驗證未通過");
@@ -142,6 +152,12 @@ const doMainSubmit = async () => {
   $q.loading.hide();
 
   if (err) {
+    if (err.data.code === 12001) {
+      hotelCodeRule.isValid = false;
+      scrollAreaRef.value.setScrollPosition('vertical', 0);
+    } else {
+      hotelCodeRule.isValid = true;
+    }
     console.log('CreateHotel error:', err);
     return;
   }

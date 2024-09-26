@@ -75,6 +75,96 @@ export const hotelColumns: TableColumn = [
   },
 ]
 
+export const customizedColumns: TableColumn = [
+  {
+    name: 'order_number',
+    label: '訂單編號',
+    field: 'order_number',
+    align: 'left',
+  },
+  {
+    name: 'title',
+    label: '訂單名稱',
+    field: 'title',
+    align: 'left',
+  },
+  {
+    name: 'created_at',
+    label: '訂單建立日期',
+    field: (row: any) => getDateString(row.created_at, 'YYYY-MM-DD'),
+    align: 'left',
+    sortable: true,
+  },
+  {
+    name: 'member',
+    label: '訂購人',
+    field: 'member',
+    align: 'left',
+  },
+  {
+    name: 'price',
+    label: '訂單金額',
+    field: 'price',
+    align: 'left',
+  },
+  {
+    name: 'operation',
+    label: '操作',
+    field: 'operation',
+    align: 'center',
+  },
+  {
+    name: 'voucher_send',
+    label: '憑證是否發送過',
+    field: 'voucher_send',
+    align: 'center',
+  },
+  {
+    name: 'voucher',
+    label: '憑證',
+    field: 'voucher',
+    align: 'center',
+  },
+]
+
+export const userColumns: TableColumn = [
+  {
+    name: 'id',
+    label: '會員編號',
+    field: 'id',
+    align: 'left',
+  },
+  {
+    name: 'title',
+    label: '稱謂',
+    field: 'title',
+    align: 'left',
+  },
+  {
+    name: 'name',
+    label: '姓名',
+    field: 'name',
+    align: 'left',
+  },
+  {
+    name: 'email',
+    label: 'E-mail',
+    field: 'email',
+    align: 'left',
+  }
+]
+
+export const customizedOrderTypeOptions = [
+  { label: '飯店', value: 'hotel' },
+  { label: '票卷', value: 'ticket' },
+]
+
+// 飯店類型的問題：飯店名稱
+export const defaultQuestions = {
+  hotel: ['Hotel Name', 'Check-in Time', 'Check-out Time', 'Room Type', 'Note'],
+  ticket: ['Title', 'Note']
+}
+
 export const memberColumns: TableColumn = [
   {
     name: 'order_number',
@@ -154,6 +244,11 @@ export const hotelOrderStatusOptions = [
   { label: '預訂失敗', value: 'failed' },
   { label: '已取消', value: 'cancelled' },
   { label: '取消失敗', value: 'cancel_failed' },
+]
+
+export const customizedVoucherSendOptions = [
+  { label: '否', value: false },
+  { label: '是', value: true }
 ]
 
 export const memberOrderStatusOptions = [
