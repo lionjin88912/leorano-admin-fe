@@ -85,6 +85,7 @@ const show = async ({ data }: any) => {
     title.value = '新增會籍活動';
     mode.value = EditMode.New;
     model.value = createEmptyModel();
+    model.value.auto_create = false;
   }
 };
 
