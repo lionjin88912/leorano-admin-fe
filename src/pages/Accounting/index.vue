@@ -2,7 +2,7 @@
   <div>
     <BreadCrumbs></BreadCrumbs>
     <div class="flex q-gutter-sm q-pb-sm q-my-md">
-      <q-field class="cursor-pointer" style="min-width: 200px;" label="入住日期區間" :stack-label="filter.checkinDuration ? true : false" outlined dense>
+      <q-field class="cursor-pointer" style="min-width: 200px;" label="退房日期區間" :stack-label="filter.checkinDuration ? true : false" outlined dense>
         <template #default>
           <DatePicker :date="filter.checkinDuration" :range="true" @updated="(val) => filter.checkinDuration = val"></DatePicker>
         </template>
