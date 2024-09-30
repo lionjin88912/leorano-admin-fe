@@ -27,12 +27,12 @@ export const columns: TableColumn = [
     field: (row: any) => hotelOrderStatusOptions.find((d) => d.value === row.order_status)?.label,
     align: 'center',
   },
-  {
-    name: 'check_in',
-    label: '預定入住日',
-    field: (row: any) => getDateStringNoTz(row.check_in, 'YYYY-MM-DD'),
-    align: 'left',
-  },
+  // {
+  //   name: 'check_in',
+  //   label: '預定入住日',
+  //   field: (row: any) => getDateStringNoTz(row.check_in, 'YYYY-MM-DD'),
+  //   align: 'left',
+  // },
   {
     name: 'check_out',
     label: '預定退房日',
@@ -45,12 +45,12 @@ export const columns: TableColumn = [
     field: 'price',
     align: 'left',
   },
-  {
-    name: 'profit',
-    label: '利潤',
-    field: 'profit',
-    align: 'left',
-  }
+  // {
+  //   name: 'profit',
+  //   label: '利潤',
+  //   field: 'profit',
+  //   align: 'left',
+  // }
 ]
 
 const hotelOrderStatusOptions = [
