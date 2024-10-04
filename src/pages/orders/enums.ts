@@ -154,6 +154,8 @@ export const userColumns: TableColumn = [
   }
 ]
 
+export const customizedOrderCurrencyOptions = ['USD', 'TWD', 'JPY', 'CNY', 'HKD', 'AED', 'AUD', 'BRL', 'CAD', 'CHF', 'EUR', 'GBP', 'IDR', 'KRW', 'MYR', 'MAD', 'NZD', 'PHP', 'RUB', 'SEK', 'SGD', 'THB', 'VND'];
+
 export const customizedOrderTypeOptions = [
   { label: '飯店', value: 'hotel' },
   { label: '票卷', value: 'ticket' },
