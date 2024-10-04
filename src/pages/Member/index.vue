@@ -28,6 +28,10 @@
           <div class="text-grey-6">({{ props.row.nickname }})</div>
         </q-td>
       </template>
+      <template v-slot:body-cell-SpendingAmount='props'>
+        <q-td v-if="props.row.SpendingAmount">{{ props.row.SpendingAmount }}</q-td>
+        <q-td v-else>-</q-td>
+      </template>
       <template v-slot:body-cell-invite_user='props'>
         <q-td v-if="isInviteUser(props.row)" class="link" @click="goInviteDetail(props.row)">
           {{ props.row.register_record.invite_user.first_name }} {{ props.row.register_record.invite_user.last_name }}
