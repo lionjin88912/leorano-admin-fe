@@ -225,8 +225,13 @@
       <InfoRow title="訂單利潤">
         <div class="info-field">
           <div class="info-field-label">每日房價</div>
-          <div class="info-field-text">
-            {{ model.Profit.room_price[0].Base }}
+        </div>
+        <div class="info-field" v-for="(rate, index) of model.Profit.room_price" :key="index">
+          <div class="info-field-label">{{ getDateStringNoTz(rate.EffectiveDate, 'MM DD, YYYY') }}</div>
+          <div class="info-field-text flex q-pl-sm">
+            <div class="price">
+              {{ rate.Base }}
+            </div>
           </div>
         </div>
         <div class="info-field">
