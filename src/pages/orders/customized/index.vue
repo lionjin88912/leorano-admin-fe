@@ -20,7 +20,7 @@
     </div>
     <TableComponent ref="tableRef" :props-filter="queryFilter" :columns="customizedColumns" :pagination="pagination" :handleCallApi="getCustomizedOrderList">
       <template #body-cell-price="{ row }">
-        <q-td>TWD {{ getCurrencyFormat(row.price) }}</q-td>
+        <q-td>{{ row.currency }} {{ getCurrencyFormat(row.price) }}</q-td>
       </template>
       <template #body-cell-voucher_send="{ row }">
         <q-td align="center">
