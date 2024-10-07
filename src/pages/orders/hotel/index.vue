@@ -92,7 +92,7 @@
         <q-td>
           <div v-if="props.row.total_price" class="text-grey-7">
             <div>{{ props.row.usd_total_price }}</div>
-            <div>{{ totalPrice(props.row) }}</div>
+            <div>{{ priceFormat(props.row.total_price) }}</div>
           </div>
         </q-td>
       </template>
@@ -106,6 +106,14 @@
         </q-td>
       </template>
 
+      <template v-slot:body-cell-final_profit="props">
+        <td class="cursor-pointer" @click="doEditProfit(props.row)">
+          <div class="text-primary">
+            {{ priceFormat(props.row.final_profit) }}
+          </div>
+        </td>
+      </template>
+
       <template v-slot:body-cell-intercom="props">
         <q-td>
           <q-icon v-if="props.row.ticket_id" class="cursor-pointer" name="open_in_new" size="24px" color="primary"
@@ -113,6 +121,7 @@
         </q-td>
       </template>
     </q-table>
+    <ProfitDialog ref="editDialog" @updated="doSearch"></ProfitDialog>
   </div>
 </template>
 
@@ -124,6 +133,7 @@ import { getHotelOrderList } from 'src/api'
 import { hotelColumns, hotelOrderStatusOptions } from '../enums';
 import DatePicker from 'src/components/DatePicker.vue'
 import BreadCrumbs from 'src/components/BreadCrumbs.vue';
+import ProfitDialog from '../components/ProfitDialog.vue'
 import XLSX from 'xlsx-js-style'
 import { getDateString, getDateStringNoTz, getCurrencyFormat } from 'src/utils/helpers';
 import { useMetaStore } from 'src/stores/meta';
@@ -363,8 +373,8 @@ const saveSearchFilter = (val) => {
   SessionStorage.set(filterStorageKey, val);
 }
 
-const totalPrice = computed(() => (row) => {
-  return `${row.total_price.slice(0, 3)}  ${getCurrencyFormat(row.total_price.slice(3))}`
+const priceFormat = computed(() => (price) => {
+  return `${price.slice(0, 3)}  ${getCurrencyFormat(price.slice(3))}`
 })
 
 const getUsdTotalPrice = async (row) => {
@@ -391,6 +401,13 @@ watch(currentTextType, (newVal, oldVal) => {
 })
 
 doSearch();
+
+const editDialog = ref();
+function doEditProfit (item) {
+  editDialog.value.show({
+    data: item
+  });
+}
 
 </script>
 
