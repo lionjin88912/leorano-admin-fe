@@ -51,7 +51,7 @@
 import { useQuasar } from 'quasar';
 import { ref, reactive, watch, onMounted } from 'vue'
 import { router } from 'src/router';
-import { customizedOrderCurrencyOptions, customizedOrderTypeOptions, defaultQuestions } from '../enums';
+import { orderCurrencyOptions, customizedOrderTypeOptions, defaultQuestions } from '../enums';
 import { getCustomizedOrder, createCustomizedOrder, updateCustomizedOrder } from 'src/api';
 import { useRoute } from 'vue-router';
 import BreadCrumbs from 'src/components/BreadCrumbs.vue';
@@ -118,16 +118,16 @@ const getData = async () => {
 	return res.data;
 }
 
-const currencyOptions = ref(customizedOrderCurrencyOptions)
+const currencyOptions = ref(orderCurrencyOptions)
 function filterCurrency (val, update, abort) {
   update(() => {
     const needle = val.toLowerCase()
-    currencyOptions.value = customizedOrderCurrencyOptions.filter(v => v.toLowerCase().indexOf(needle) > -1)
+    currencyOptions.value = orderCurrencyOptions.filter(v => v.toLowerCase().indexOf(needle) > -1)
   })
 }
 function autoCompleteCurrency (val) {
   const needle = val.toLowerCase()
-  data.currency = customizedOrderCurrencyOptions.filter(v => v.toLowerCase().indexOf(needle) > -1)[0]
+  data.currency = orderCurrencyOptions.filter(v => v.toLowerCase().indexOf(needle) > -1)[0]
 }
 
 /* 變更訂單類型 Start */

@@ -69,6 +69,12 @@ export const hotelColumns: TableColumn = [
     align: 'left',
   },
   {
+    name: 'final_profit',
+    label: '利潤',
+    align: 'left',
+    field: 'final_profit',
+  },
+  {
     name: 'intercom',
     label: '客服記錄',
     align: 'center',
@@ -154,7 +160,7 @@ export const userColumns: TableColumn = [
   }
 ]
 
-export const customizedOrderCurrencyOptions = ['USD', 'TWD', 'JPY', 'CNY', 'HKD', 'AED', 'AUD', 'BRL', 'CAD', 'CHF', 'EUR', 'GBP', 'IDR', 'KRW', 'MYR', 'MAD', 'NZD', 'PHP', 'RUB', 'SEK', 'SGD', 'THB', 'VND'];
+export const orderCurrencyOptions = ['USD', 'TWD', 'JPY', 'CNY', 'HKD', 'AED', 'AUD', 'BRL', 'CAD', 'CHF', 'EUR', 'GBP', 'IDR', 'KRW', 'MYR', 'MAD', 'NZD', 'PHP', 'RUB', 'SEK', 'SGD', 'THB', 'VND'];
 
 export const customizedOrderTypeOptions = [
   { label: '飯店', value: 'hotel' },
