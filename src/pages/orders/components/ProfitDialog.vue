@@ -11,7 +11,7 @@
       <q-card-section class="content">
         <q-form ref="form" class="row q-col-gutter-md">
           <q-select v-model="model.final_profit_currency" label="訂單幣別" class="col-4" :options="currencyOptions" use-input hide-selected  fill-input input-debounce="0" @filter="filterCurrency" @input-value="autoCompleteCurrency" dense outlined />
-          <q-input v-model="model.final_profit" label="實際利潤" class="col-8" :rules="rules.profit" lazy-rules  outlined dense />
+          <q-input v-model.number="model.final_profit" label="實際利潤" class="col-8" :rules="rules.profit" lazy-rules  outlined dense />
         </q-form>
       </q-card-section>
       <q-card-actions class="sticky-bottom" align="right">
@@ -25,22 +25,34 @@
 </template>
 
 <script setup>
-import { ref, computed, watchEffect } from 'vue'
+import { ref, reactive, computed, watchEffect } from 'vue'
 import { useQuasar } from 'quasar';
 import { orderCurrencyOptions } from '../enums';
 import { updateHotelOrderFinalProfit } from 'src/api';
 import { isEmpty, messages } from 'src/utils/validators';
 import to from 'await-to-js';
 
-const model = ref({});
+const model = reactive({
+  order_number: '',
+  final_profit: '',
+  final_profit_currency: 'USD'
+});
 const visible = ref(false);
 const show = async ({ data }) => {
+  resetModel();
   visible.value = true;
-  model.value = {
-    order_number: data.order_number,
-    final_profit_currency: data.final_profit.slice(0, 3),
-    final_profit: data.final_profit.slice(3)
-  };
+
+  model.order_number = data.order_number;
+  if (data.final_profit) {
+    model.final_profit_currency = data.final_profit.slice(0, 3);
+    model.final_profit = Number(data.final_profit.slice(3)) ? data.final_profit.slice(3) : '';
+  }
+}
+
+const resetModel = () => {
+  model.order_number = '';
+  model.final_profit = '';
+  model.final_profit_currency = 'USD';
 }
 
 const currencyOptions = ref(orderCurrencyOptions)
@@ -52,7 +64,7 @@ function filterCurrency (val, update, abort) {
 }
 function autoCompleteCurrency (val) {
   const needle = val.toLowerCase()
-  model.value.final_profit_currency = orderCurrencyOptions.filter(v => v.toLowerCase().indexOf(needle) > -1)[0]
+  model.final_profit_currency = orderCurrencyOptions.filter(v => v.toLowerCase().indexOf(needle) > -1)[0]
 }
 
 const rules = computed(() => {
@@ -72,7 +84,7 @@ const doSubmit = async () => {
     return;
   }
   $q.loading.show();
-  const [err, res] = await to(updateHotelOrderFinalProfit(model.value));
+  const [err, res] = await to(updateHotelOrderFinalProfit(model));
   $q.loading.hide();
 
   if (err) {
