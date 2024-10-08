@@ -374,7 +374,7 @@ const saveSearchFilter = (val) => {
 }
 
 const priceFormat = computed(() => (price) => {
-  return `${price.slice(0, 3)}  ${getCurrencyFormat(price.slice(3))}`
+  return price ? `${price.slice(0, 3)}  ${getCurrencyFormat(price.slice(3))}` : '-'
 })
 
 const getUsdTotalPrice = async (row) => {
