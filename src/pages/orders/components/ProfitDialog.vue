@@ -11,7 +11,7 @@
       <q-card-section class="content">
         <q-form ref="form" class="row q-col-gutter-md">
           <q-select v-model="model.final_profit_currency" label="訂單幣別" class="col-4" :options="currencyOptions" use-input hide-selected  fill-input input-debounce="0" @filter="filterCurrency" @input-value="autoCompleteCurrency" dense outlined />
-          <q-input v-model.number="model.final_profit" label="實際利潤" class="col-8" :rules="rules.profit" lazy-rules  outlined dense />
+          <q-input type="number" v-model.number="model.final_profit" label="實際利潤" class="col-8" :rules="rules.profit" outlined dense />
         </q-form>
       </q-card-section>
       <q-card-actions class="sticky-bottom" align="right">
@@ -30,6 +30,7 @@ import { useQuasar } from 'quasar';
 import { orderCurrencyOptions } from '../enums';
 import { updateHotelOrderFinalProfit } from 'src/api';
 import { isEmpty, messages } from 'src/utils/validators';
+import { getCurrencyFormat } from 'src/utils/helpers';
 import to from 'await-to-js';
 
 const model = reactive({
@@ -45,7 +46,7 @@ const show = async ({ data }) => {
   model.order_number = data.order_number;
   if (data.final_profit) {
     model.final_profit_currency = data.final_profit.slice(0, 3);
-    model.final_profit = Number(data.final_profit.slice(3)) ? data.final_profit.slice(3) : '';
+    model.final_profit = getCurrencyFormat(data.final_profit.slice(3)) ?? '';
   }
 }
 
@@ -70,7 +71,8 @@ function autoCompleteCurrency (val) {
 const rules = computed(() => {
   return {
     profit: [
-      val => !isEmpty(val) || messages.requiredInput()
+      val => !isEmpty(val) || messages.requiredInput(),
+      val => /^[0-9]*\.?[0-9]{0,2}$/.test(val) || '只能輸入到小數第二位'
     ]
   }
 });
