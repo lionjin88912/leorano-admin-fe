@@ -29,7 +29,7 @@ import { ref, reactive, computed, watchEffect } from 'vue'
 import { useQuasar } from 'quasar';
 import { orderCurrencyOptions } from '../enums';
 import { updateHotelOrderFinalProfit } from 'src/api';
-import { isEmpty, messages } from 'src/utils/validators';
+import { isNumberEmpty, isValidDecimal, messages } from 'src/utils/validators';
 import { getCurrencyFormat } from 'src/utils/helpers';
 import to from 'await-to-js';
 
@@ -71,8 +71,8 @@ function autoCompleteCurrency (val) {
 const rules = computed(() => {
   return {
     profit: [
-      val => !isEmpty(val) || messages.requiredInput(),
-      val => /^[0-9]*\.?[0-9]{0,2}$/.test(val) || '只能輸入到小數第二位'
+      val => !isNumberEmpty(val) || messages.requiredInput(),
+      val => isValidDecimal(val, 2) || messages.invalidDecimal(2)
     ]
   }
 });
