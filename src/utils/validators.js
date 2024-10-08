@@ -1,6 +1,11 @@
 import dayjs from 'dayjs'
 import _ from 'lodash'
 
+const CHINESE_NUMBER = {
+  1: '一',
+  2: '二',
+}
+
 const messages = {
   requiredInput: () => '此欄位為必填',
   email: () => '不正確的信箱格式',
@@ -8,7 +13,8 @@ const messages = {
   enterPassword: () => '請輸入密碼',
   inputPositiveInteger: () => '請輸入正整數',
   invalidDateRange: () => '日期區間有誤',
-  invalidRange: (min, max) => `請輸入介於 ${min}-${max} 之間的數字`
+  invalidRange: (min, max) => `請輸入介於 ${min}-${max} 之間的數字`,
+  invalidDecimal: (place) => `只能輸入到小數第${CHINESE_NUMBER[place]}位`
 }
 
 /**
@@ -16,6 +22,12 @@ const messages = {
  */
 const isEmpty = (val) => {
   return !val || String(val).trim().length <= 0
+}
+/**
+ * 是否數字空白未填值（可以是0）
+ */
+const isNumberEmpty = (val) => {
+  return isNaN(val) || String(val).trim().length <= 0
 }
 /**
  * 是否只包含英文或數字
@@ -103,14 +115,26 @@ const isMatch = (a, b) => {
   return a === b
 }
 
+
+/**
+ * 是否為合法的小數位數
+ */
+const isValidDecimal = (val, place) => {
+  const regex = new RegExp(`^-?[0-9]*\.?[0-9]{0,${place}}$`);
+  const result = regex.test(val)
+  return result
+}
+
 export {
   messages,
   isEmpty,
+  isNumberEmpty,
   isValidEmail,
   isValidLength,
   isLetterOrDigit,
   isMatch,
   isPositiveInteger,
   isValidDateRange,
-  isValidRange
+  isValidRange,
+  isValidDecimal
 }

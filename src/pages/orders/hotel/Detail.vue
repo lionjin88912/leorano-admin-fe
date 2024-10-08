@@ -258,6 +258,7 @@ import { useQuasar } from 'quasar';
 import { ref, reactive, computed, watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router';
 import { getHotelOrder, cancelHotelOrder, updateHotelOrderUser, updateHotelOrderProfit } from 'src/api'
+import { isNumberEmpty, isValidDecimal, messages } from 'src/utils/validators';
 import InfoRow from '../components/InfoRow.vue';
 import RawDataInfo from 'src/pages/HotelList/plan/RawDataInfo.vue';
 import CancelOrderDialog from '../components/CancelOrderDialog.vue';
@@ -365,7 +366,8 @@ const onUpdateUserConfirm = async (data: any) => {
 const rules = computed(() => {
   return {
     profit: [
-      val => !val || /^[0-9]*\.?[0-9]{0,1}$/.test(val) || '只能輸入到小數第一位'
+      val => !isNumberEmpty(val) || messages.requiredInput(),
+      val => isValidDecimal(val, 1) || messages.invalidDecimal(1)
     ],
   }
 })
