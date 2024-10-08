@@ -65,9 +65,9 @@ const columns: tableColumn = [
   },
 
   {
-    name: 'order_sum',
+    name: 'SpendingAmount',
     label: '累積消費金額',
-    field: 'order_sum',
+    field: 'SpendingAmount',
     align: 'left',
   },
   {
