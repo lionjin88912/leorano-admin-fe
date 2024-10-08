@@ -50,10 +50,16 @@ export const columns: TableColumn = [
   //   label: '利潤',
   //   field: 'profit',
   //   align: 'left',
-  // }
+  // },
+  {
+    name: 'final_profit',
+    label: '實際利潤',
+    field: 'final_profit',
+    align: 'left',
+  }
 ]
 
-const hotelOrderStatusOptions = [
+export const hotelOrderStatusOptions = [
   { label: '所有訂單狀態', value: null },
   { label: '預訂中', value: 'processing' },
   { label: '預訂成功', value: 'success' },

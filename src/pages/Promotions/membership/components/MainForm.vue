@@ -51,6 +51,7 @@
         <q-input input-class="text-right" v-model="model.total" label="數量 *" type="number" suffix="組"
           :rules="rules.number" min="1" :disable="!isEditable" hide-bottom-space lazy-rules dense outlined>
         </q-input>
+        <q-toggle v-model="model.auto_create" color="green" label="系統自動產生行銷碼" />
       </div>
       <q-input v-model="model.note" type="textarea" :rows="3" label="備註(僅後台可見)" hide-bottom-space outlined
         dense></q-input>
@@ -203,6 +204,7 @@ const getModel = () => {
     start_date: duration.value.from,
     end_date: duration.value.to,
     total: Number(model.value.total),
+    auto_create: model.value.auto_create,
     note: model.value.note
   };
 }
