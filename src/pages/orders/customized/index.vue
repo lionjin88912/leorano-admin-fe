@@ -33,7 +33,7 @@
       <template #body-cell-operation="{ row }">
         <q-td align="center">
           <q-btn dense flat icon='edit' text-color="primary" @click="goCustomizedOrder(row.id)" />
-          <q-btn dense flat icon="delete" text-color="negative" @click="doDelete(row)" />
+          <q-btn dense flat icon="archive" text-color="negative" @click="doDelete(row)" />
         </q-td>
       </template>
       <template #body-cell-voucher="{ row }">
