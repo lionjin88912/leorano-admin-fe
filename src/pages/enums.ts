@@ -91,6 +91,12 @@ const menus: Menu[] = [
       { label: '國家城市設定', to: '/settings/country-region' },
     ],
   },
+  {
+    label: '匯率查詢',
+    module: 'currency',
+    to: '/currency/change',
+    children: []
+  }
 ]
 
 export const TagType = {

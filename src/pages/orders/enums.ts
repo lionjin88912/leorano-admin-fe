@@ -115,7 +115,7 @@ export const customizedColumns: TableColumn = [
   },
   {
     name: 'operation',
-    label: '操作',
+    label: '編輯 / 封存',
     field: 'operation',
     align: 'center',
   },
@@ -159,8 +159,6 @@ export const userColumns: TableColumn = [
     align: 'left',
   }
 ]
-
-export const orderCurrencyOptions = ['USD', 'TWD', 'JPY', 'CNY', 'HKD', 'AED', 'AUD', 'BRL', 'CAD', 'CHF', 'EUR', 'GBP', 'IDR', 'KRW', 'MYR', 'MAD', 'NZD', 'PHP', 'RUB', 'SEK', 'SGD', 'THB', 'VND'];
 
 export const customizedOrderTypeOptions = [
   { label: '飯店', value: 'hotel' },

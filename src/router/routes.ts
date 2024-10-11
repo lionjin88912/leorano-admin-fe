@@ -286,6 +286,14 @@ const routes: RouteRecordRaw[] = [
           },
         ],
       },
+      {
+        path: '/currency/change',
+        meta: {
+          requiresAuth: true,
+          title: '匯率查詢',
+        },
+        component: () => import('pages/Currency/index.vue'),
+      },
     ],
   },
   {
