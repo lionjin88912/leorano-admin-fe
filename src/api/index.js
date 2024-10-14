@@ -109,6 +109,7 @@ export const createCustomizedOrder = (data) => baseService.post(`/order/customiz
 export const updateCustomizedOrder = (id, data) => baseService.put(`/order/customized/${id}`, data)
 export const getMemberList = (data) => baseService.get('/users/search', { params: data })
 export const getMember = (id) => baseService.get(`/member/${id}`)
+export const updateCustomizedOrderFinalProfit = (data) => baseService.put(`/order/customized/final_profit`, data)
 // 訂單管理-酒店訂單
 export const getMemberOrderList = (data) => baseService.get('/order/membership', { params: data })
 export const getMemberOrder = (orderNumber) => baseService.get(`/order/membership/${orderNumber}`)
@@ -117,7 +118,8 @@ export const cancelMemberOrder = (orderNumber, data) =>
 export const refundMemberOrder = (orderNumber, data) =>
   baseService.delete(`/order/membership/${orderNumber}/refund`, { data })
 // 訂單對帳管理
-export const getAccountingList = (data) => baseService.get('/accounting/order/hotel', { params: data })
+export const getHotelAccountingList = (data) => baseService.get('/accounting/order/hotel', { params: data })
+export const getCustomizedAccountingList = (data) => baseService.get('/accounting/order/customized', { params: data })
 // 行銷碼管理
 // 會籍活動
 export const getPromoMembershipList = (params) =>

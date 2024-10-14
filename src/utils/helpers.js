@@ -85,6 +85,10 @@ export const getCurrencyFormat = (value, locale, options) => {
   }
 }
 
+export const getCurrencyPriceFormat = value => {
+  return value ? `${value.slice(0, 3)} ${getCurrencyFormat(value.slice(3))}` : '-'
+}
+
 export const getTimeZoneList = () => {
   let tzInfoList = []
   const time = new Date()

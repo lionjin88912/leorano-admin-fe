@@ -2,16 +2,6 @@
   <div>
     <BreadCrumbs></BreadCrumbs>
     <div class="flex q-gutter-sm q-pb-sm q-my-md">
-      <q-field class="cursor-pointer" style="min-width: 200px;" label="退房日期區間" :stack-label="filter.checkinDuration ? true : false" outlined dense>
-        <template #default>
-          <DatePicker :date="filter.checkinDuration" :range="true" @updated="(val) => filter.checkinDuration = val"></DatePicker>
-        </template>
-        <template v-slot:control>
-          <div v-if="filter.checkinDuration && filter.checkinDuration.from">
-            {{ filter.checkinDuration.from }} - {{ filter.checkinDuration.to }}
-          </div>
-        </template>
-      </q-field>
       <q-field class="cursor-pointer" style="min-width: 200px;" label="訂單日期區間" :stack-label="filter.orderDuration ? true : false" outlined dense>
         <template #default>
           <DatePicker :date="filter.orderDuration" :range="true" @updated="(val) => filter.orderDuration = val"></DatePicker>
@@ -22,8 +12,7 @@
           </div>
         </template>
       </q-field>
-      <q-select v-model="filter.order_status" :options="hotelOrderStatusOptions" outlined dense />
-      <q-input v-model="filter.order_number" outlined dense placeholder="訂單編號">
+      <q-input v-model="filter.order_number" outlined dense label="訂單編號">
         <template v-slot:append>
           <q-icon class='cursor-pointer' name='search' />
         </template>
@@ -31,9 +20,9 @@
       <q-space />
       <q-btn label="導出 Excel" color="primary" @click="doExcelExport"></q-btn>
     </div>
-    <TableComponent ref="tableRef" :propsFilter='queryFilter' :columns="columns" :handleCallApi="getHotelAccountingList">
+    <TableComponent ref="tableRef" :propsFilter='queryFilter' :columns="customizedColumns" :handleCallApi="getCustomizedAccountingList">
       <template v-slot:body-cell-order_number="props">
-        <q-td class="link" @click="goDetail(props.row.order_number)">
+        <q-td class="link" @click="goDetail(props.row.id)">
           {{ props.row.order_number }}
         </q-td>
       </template>
@@ -48,17 +37,15 @@ import { router } from 'src/router'
 import BreadCrumbs from 'src/components/BreadCrumbs.vue'
 import DatePicker from 'src/components/DatePicker.vue'
 import TableComponent from 'src/components/TableComponent.vue'
-import { getHotelAccountingList } from 'src/api'
-import { columns, hotelOrderStatusOptions } from './enums'
+import { getCustomizedAccountingList } from 'src/api'
+import { customizedColumns } from './enums'
 import XLSX from 'xlsx-js-style'
-import { getDateString, getDateStringNoTz, getCurrencyFormat } from 'src/utils/helpers';
+import { getDateString, getCurrencyFormat } from 'src/utils/helpers';
 import to from 'await-to-js';
 
 const filter = reactive({
-  checkinDuration: null,
   orderDuration: null,
   order_number: null,
-  order_status: hotelOrderStatusOptions[0],
 })
 
 watch(filter, (newVal) => {
@@ -84,10 +71,6 @@ const getFilterParams = () => {
   restoreSearchFilter();
 
   const params = {};
-  if (filter.checkinDuration) {
-    params.check_in_start = filter.checkinDuration.from;
-    params.check_in_end = filter.checkinDuration.to;
-  }
   if (filter.orderDuration) {
     params.created_at_start = filter.orderDuration.from;
     params.created_at_end = filter.orderDuration.to;
@@ -95,7 +78,6 @@ const getFilterParams = () => {
   if (filter.order_number) {
     params.order_number = filter.order_number;
   }
-  params.order_status = filter.order_status.value;
   return params;
 }
 
@@ -105,7 +87,7 @@ const queryFilter = computed(() => {
 })
 
 const goDetail = (orderNumber) => {
-  router.push({ name: "HotelOrderDetail", params: { orderNumber } });
+  router.push({ name: "CustomizedOrderDetail", params: { orderNumber } });
 }
 
 /* 導出 Excel Start */
@@ -122,14 +104,12 @@ async function doExcelExport () {
 
   // 整理資料
   const headers = [
-    "訂單編號", "訂單日期", "訂單狀態", "預定退房日", "訂單金額", "實際利潤"
+    "訂單編號", "訂單日期", "訂單金額", "實際利潤"
   ]
   let excelDatas = datas.map(d => {
     return [
       d.order_number,
       getDateString(d.order_date, 'YYYY-MM-DD'),
-      hotelOrderStatusOptions.find(s => s.value === d.order_status)?.label,
-      getDateStringNoTz(d.check_out, 'YYYY-MM-DD'),
       d.price
         ? `${d.price.slice(0, 3)} ${getCurrencyFormat(d.price.slice(3))}`
         : '',
@@ -139,14 +119,14 @@ async function doExcelExport () {
   excelDatas = [headers, ...excelDatas];
   const ws = XLSX.utils.aoa_to_sheet(excelDatas);
   const wsCols = [
-    { wpx: 120 }, { wpx: 80 }, { wpx: 100 }, { wpx: 80 }, { wpx: 100 }, { wpx: 100 }
+    { wpx: 120 }, { wpx: 80 }, { wpx: 100 }, { wpx: 100 }
   ]
   ws['!cols'] = wsCols;
   ws['!rows'] = excelDatas.map(d => { return { hpx: 20 } });
 
   const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, "Hotel Orders Accounting");
-  const filename = `${getDateString(new Date(), "YYYY-MM-DD")}_hotel_order_accounting.xlsx`;
+  XLSX.utils.book_append_sheet(wb, ws, "Customized Orders Accounting");
+  const filename = `${getDateString(new Date(), "YYYY-MM-DD")}_customized_order_accounting.xlsx`;
   XLSX.writeFileXLSX(wb, filename);
 }
 
@@ -156,7 +136,7 @@ async function loadExportData (datas, page) {
     limit: 50,
     ...queryFilter.value
   }
-  const [err, res] = await to(getAccountingList(params));
+  const [err, res] = await to(getCustomizedAccountingList(params));
 
   if (err) {
     console.error("getList error:", err);
