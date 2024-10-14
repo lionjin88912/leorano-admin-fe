@@ -208,6 +208,15 @@ const routes: RouteRecordRaw[] = [
             },
             component: () => import('src/pages/Accounting/index.vue'),
           },
+          {
+            path: 'order/customized',
+            name: 'AccountingCustomizeOrderList',
+            meta: {
+              root: { title: '訂單對帳管理' },
+              title: '客製訂單對帳',
+            },
+            component: () => import('src/pages/Accounting/customized.vue'),
+          },
         ],
       },
       {

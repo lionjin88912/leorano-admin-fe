@@ -27,11 +27,18 @@
 <script setup>
 import { ref, reactive, computed, watchEffect } from 'vue'
 import { useQuasar } from 'quasar';
-import { updateHotelOrderFinalProfit } from 'src/api';
+import { updateHotelOrderFinalProfit, updateCustomizedOrderFinalProfit } from 'src/api';
 import { isNumberEmpty, isValidDecimal, messages } from 'src/utils/validators';
 import { getCurrencyFormat } from 'src/utils/helpers';
 import selectCurrency from 'src/components/selectCurrency.vue';
 import to from 'await-to-js';
+
+const props = defineProps({
+  type: {
+    type: String,
+    default: 'hotel'
+  }
+});
 
 const model = reactive({
   order_number: '',
@@ -74,7 +81,16 @@ const doSubmit = async () => {
     return;
   }
   $q.loading.show();
-  const [err, res] = await to(updateHotelOrderFinalProfit(model));
+  let err, res;
+  console.log(props.type);
+  switch (props.type) {
+    case 'customized':
+      [err, res] = await to(updateCustomizedOrderFinalProfit(model));
+      break;
+    default:
+      [err, res] = await to(updateHotelOrderFinalProfit(model));
+      break;
+  }
   $q.loading.hide();
 
   if (err) {

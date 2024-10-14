@@ -1,4 +1,4 @@
-import { getDateString, getDateStringNoTz } from 'src/utils/helpers'
+import { getDateString, getDateStringNoTz, getCurrencyPriceFormat } from 'src/utils/helpers'
 
 interface ColumnStruct {
   name: string
@@ -55,6 +55,33 @@ export const columns: TableColumn = [
     name: 'final_profit',
     label: '實際利潤',
     field: 'final_profit',
+    align: 'left',
+  }
+]
+
+export const customizedColumns: TableColumn = [
+  {
+    name: 'order_number',
+    label: '訂單編號',
+    field: 'order_number',
+    align: 'left',
+  },
+  {
+    name: 'order_date',
+    label: '訂單建立日期',
+    field: (row: any) => getDateString(row.order_date, 'YYYY-MM-DD'),
+    align: 'left',
+  },
+  {
+    name: 'price',
+    label: '訂單金額',
+    field: (row: any) => getCurrencyPriceFormat(row.price),
+    align: 'left',
+  },
+  {
+    name: 'final_profit',
+    label: '實際利潤',
+    field: (row: any) => getCurrencyPriceFormat(row.final_profit),
     align: 'left',
   }
 ]

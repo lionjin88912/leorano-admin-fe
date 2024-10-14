@@ -92,7 +92,7 @@
         <q-td>
           <div v-if="props.row.total_price" class="text-grey-7">
             <div>{{ props.row.usd_total_price }}</div>
-            <div>{{ priceFormat(props.row.total_price) }}</div>
+            <div>{{ getCurrencyPriceFormat(props.row.total_price) }}</div>
           </div>
         </q-td>
       </template>
@@ -109,7 +109,7 @@
       <template v-slot:body-cell-final_profit="props">
         <td class="cursor-pointer" @click="doEditProfit(props.row)">
           <div class="text-primary">
-            {{ priceFormat(props.row.final_profit) }}
+            {{ getCurrencyPriceFormat(props.row.final_profit) }}
           </div>
         </td>
       </template>
@@ -121,7 +121,7 @@
         </q-td>
       </template>
     </q-table>
-    <ProfitDialog ref="editDialog" @updated="doSearch"></ProfitDialog>
+    <ProfitDialog ref="editDialog" type="hotel" @updated="doSearch"></ProfitDialog>
   </div>
 </template>
 
@@ -135,7 +135,7 @@ import DatePicker from 'src/components/DatePicker.vue'
 import BreadCrumbs from 'src/components/BreadCrumbs.vue';
 import ProfitDialog from '../components/ProfitDialog.vue'
 import XLSX from 'xlsx-js-style'
-import { getDateString, getDateStringNoTz, getCurrencyFormat } from 'src/utils/helpers';
+import { getDateString, getDateStringNoTz, getCurrencyFormat, getCurrencyPriceFormat } from 'src/utils/helpers';
 import { useMetaStore } from 'src/stores/meta';
 import to from 'await-to-js';
 import _ from 'lodash'
@@ -372,10 +372,6 @@ const restoreSearchFilter = () => {
 const saveSearchFilter = (val) => {
   SessionStorage.set(filterStorageKey, val);
 }
-
-const priceFormat = computed(() => (price) => {
-  return price ? `${price.slice(0, 3)}  ${getCurrencyFormat(price.slice(3))}` : '-'
-})
 
 const getUsdTotalPrice = async (row) => {
   if (!row.total_price) {

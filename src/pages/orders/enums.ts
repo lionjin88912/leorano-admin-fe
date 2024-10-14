@@ -114,6 +114,12 @@ export const customizedColumns: TableColumn = [
     align: 'left',
   },
   {
+    name: 'final_profit',
+    label: '實際利潤',
+    field: 'final_profit',
+    align: 'left',
+  },
+  {
     name: 'operation',
     label: '編輯 / 封存',
     field: 'operation',
@@ -158,6 +164,12 @@ export const userColumns: TableColumn = [
     field: 'email',
     align: 'left',
   }
+]
+
+export const customizedOrderStatusOptions = [
+  { label: '全部', value: '' },
+  { label: '未封存', value: 'online' },
+  { label: '封存', value: 'archive' }
 ]
 
 export const customizedOrderTypeOptions = [
