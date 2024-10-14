@@ -101,11 +101,19 @@ const getFilterParams = () => {
   restoreSearchFilter();
 
   const params = {};
-  if (filter.orderDuration) {
+  if (filter.orderNumber) {
     params.order_number = filter.orderNumber;
+  }
+  if (filter.title) {
     params.title = filter.title;
+  }
+  if (filter.member) {
     params.member = filter.member;
+  }
+  if (filter.orderStatus) {
     params.status = filter.orderStatus;
+  }
+  if (filter.orderDuration) {
     params.created_at_start = `${filter.orderDuration.from} 00:00:00`;
     params.created_at_end = `${filter.orderDuration.to} 23:59:59`;
   }
