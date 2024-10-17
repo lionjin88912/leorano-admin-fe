@@ -340,6 +340,7 @@ const onCancelOrder = () => {
   cancelOrderRef.value.show({
     title: '確定取消酒店訂單',
     message: '酒店訂單取消後將無法復原，重新訂購可能無法取得相同房型、優惠與價格。',
+    required: true,
     data: {
       type: 'hotel-order',
       orderNumber: model.value.order_number
