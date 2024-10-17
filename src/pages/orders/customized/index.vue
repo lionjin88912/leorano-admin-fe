@@ -25,6 +25,18 @@
       <q-btn label="新增客製訂單" color="primary" @click="goCustomizedOrder('add')" />
     </div>
     <TableComponent ref="tableRef" :props-filter="queryFilter" :columns="customizedColumns" :pagination="pagination" :handleCallApi="getCustomizedOrderList">
+      <template #body-cell-voucher_cancel_code="{ row }">
+        <q-td>
+          <div v-if="row.voucher" class="flex no-wrap">
+            <div class="q-pr-sm text-bold">憑證編號</div>
+            <div class="text-primary">{{ row.voucher }}</div>
+          </div>
+          <div v-if="row.cancel_number" class="flex no-wrap">
+            <div class="q-pr-sm text-bold">取消編號</div>
+            <div class="text-negative">{{ row.cancel_number }}</div>
+          </div>
+        </q-td>
+      </template>
       <template #body-cell-price="{ row }">
         <q-td>{{ row.currency }} {{ getCurrencyFormat(row.price) }}</q-td>
       </template>
@@ -46,7 +58,8 @@
       <template #body-cell-operation="{ row }">
         <q-td align="center">
           <q-btn dense flat icon='edit' text-color="primary" @click="goCustomizedOrder(row.id)" />
-          <q-btn dense flat icon="archive" text-color="negative" @click="doDelete(row)" />
+          <q-btn v-if="row.deleted_at" dense flat icon="cancel" text-color="grey-5" disable />
+          <q-btn v-else dense flat icon="cancel" text-color="warning" @click="onCancelOrder(row)" />
         </q-td>
       </template>
       <template #body-cell-voucher="{ row }">
@@ -55,7 +68,7 @@
         </q-td>
       </template>
     </TableComponent>
-    <Confirm ref="confirmRef" @confirm="onDeleteConfirm"></Confirm>
+    <CancelOrderDialog ref="cancelOrderRef" @confirm="onCancelConfirm"></CancelOrderDialog>
     <ProfitDialog ref="editDialog" type="customized" @updated="doSearch"></ProfitDialog>
   </div>
 </template>
@@ -70,7 +83,7 @@ import { router } from 'src/router'
 import BreadCrumbs from 'src/components/BreadCrumbs.vue';
 import DatePicker from 'src/components/DatePicker.vue';
 import TableComponent from 'components/TableComponent.vue';
-import Confirm from 'src/components/dialog/Confirm.vue'
+import CancelOrderDialog from '../components/CancelOrderDialog.vue';
 import ProfitDialog from '../components/ProfitDialog.vue'
 import to from 'await-to-js';
 
@@ -125,19 +138,25 @@ const queryFilter = computed(() => {
   return Object.assign({}, params);
 })
 
-const confirmRef = ref();
-const doDelete = (item) => {
-  confirmRef.value.show({
-    title: '刪除確認',
-    message: '確認要刪除嗎？',
-    data: item
+const cancelOrderRef = ref();
+const onCancelOrder = (item) => {
+  cancelOrderRef.value.show({
+    title: '確定取消客製訂單',
+    message: `訂單編號：${item.order_number}`,
+    required: false,
+    data: {
+      type: 'customized-order',
+      orderNumber: item.order_number
+    }
   });
 }
 
 const $q = useQuasar();
-const onDeleteConfirm = async (data) => {
+const onCancelConfirm = async (data) => {
   $q.loading.show();
-  const [err, res] = await to(deleteCustomizedOrder(data.id));
+  const [err, res] = await to(deleteCustomizedOrder(data.orderNumber, {
+    reason: data.confirmText
+  }));
   $q.loading.hide();
 
   doSearch();

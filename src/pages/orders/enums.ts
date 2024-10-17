@@ -89,6 +89,11 @@ export const customizedColumns: TableColumn = [
     align: 'left',
   },
   {
+    name: 'voucher_cancel_code',
+    label: '憑證編號/取消編號',
+    align: 'left',
+  },
+  {
     name: 'title',
     label: '訂單名稱',
     field: 'title',
@@ -121,7 +126,7 @@ export const customizedColumns: TableColumn = [
   },
   {
     name: 'operation',
-    label: '編輯 / 封存',
+    label: '編輯/取消',
     field: 'operation',
     align: 'center',
   },
