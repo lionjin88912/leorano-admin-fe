@@ -8,6 +8,7 @@ interface columnStruct {
     | ((row: { updated_at: string }) => string)
     | ((row: { first_name: string; last_name: string }) => string)
   align: 'center' | 'left' | 'right'
+  sortable?: boolean
 }
 type tableColumn = columnStruct[]
 
@@ -17,6 +18,7 @@ const columns: tableColumn = [
     label: '編號',
     field: 'user_number',
     align: 'left',
+    sortable: true,
   },
   {
     name: 'title',
@@ -50,6 +52,7 @@ const columns: tableColumn = [
         ? helpers.getDateString(row.MembershipRecords[0].expired_at, 'YYYY-MM-DD')
         : '',
     align: 'left',
+    sortable: true,
   },
   {
     name: 'city',
@@ -62,13 +65,14 @@ const columns: tableColumn = [
     label: '年收入',
     field: 'income',
     align: 'left',
+    sortable: true,
   },
-
   {
     name: 'SpendingAmount',
     label: '累積消費金額',
     field: 'SpendingAmount',
     align: 'left',
+    sortable: true,
   },
   {
     name: 'invite_user',
