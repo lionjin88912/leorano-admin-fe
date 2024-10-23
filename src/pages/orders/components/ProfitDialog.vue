@@ -9,8 +9,8 @@
         </div>
       </q-card-section>
       <q-card-section class="content">
-        <q-form ref="form" class="row q-col-gutter-md">
-          <q-select v-model="model.final_profit_currency" label="訂單幣別" class="col-4" :options="currencyOptions" use-input hide-selected  fill-input input-debounce="0" @filter="filterCurrency" @input-value="autoCompleteCurrency" dense outlined />
+        <q-form ref="form" class="row q-col-gutter-sm">
+          <selectCurrency v-model="model.final_profit_currency" label="訂單幣別" class="col-4" :default="model.final_profit_currency"></selectCurrency>
           <q-input type="number" v-model.number="model.final_profit" label="實際利潤" class="col-8" :rules="rules.profit" outlined dense />
         </q-form>
       </q-card-section>
@@ -27,11 +27,18 @@
 <script setup>
 import { ref, reactive, computed, watchEffect } from 'vue'
 import { useQuasar } from 'quasar';
-import { orderCurrencyOptions } from '../enums';
-import { updateHotelOrderFinalProfit } from 'src/api';
-import { isEmpty, messages } from 'src/utils/validators';
+import { updateHotelOrderFinalProfit, updateCustomizedOrderFinalProfit } from 'src/api';
+import { isNumberEmpty, isValidDecimal, messages } from 'src/utils/validators';
 import { getCurrencyFormat } from 'src/utils/helpers';
+import selectCurrency from 'src/components/selectCurrency.vue';
 import to from 'await-to-js';
+
+const props = defineProps({
+  type: {
+    type: String,
+    default: 'hotel'
+  }
+});
 
 const model = reactive({
   order_number: '',
@@ -46,7 +53,7 @@ const show = async ({ data }) => {
   model.order_number = data.order_number;
   if (data.final_profit) {
     model.final_profit_currency = data.final_profit.slice(0, 3);
-    model.final_profit = getCurrencyFormat(data.final_profit.slice(3)) ?? '';
+    model.final_profit = Number(data.final_profit.slice(3)) ?? '';
   }
 }
 
@@ -56,23 +63,11 @@ const resetModel = () => {
   model.final_profit_currency = 'USD';
 }
 
-const currencyOptions = ref(orderCurrencyOptions)
-function filterCurrency (val, update, abort) {
-  update(() => {
-    const needle = val.toLowerCase()
-    currencyOptions.value = orderCurrencyOptions.filter(v => v.toLowerCase().indexOf(needle) > -1)
-  })
-}
-function autoCompleteCurrency (val) {
-  const needle = val.toLowerCase()
-  model.final_profit_currency = orderCurrencyOptions.filter(v => v.toLowerCase().indexOf(needle) > -1)[0]
-}
-
 const rules = computed(() => {
   return {
     profit: [
-      val => !isEmpty(val) || messages.requiredInput(),
-      val => /^[0-9]*\.?[0-9]{0,2}$/.test(val) || '只能輸入到小數第二位'
+      val => !isNumberEmpty(val) || messages.requiredInput(),
+      val => isValidDecimal(val, 2) || messages.invalidDecimal(2)
     ]
   }
 });
@@ -86,7 +81,16 @@ const doSubmit = async () => {
     return;
   }
   $q.loading.show();
-  const [err, res] = await to(updateHotelOrderFinalProfit(model));
+  let err, res;
+  console.log(props.type);
+  switch (props.type) {
+    case 'customized':
+      [err, res] = await to(updateCustomizedOrderFinalProfit(model));
+      break;
+    default:
+      [err, res] = await to(updateHotelOrderFinalProfit(model));
+      break;
+  }
   $q.loading.hide();
 
   if (err) {

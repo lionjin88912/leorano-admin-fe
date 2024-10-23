@@ -12,13 +12,16 @@
           BUILD {{ buildDate }}
         </div>
         <q-list class="rounded-borders" v-for="(item, index) of appMenus" :key="index">
-          <q-expansion-item :label="item.label" :default-opened="isChildOpened(item)" expand-separator
+          <q-expansion-item v-if="item.children.length > 0" :label="item.label" :default-opened="isChildOpened(item)" expand-separator
             @show="item.isExpand = true" @hide="item.isExpand = false">
             <q-item v-for="(child, cIdx) of item.children" :key="cIdx" :inset-level="0.5" clickable
               :active="isMenuActive(child)" :to="child.to">
               <q-item-section>{{ child.label }}</q-item-section>
             </q-item>
           </q-expansion-item>
+          <q-item v-else clickable :to="item.to">
+            <q-item-section>{{ item.label }}</q-item-section>
+          </q-item>
         </q-list>
       </div>
     </q-drawer>
@@ -44,8 +47,9 @@ const toggleLeftDrawer = () => {
 }
 const buildDate = getDateStringNoTz(process.env.VUE_APP_BUILD_DATE, 'YYYY-MM-DD HH:mm');
 const permissions = ref<any>(LocalStorage.getItem('permissions') || {})
+const UN_PERMISSIONS = ['currency']
 const appMenus = computed(() => {
-  return menus.filter((d: Menu) => permissions.value.hasOwnProperty(d.module) && permissions.value[d.module])
+  return menus.filter((d: Menu) => (permissions.value.hasOwnProperty(d.module) && permissions.value[d.module]) || UN_PERMISSIONS.includes(d.module))
 })
 
 const isChildOpened = computed(() => (menu: Menu) => {

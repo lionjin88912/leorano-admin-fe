@@ -200,11 +200,16 @@ const routes: RouteRecordRaw[] = [
         },
         children: [
           {
-            path: 'order/hotel',
-            name: 'AccountingHotelOrderList',
+            path: 'order/:type',
+            name: 'AccountingOrderList',
             meta: {
               root: { title: '訂單對帳管理' },
-              title: '飯店訂單對帳',
+            },
+            beforeEnter: (to, from, next) => {
+              if (!['hotel', 'customized'].includes(to.params.type as string))
+                next('ErrorNotFound');
+              else
+                next();
             },
             component: () => import('src/pages/Accounting/index.vue'),
           },
@@ -286,6 +291,14 @@ const routes: RouteRecordRaw[] = [
           },
         ],
       },
+      {
+        path: '/currency/change',
+        meta: {
+          requiresAuth: true,
+          title: '匯率查詢',
+        },
+        component: () => import('pages/Currency/index.vue'),
+      },
     ],
   },
   {
@@ -312,6 +325,7 @@ const routes: RouteRecordRaw[] = [
   // but you can also remove it
   {
     path: '/:catchAll(.*)*',
+    name: 'ErrorNotFound',
     component: () => import('pages/ErrorNotFound.vue'),
   },
 ];

@@ -12,7 +12,7 @@
           <div class="flex-1 q-gutter-x-sm">
             <q-scroll-area class="flex-1 content-scroll bordered rounded-borders">
               <TableComponent ref="tableRef" :propsFilter='propsFilter' :columns='columns' :pagination="pagination"
-                :handleCallApi='RequestUsers' hide-pagination hide-header>
+                :handleCallApi='getMemberList' hide-pagination hide-header>
                 <template #body-cell-email="props">
                   <q-td :props="props" class="cursor-pointer" @click="select(props.row)">
                     <div class="flex q-gutter-x-sm">
@@ -42,7 +42,7 @@
 import { QTableProps } from 'quasar'
 import { ref, computed } from "vue";
 import TableComponent from 'src/components/TableComponent.vue';
-import { RequestUsers } from "src/api";
+import { getMemberList } from "src/api";
 
 const emit = defineEmits(['confirm', 'cancel'])
 const isShow = ref(false)
@@ -58,10 +58,12 @@ const show = (users: []) => {
 };
 
 const propsFilter = computed(() => {
-  return {
-    email: searchText.value,
-    excepts: 'MembershipRecords,User,Photo,register_record'
+  let params: { email?: string } = {}
+
+  if (searchText.value) {
+    params.email = searchText.value
   }
+  return params
 })
 
 const isSelected = computed(() => (row: any) => {

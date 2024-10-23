@@ -50,7 +50,7 @@ const pagination = ref({
 
 const keyword = ref('');
 watch(keyword, (newVal, oldVal) => {
-	if (newVal != '' && newVal !== oldVal) {
+	if (newVal && newVal !== oldVal) {
     pagination.value.page = 1;
 	  searchMember();
 	}

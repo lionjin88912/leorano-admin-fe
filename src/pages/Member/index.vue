@@ -1,8 +1,8 @@
 <template>
   <div>
     <BreadCrumbs></BreadCrumbs>
-    <q-form class='row q-my-lg'>
-      <q-input v-model='filter.search' dense class='q-mx-md q-my-sm' :debounce="500" style='width: 240px' outlined
+    <q-form class='row q-my-md'>
+      <q-input v-model='filter.search' dense :debounce="500" style='width: 240px' outlined
         placeholder='會員姓名、Email、電話'>
         <template v-slot:append>
           <q-icon class='cursor-pointer' name='search' @click="doSearch" />
@@ -16,7 +16,7 @@
         <q-btn label="新增會員" color="primary" @click="goToAdd()" />
       </div>
     </div>
-    <TableComponent ref="tableRef" :propsFilter='propsFilter' :columns='columns' :handleCallApi='RequestUsers'>
+    <q-table :loading='loading' no-data-label='無資料' :rows='userLists' :columns='columns' :pagination="pagination" :rows-per-page-options="pagination.rowsPerPageOptions" class="data-table" flat bordered>
       <template v-slot:body-cell-user_number='props'>
         <q-td class="link" @click="goToEdit(props.row.user_id)">
           {{ props.row.user_number }}
@@ -53,32 +53,51 @@
             @click="goIntercom(props.row.user_id)"></q-icon>
         </q-td>
       </template>
-    </TableComponent>
+    </q-table>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, computed } from 'vue'
+import { ref, reactive, computed, watch, onMounted } from 'vue'
 import { router } from 'src/router';
 import TableComponent from 'components/TableComponent.vue';
 import { RequestUsers } from 'src/api'
 import { columns, tabArr } from './enums';
 import TabComponent from 'src/components/TabComponent.vue'
 import BreadCrumbs from 'src/components/BreadCrumbs.vue';
-
-const tableRef = ref();
+import to from 'await-to-js'
 
 const filter = reactive({
   membership: tabArr[0].val,
   search: null
 })
 
-const propsFilter = computed(() => {
-  return Object.assign({}, filter)
+const pagination = ref({
+  sortBy: 'user_number',
+  descending: false,
+  rowsPerPage: 10,
+  rowsPerPageOptions: [10, 20, 50]
 })
 
-const doSearch = () => {
-  tableRef.value.reload();
+watch(filter, (val) => {
+  doSearch()
+})
+
+onMounted(() => {
+  doSearch()
+})
+
+const loading = ref(false)
+const userLists = ref([])
+const doSearch = async () => {
+  loading.value = true
+  const [err, res] = await to(RequestUsers(filter))
+  if (err) {
+    console.error('getUsers error:', err)
+    return null
+  }
+  userLists.value = res.data
+  loading.value = false
 }
 
 const handleClick = (tabItem) => {
