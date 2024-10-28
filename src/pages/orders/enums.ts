@@ -89,6 +89,11 @@ export const customizedColumns: TableColumn = [
     align: 'left',
   },
   {
+    name: 'voucher_cancel_code',
+    label: '憑證編號/取消編號',
+    align: 'left',
+  },
+  {
     name: 'title',
     label: '訂單名稱',
     field: 'title',
@@ -114,8 +119,14 @@ export const customizedColumns: TableColumn = [
     align: 'left',
   },
   {
+    name: 'final_profit',
+    label: '實際利潤',
+    field: 'final_profit',
+    align: 'left',
+  },
+  {
     name: 'operation',
-    label: '操作',
+    label: '編輯/取消',
     field: 'operation',
     align: 'center',
   },
@@ -160,7 +171,11 @@ export const userColumns: TableColumn = [
   }
 ]
 
-export const orderCurrencyOptions = ['USD', 'TWD', 'JPY', 'CNY', 'HKD', 'AED', 'AUD', 'BRL', 'CAD', 'CHF', 'EUR', 'GBP', 'IDR', 'KRW', 'MYR', 'MAD', 'NZD', 'PHP', 'RUB', 'SEK', 'SGD', 'THB', 'VND'];
+export const customizedOrderStatusOptions = [
+  { label: '全部', value: '' },
+  { label: '未封存', value: 'online' },
+  { label: '封存', value: 'archive' }
+]
 
 export const customizedOrderTypeOptions = [
   { label: '飯店', value: 'hotel' },

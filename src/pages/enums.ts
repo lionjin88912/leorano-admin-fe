@@ -68,7 +68,10 @@ const menus: Menu[] = [
     label: '訂單對帳管理',
     module: 'accounting',
     to: 'accounting',
-    children: [{ label: '飯店訂單對帳', to: '/accounting/order/hotel' }],
+    children: [
+      { label: '飯店訂單對帳', to: '/accounting/order/hotel' },
+      { label: '客製訂單對帳', to: '/accounting/order/customized' }
+    ],
   },
   {
     label: '行銷碼管理',
@@ -91,6 +94,12 @@ const menus: Menu[] = [
       { label: '國家城市設定', to: '/settings/country-region' },
     ],
   },
+  {
+    label: '匯率查詢',
+    module: 'currency',
+    to: '/currency/change',
+    children: []
+  }
 ]
 
 export const TagType = {

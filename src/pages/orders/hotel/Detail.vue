@@ -170,24 +170,40 @@
         </div>
       </InfoRow>
       <InfoRow title="訂購人資料">
+        <div class="info-field">
+          <div class="info-field-label">姓名</div>
+          <div v-if="model.user.first_name" class="info-field-text">
+            {{ model.user.first_name }} {{ model.user.last_name }}
+          </div>
+        </div>
+        <div class="info-field">
+          <div class="info-field-label">Email</div>
+          <div class="info-field-text">{{ model.user.email }}</div>
+        </div>
+        <div class="info-field">
+          <div class="info-field-label">Phone</div>
+          <div class="info-field-text">{{ model.user.phone }}</div>
+        </div>
+      </InfoRow>
+      <InfoRow title="出行人資料">
         <div class="row items-start q-gutter-lg">
           <div>
             <div class="info-field">
               <div class="info-field-label">姓名</div>
-              <div v-if="model.user.first_name" class="info-field-text">
-                {{ model.user.first_name }} {{ model.user.last_name }}
+              <div v-if="model.passenger_user.first_name" class="info-field-text">
+                {{ model.passenger_user.first_name }} {{ model.passenger_user.last_name }}
               </div>
             </div>
             <div class="info-field">
               <div class="info-field-label">Email</div>
-              <div class="info-field-text">{{ model.user.email }}</div>
+              <div class="info-field-text">{{ model.passenger_user.email }}</div>
             </div>
             <div class="info-field">
               <div class="info-field-label">Phone</div>
-              <div class="info-field-text">{{ model.user.phone }}</div>
+              <div class="info-field-text">{{ model.passenger_user.phone }}</div>
             </div>
           </div>
-          <q-btn color="primary" label="修改訂購人" @click="onUpdateUser" />
+          <q-btn color="primary" label="修改出行人" @click="onUpdateUser" />
         </div>
       </InfoRow>
       <InfoRow title="入住人資料">
@@ -222,7 +238,13 @@
           </div>
         </div>
       </InfoRow>
-      <InfoRow title="訂單利潤">
+      <InfoRow title="實際利潤">
+        <div class="info-field">
+          <div class="info-field-label">利潤</div>
+          <div class="info-field-text">{{ getCurrencyPriceFormat(model.final_profit) }}</div>
+        </div>
+      </InfoRow>
+      <InfoRow title="預估利潤">
         <div class="info-field">
           <div class="info-field-label">每日房價</div>
         </div>
@@ -258,12 +280,13 @@ import { useQuasar } from 'quasar';
 import { ref, reactive, computed, watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router';
 import { getHotelOrder, cancelHotelOrder, updateHotelOrderUser, updateHotelOrderProfit } from 'src/api'
+import { isNumberEmpty, isValidDecimal, messages } from 'src/utils/validators';
 import InfoRow from '../components/InfoRow.vue';
 import RawDataInfo from 'src/pages/HotelList/plan/RawDataInfo.vue';
 import CancelOrderDialog from '../components/CancelOrderDialog.vue';
 import UserDialog from '../components/UserDialog.vue';
 import BreadCrumbs from 'src/components/BreadCrumbs.vue';
-import { getDateString, getCurrencyFormat, getDateStringNoTz, isDateBefore } from 'src/utils/helpers';
+import { getDateString, getCurrencyFormat, getCurrencyPriceFormat, getDateStringNoTz, isDateBefore } from 'src/utils/helpers';
 import _ from 'lodash';
 
 const to = require('await-to-js').default
@@ -317,6 +340,7 @@ const onCancelOrder = () => {
   cancelOrderRef.value.show({
     title: '確定取消酒店訂單',
     message: '酒店訂單取消後將無法復原，重新訂購可能無法取得相同房型、優惠與價格。',
+    required: true,
     data: {
       type: 'hotel-order',
       orderNumber: model.value.order_number
@@ -344,10 +368,10 @@ const userDialogRef = ref();
 const onUpdateUser = () => {
   userDialogRef.value.show({
     data: {
-      id: model.value.user_id,
-      title: model.value.user.title,
-      name: model.value.user.first_name + model.value.user.last_name,
-      email: model.value.user.email
+      id: model.value.passenger_user_id,
+      title: model.value.passenger_user.title,
+      name: model.value.passenger_user.first_name + model.value.passenger_user.last_name,
+      email: model.value.passenger_user.email
     }
   });
 }
@@ -365,7 +389,8 @@ const onUpdateUserConfirm = async (data: any) => {
 const rules = computed(() => {
   return {
     profit: [
-      val => !val || /^[0-9]*\.?[0-9]{0,1}$/.test(val) || '只能輸入到小數第一位'
+      val => !isNumberEmpty(val) || messages.requiredInput(),
+      val => isValidDecimal(val, 1) || messages.invalidDecimal(1)
     ],
   }
 })

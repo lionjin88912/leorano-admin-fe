@@ -3,7 +3,7 @@
     <q-card class="container">
       <q-card-section class="sticky-top">
         <div class="flex">
-          <div class="text-h6">修改訂購人</div>
+          <div class="text-h6">修改出行人</div>
           <q-space></q-space>
           <q-btn icon="close" flat dense rounded v-close-popup />
         </div>

@@ -12,7 +12,7 @@
         <div class="q-my-md">
           <div class="row q-col-gutter-md">
             <q-input v-model="data.title" label="訂單名稱" class="col-6" dense outlined />
-            <q-select v-model="data.currency" label="訂單幣別" class="col-3" :options="currencyOptions" use-input hide-selected  fill-input input-debounce="0" @filter="filterCurrency" @input-value="autoCompleteCurrency" dense outlined />
+            <selectCurrency v-model="data.currency" label="訂單幣別" class="col-3" :default="data.currency"></selectCurrency>
             <q-input v-model.number="data.price" type="number" label="訂單金額" class="col-3" dense outlined />
             <q-input v-model="data.voucher_number" label="憑證資料" class="col-3" dense outlined />
             <q-select v-model="data.type" label="訂單類型" class="col-3" :options="customizedOrderTypeOptions" @update:modelValue="changeOrderType" emit-value map-options dense outlined />
@@ -51,12 +51,13 @@
 import { useQuasar } from 'quasar';
 import { ref, reactive, watch, onMounted } from 'vue'
 import { router } from 'src/router';
-import { orderCurrencyOptions, customizedOrderTypeOptions, defaultQuestions } from '../enums';
+import { customizedOrderTypeOptions, defaultQuestions } from '../enums';
 import { getCustomizedOrder, createCustomizedOrder, updateCustomizedOrder } from 'src/api';
 import { useRoute } from 'vue-router';
 import BreadCrumbs from 'src/components/BreadCrumbs.vue';
 import InfoRow from '../components/InfoRow.vue';
 import UserSelector from '../components/UserSelector.vue';
+import selectCurrency from 'src/components/selectCurrency.vue';
 import to from 'await-to-js';
 import { type } from 'os';
 
@@ -116,18 +117,6 @@ const getData = async () => {
     return;
   }
 	return res.data;
-}
-
-const currencyOptions = ref(orderCurrencyOptions)
-function filterCurrency (val, update, abort) {
-  update(() => {
-    const needle = val.toLowerCase()
-    currencyOptions.value = orderCurrencyOptions.filter(v => v.toLowerCase().indexOf(needle) > -1)
-  })
-}
-function autoCompleteCurrency (val) {
-  const needle = val.toLowerCase()
-  data.currency = orderCurrencyOptions.filter(v => v.toLowerCase().indexOf(needle) > -1)[0]
 }
 
 /* 變更訂單類型 Start */

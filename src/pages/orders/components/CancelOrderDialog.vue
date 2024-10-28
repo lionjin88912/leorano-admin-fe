@@ -35,6 +35,7 @@ const state = reactive({
   data: {},
   title: null,
   message: "",
+  required: true,
   confirmText: "",
   multiple: true, // 多行輸入
 });
@@ -42,7 +43,7 @@ const state = reactive({
 const rules = computed(() => {
   return {
     confirmText: [
-      val => !isEmpty(val) || messages.requiredInput(),
+      val => state.required ? !isEmpty(val) || messages.requiredInput() : true,
     ]
   };
 });
@@ -51,10 +52,11 @@ const outlined = computed(() => {
   return state.multiple ? true : false;
 });
 
-const show = ({ title, message, data = {} }) => {
+const show = ({ title, message, required, data = {} }) => {
   visible.value = true;
   state.title = title;
   state.message = message;
+  state.required = required;
   state.data = data;
 };
 
@@ -70,9 +72,9 @@ defineExpose({ show });
 
 </script>
 <style lang="scss" scoped>
-.container {
+.container.q-card {
   padding: 0px 16px 16px;
-  min-width: 300px;
+  min-width: 400px;
   max-width: 450px;
 
   .title {

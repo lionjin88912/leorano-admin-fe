@@ -1,25 +1,38 @@
 <template>
-  <q-table class='data-table' :table-class="selectionClass" :class="tableClass" :rows='rows' :columns='props.columns'
-    :loading='loading' :no-data-label='noDataLabel' :rows-per-page-options="pagination.perPage"
-    v-model:pagination='pagination' v-model:selected="selection" :selection="selectionType" :hide-selected-banner="true"
-    :hide-pagination="hidePagination" :hide-header="hideHeader" @row-click="onRowClick" @request='onDataRequest'
-    binary-state-sort hidde-title flat bordered>
-    <template v-for="column in props.columns" v-slot:[`body-cell-${column.name}`]='props'>
-      <slot :name='`body-cell-${column.name}`' v-bind='props'>
-        <q-td :props="props">
-          {{ typeof column.field === 'string' ? props.row[column.field] : column.field(props.row) }}
-        </q-td>
-      </slot>
-    </template>
-  </q-table>
+  <div>
+    <q-card v-if="!hideVisableColumnsSetting" class="bg-blue-grey-1 q-my-md row" flat>
+      <div class="col-1 q-my-auto text-center text-weight-medium">
+        顯示欄位
+      </div>
+      <q-separator vertical inset />
+      <div class="col">
+        <q-toggle v-for="column in columns" :key="column.name" v-model="visibleColumns" :val="column.name" :label="column.label" class="q-px-sm"></q-toggle>
+      </div>
+    </q-card>
+    <q-table class='data-table' :table-class="selectionClass" :class="tableClass" :rows='rows' :columns='props.columns'
+      :loading='loading' :no-data-label='noDataLabel' :rows-per-page-options="pagination.perPage"
+      v-model:pagination='pagination' v-model:selected="selection" :selection="selectionType" :hide-selected-banner="true"
+      :hide-pagination="hidePagination" :hide-header="hideHeader" :visible-columns="visibleColumns" @row-click="onRowClick" @request='onDataRequest'
+      binary-state-sort hidde-title flat bordered>
+      <template v-for="column in props.columns" v-slot:[`body-cell-${column.name}`]='props'>
+        <slot :name='`body-cell-${column.name}`' v-bind='props'>
+          <q-td :props="props">
+            {{ typeof column.field === 'string' ? props.row[column.field] : column.field(props.row) }}
+          </q-td>
+        </slot>
+      </template>
+    </q-table>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted, watch, computed } from 'vue'
+import { LocalStorage } from 'quasar'
 import to from 'await-to-js';
 
 const emit = defineEmits(['requested'])
 const props = defineProps({
+  tableName: String,
   tableClass: String,
   noDataLabel: {
     type: String,
@@ -56,7 +69,13 @@ const props = defineProps({
     }
   },
   hidePagination: Boolean,
-  hideHeader: Boolean
+  hideHeader: Boolean,
+  hideVisableColumnsSetting: {
+    type: Boolean,
+    default() {
+      return true
+    }
+  }
 })
 
 const filter = ref(props.propsFilter)
@@ -178,10 +197,19 @@ const getResponseData = () => {
   return responseData.value
 }
 
+const visibleColumns = ref(props.columns.map(c => c.name));
 onMounted(async () => {
   initQueryTimer = setTimeout(async () => {
     reload();
   }, 500);
+
+  if (LocalStorage.getItem(props.tableName)) {
+    visibleColumns.value = LocalStorage.getItem(props.tableName);
+  }
+})
+
+watch(visibleColumns, (newVal) => {
+  LocalStorage.set(props.tableName, newVal);
 })
 
 watch(() => props.propsFilter, async (val) => {
@@ -194,7 +222,8 @@ watch(() => props.propsFilter, async (val) => {
   reload()
 })
 
-defineExpose({ reload, clearSelection, getSelection, getPagination, getResponseData })
+
+defineExpose({ reload, clearSelection, getSelection, getPagination, getResponseData, visibleColumns })
 </script>
 
 <style lang="scss" scoped>
