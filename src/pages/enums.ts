@@ -74,6 +74,15 @@ const menus: Menu[] = [
     ],
   },
   {
+    label: '業績報表',
+    module: 'report',
+    to: 'report',
+    children: [
+      { label: '月進單對照報表', to: '/report/monthGMV' },
+      { label: '營業額報表', to: '/report/grossMargin' },
+    ],
+  },
+  {
     label: '行銷碼管理',
     module: 'promotion',
     to: 'promotions',

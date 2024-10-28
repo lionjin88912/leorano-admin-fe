@@ -216,6 +216,34 @@ const routes: RouteRecordRaw[] = [
         ],
       },
       {
+        path: '/report',
+        redirect: { name: 'GMVReport' },
+        meta: {
+          requiresPermission: true,
+          permissionCode: 'report',
+        },
+        children: [
+          {
+            path: 'monthGMV',
+            name: 'GMVReport',
+            meta: {
+              root: { title: '業績報表' },
+              title: '月進單對照報表',
+            },
+            component: () => import('src/pages/Report/reportGMV.vue'),
+          },
+          {
+            path: 'grossMargin',
+            name: 'GrossMargin',
+            meta: {
+              root: { title: '業績報表' },
+              title: '營業額報表',
+            },
+            component: () => import('src/pages/Report/grossMargin.vue'),
+          },
+        ],
+      },
+      {
         path: '/promotions',
         redirect: { name: 'PromotionMembershipList' },
         meta: {

@@ -119,6 +119,10 @@ export const refundMemberOrder = (orderNumber, data) =>
   baseService.delete(`/order/membership/${orderNumber}/refund`, { data })
 // 訂單對帳管理
 export const getAccountingList = ({type, ...data}) => baseService.get(`/accounting/${type}`, { params: data })
+// 業績報表
+export const getMonthGMV = (year, month) => baseService.get(`/report/monthGMV/${year}/${month}`)
+export const getGrossMargin = (year, month) => baseService.get(`/report/grossMargin/${year}/${month}`)
+export const getGrossMarginLastWeek = () => baseService.get(`/report/grossMargin/lastWeek`)
 // 行銷碼管理
 // 會籍活動
 export const getPromoMembershipList = (params) =>

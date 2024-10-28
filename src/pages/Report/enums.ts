@@ -1,0 +1,673 @@
+import { QTableProps } from 'quasar'
+import { getCurrencyFormat } from 'src/utils/helpers';
+
+export const gmvColumns: QTableProps['columns'] = [
+  {
+    name: 'group',
+    label: '項目',
+    align: 'left',
+    field: 'group'
+  },
+  {
+    name: 'label',
+    label: '',
+    align: 'left',
+    field: 'label'
+  },
+  {
+    name: 'month1',
+    label: '一月',
+    align: 'right',
+    field: (row: any) => row.hasOwnProperty('month1') ? getCurrencyFormat(row.month1) : '-'
+  },
+  {
+    name: 'month2',
+    label: '二月',
+    align: 'right',
+    field: (row: any) => row.hasOwnProperty('month2') ? getCurrencyFormat(row.month2) : '-'
+  },
+  {
+    name: 'month3',
+    label: '三月',
+    align: 'right',
+    field: (row: any) => row.hasOwnProperty('month3') ? getCurrencyFormat(row.month3) : '-'
+  },
+  {
+    name: 'month4',
+    label: '四月',
+    align: 'right',
+    field: (row: any) => row.hasOwnProperty('month4') ? getCurrencyFormat(row.month4) : '-'
+  },
+  {
+    name: 'month5',
+    label: '五月',
+    align: 'right',
+    field: (row: any) => row.hasOwnProperty('month5') ? getCurrencyFormat(row.month5) : '-'
+  },
+  {
+    name: 'month6',
+    label: '六月',
+    align: 'right',
+    field: (row: any) => row.hasOwnProperty('month6') ? getCurrencyFormat(row.month6) : '-'
+  },
+  {
+    name: 'month7',
+    label: '七月',
+    align: 'right',
+    field: (row: any) => row.hasOwnProperty('month7') ? getCurrencyFormat(row.month7) : '-'
+  },
+  {
+    name: 'month8',
+    label: '八月',
+    align: 'right',
+    field: (row: any) => row.hasOwnProperty('month8') ? getCurrencyFormat(row.month8) : '-'
+  },
+  {
+    name: 'month9',
+    label: '九月',
+    align: 'right',
+    field: (row: any) => row.hasOwnProperty('month9') ? getCurrencyFormat(row.month9) : '-'
+  },
+  {
+    name: 'month10',
+    label: '十月',
+    align: 'right',
+    field: (row: any) => row.hasOwnProperty('month10') ? getCurrencyFormat(row.month10) : '-'
+  },
+  {
+    name: 'month11',
+    label: '十一月',
+    align: 'right',
+    field: (row: any) => row.hasOwnProperty('month11') ? getCurrencyFormat(row.month11) : '-'
+  },
+  {
+    name: 'month12',
+    label: '十二月',
+    align: 'right',
+    field: (row: any) => row.hasOwnProperty('month12') ? getCurrencyFormat(row.month12) : '-'
+  }
+]
+
+export const grossMarginLast5WeekColumns: QTableProps['columns'] = [
+	{
+    name: 'group',
+    label: '項目',
+    align: 'left',
+    field: 'group'
+  },
+  {
+    name: 'label',
+    label: '',
+    align: 'left',
+    field: 'label'
+  }
+]
+
+export const grossMarginYearColumns: QTableProps['columns'] = [
+  {
+    name: 'group',
+    label: '項目',
+    align: 'left',
+    field: 'group'
+  },
+  {
+    name: 'label',
+    label: '',
+    align: 'left',
+    field: 'label'
+  },
+  {
+    name: 'month1',
+    label: '一月累計',
+    align: 'right',
+    field: (row: any) => row.hasOwnProperty('month1') ? getCurrencyFormat(row.month1) : '-'
+  },
+  {
+    name: 'month2',
+    label: '二月累計',
+    align: 'right',
+    field: (row: any) => row.hasOwnProperty('month2') ? getCurrencyFormat(row.month2) : '-'
+  },
+  {
+    name: 'month3',
+    label: '三月累計',
+    align: 'right',
+    field: (row: any) => row.hasOwnProperty('month3') ? getCurrencyFormat(row.month3) : '-'
+  },
+  {
+    name: 'month4',
+    label: '四月累計',
+    align: 'right',
+    field: (row: any) => row.hasOwnProperty('month4') ? getCurrencyFormat(row.month4) : '-'
+  },
+  {
+    name: 'month5',
+    label: '五月累計',
+    align: 'right',
+    field: (row: any) => row.hasOwnProperty('month5') ? getCurrencyFormat(row.month5) : '-'
+  },
+  {
+    name: 'month6',
+    label: '六月累計',
+    align: 'right',
+    field: (row: any) => row.hasOwnProperty('month6') ? getCurrencyFormat(row.month6) : '-'
+  },
+  {
+    name: 'month7',
+    label: '七月累計',
+    align: 'right',
+    field: (row: any) => row.hasOwnProperty('month7') ? getCurrencyFormat(row.month7) : '-'
+  },
+  {
+    name: 'month8',
+    label: '八月累計',
+    align: 'right',
+    field: (row: any) => row.hasOwnProperty('month8') ? getCurrencyFormat(row.month8) : '-'
+  },
+  {
+    name: 'month9',
+    label: '九月累計',
+    align: 'right',
+    field: (row: any) => row.hasOwnProperty('month9') ? getCurrencyFormat(row.month9) : '-'
+  },
+  {
+    name: 'month10',
+    label: '十月累計',
+    align: 'right',
+    field: (row: any) => row.hasOwnProperty('month10') ? getCurrencyFormat(row.month10) : '-'
+  },
+  {
+    name: 'month11',
+    label: '十一月累計',
+    align: 'right',
+    field: (row: any) => row.hasOwnProperty('month11') ? getCurrencyFormat(row.month11) : '-'
+  },
+  {
+    name: 'month12',
+    label: '十二月累計',
+    align: 'right',
+    field: (row: any) => row.hasOwnProperty('month12') ? getCurrencyFormat(row.month12) : '-'
+  },
+  {
+    name: 'year',
+    label: '',
+    align: 'right',
+    field: 'year'
+  }
+]
+
+export const reportTypeOptions = [
+  {slot: 'table', value: 'table'},
+  {slot: 'chart', value: 'chart'}
+]
+
+export const grossMarginTypeOptions = [
+  {label: '近五週', value: 'last5Week'},
+  {label: '指定年份', value: 'byYear'}
+]
+
+export const gmvDefaultData = [
+  {
+    group: 'GMV',
+    label: '訂單數'
+  },
+  {
+    group: '',
+    label: '房晚數'
+  },
+  {
+    group: '',
+    label: '營業額 (USD)'
+  },
+  {
+    group: 'Revenue',
+    label: '訂單數'
+  },
+  {
+    group: '',
+    label: '房晚數'
+  },
+  {
+    group: '',
+    label: '營業額 (USD)'
+  },
+  {
+    group: 'Commission',
+    label: '金額'
+  }
+]
+
+export const grossMarginLast5WeekDefaultData = [
+  {
+    group: 'APP訂房',
+    label: '訂單數'
+  },
+  {
+    group: '',
+    label: '房晚數'
+  },
+  {
+    group: '',
+    label: '營業額'
+  },
+  {
+    group: '',
+    label: '毛利'
+  },
+  {
+    group: '',
+    label: '毛利率 (%)'
+  },
+  {
+    group: '線下訂房',
+    label: '訂單數'
+  },
+  {
+    group: '',
+    label: '房晚數'
+  },
+  {
+    group: '',
+    label: '營業額'
+  },
+  {
+    group: '',
+    label: '毛利'
+  },
+  {
+    group: '',
+    label: '毛利率 (%)'
+  },
+	{
+    group: '其他服務',
+    label: '訂單數'
+  },
+  {
+    group: '',
+    label: '營業額'
+  },
+  {
+    group: '',
+    label: '毛利'
+  },
+  {
+    group: '',
+    label: '毛利率 (%)'
+  }
+]
+
+export const grossMarginYearDefaultData = [
+  {
+    group: 'APP訂房',
+    label: '訂單數',
+		year: 0
+  },
+  {
+    group: '',
+    label: '房晚數',
+		year: 0
+  },
+  {
+    group: '',
+    label: '營業額',
+		year: 0
+  },
+  {
+    group: '',
+    label: '毛利',
+		year: 0
+  },
+  {
+    group: '',
+    label: '毛利率',
+		year: 0
+  },
+  {
+    group: '線下訂房',
+    label: '訂單數',
+		year: 0
+  },
+  {
+    group: '',
+    label: '房晚數',
+		year: 0
+  },
+  {
+    group: '',
+    label: '營業額',
+		year: 0
+  },
+  {
+    group: '',
+    label: '毛利',
+		year: 0
+  },
+  {
+    group: '',
+    label: '毛利率',
+		year: 0
+  },
+	{
+    group: '其他服務',
+    label: '訂單數',
+		year: 0
+  },
+  {
+    group: '',
+    label: '營業額',
+		year: 0
+  },
+  {
+    group: '',
+    label: '毛利',
+		year: 0
+  },
+  {
+    group: '',
+    label: '毛利率',
+		year: 0
+  }
+]
+
+export const gmvChartOptions = {
+  chart: {
+    stacked: false,
+    toolbar: {
+      show: false
+    },
+		zoom: {
+			enabled: false,
+		}
+  },
+  xaxis: {
+    categories: gmvColumns.slice(2).map(col => col.label)
+  },
+  yaxis: [
+    {
+			seriesName: 'GMV 訂單數',
+      title: {
+        text: '數量'
+      },
+      labels: {
+        formatter: (val: number) => {
+					return getCurrencyFormat(val)
+				}
+      }
+    },
+		{
+			seriesName: 'GMV 訂單數'
+    },
+    {
+			seriesName: 'GMV 營業額',
+      title: {
+        text: '金額'
+      },
+      labels: {
+        formatter: (val: number) => {
+					return `$${getCurrencyFormat(val)}`
+				}
+      },
+      opposite: true
+    },
+		{
+			seriesName: 'GMV 訂單數'
+    },
+		{
+			seriesName: 'GMV 訂單數'
+    },
+    {
+			seriesName: 'GMV 營業額'
+    },
+		{
+			seriesName: 'GMV 營業額'
+    }
+  ],
+  colors: ['#0288d1', '#bbdefb', '#64b5f6', '#689f38', '#c8e6c9', '#9ccc65', '#fbc02d'],
+  stroke: {
+    width: [3, 3, 4, 3, 3, 4, 4],
+    curve: 'smooth',
+    colors: ['#0288d1', '#bbdefb', 'transparent', '#689f38', '#c8e6c9', 'transparent', 'transparent']
+  },
+  plotOptions: {
+    bar: {
+      columnWidth: '50%',
+			borderRadius: 5,
+			borderRadiusApplication: 'end',
+    }
+  },
+  fill: {
+    opacity: [1, .1, 1, 1, .1, 1, 1]
+  },
+  markers: {
+    size: 0
+  },
+  legend: {
+    position: 'top',
+    horizontalAlign: 'left'
+  },
+  dataLabels: {
+    enabled: false
+  },
+  tooltip: {
+    shared: true,
+    intersect: false,
+    y: {
+      formatter: function (y: number, { seriesIndex }: { seriesIndex: number }) {
+        if ([2, 5, 6].includes(seriesIndex)) {
+          return `$${getCurrencyFormat(y)}`
+        }
+        return getCurrencyFormat(y)
+      }
+    }
+  }
+}
+
+export const grossMarginLast5WeekChartOptions = {
+  chart: {
+    stacked: false,
+    toolbar: {
+      show: false
+    },
+		zoom: {
+			enabled: false,
+		}
+  },
+  xaxis: {
+    categories: []
+  },
+  yaxis: [
+    {
+			seriesName: 'APP訂房 訂單數',
+      title: {
+        text: '數量'
+      },
+      labels: {
+        formatter: (val: number) => {
+					return getCurrencyFormat(val)
+				}
+      }
+    },
+		{
+			seriesName: 'APP訂房 訂單數'
+    },
+    {
+			seriesName: 'APP訂房 營業額',
+      title: {
+        text: '金額'
+      },
+      labels: {
+        formatter: (val: number) => {
+					return `$${getCurrencyFormat(val)}`
+				}
+      },
+      opposite: true
+    },
+		{
+			seriesName: 'APP訂房 營業額'
+    },
+    {
+			seriesName: 'APP訂房 訂單數'
+    },
+		{
+			seriesName: 'APP訂房 訂單數'
+    },
+		{
+			seriesName: 'APP訂房 營業額'
+    },
+		{
+			seriesName: 'APP訂房 營業額'
+    },
+		{
+			seriesName: 'APP訂房 訂單數'
+    },
+		{
+			seriesName: 'APP訂房 營業額'
+    },
+		{
+			seriesName: 'APP訂房 營業額'
+    }
+  ],
+  colors: ['#00838f', '#4dd0e1', '#00bcd4', '#b2ebf2', '#ef6c00', '#ffb74d', '#ff9800', '#ffe0b2', '#9c27b0', '#ba68c8', '#e1bee7'],
+  stroke: {
+    width: [3, 3, 1, 1, 3, 3, 1, 1, 3, 1, 1],
+    curve: 'smooth',
+    colors: ['#00838f', '#4dd0e1', 'transparent', 'transparent', '#ef6c00', '#ffb74d', 'transparent', 'transparent', '#9c27b0', 'transparent', 'transparent']
+  },
+  plotOptions: {
+    bar: {
+      columnWidth: '60%',
+			borderRadius: 4,
+			borderRadiusApplication: 'end',
+    }
+  },
+  fill: {
+    opacity: [1, .1, 1, 1, 1, .1, 1, 1, 1, 1, 1]
+  },
+  markers: {
+    size: 0
+  },
+  legend: {
+    position: 'top',
+    horizontalAlign: 'left'
+  },
+  dataLabels: {
+    enabled: false
+  },
+  tooltip: {
+    shared: true,
+    intersect: false,
+    y: {
+      formatter: function (y: number, { seriesIndex }: { seriesIndex: number }) {
+        if ([2, 3, 6, 7, 9, 10].includes(seriesIndex)) {
+          return `$${getCurrencyFormat(y)}`
+        }
+        return getCurrencyFormat(y)
+      }
+    }
+  }
+}
+
+export const grossMarginYearChartOptions = {
+  chart: {
+    stacked: false,
+    toolbar: {
+      show: false
+    },
+		zoom: {
+			enabled: false,
+		}
+  },
+  xaxis: {
+    categories: grossMarginYearColumns.slice(2, 13).map(col => col.label)
+  },
+  yaxis: [
+    {
+			seriesName: 'APP訂房 訂單數',
+      title: {
+        text: '數量'
+      },
+      labels: {
+        formatter: (val: number) => {
+					return getCurrencyFormat(val)
+				}
+      }
+    },
+		{
+			seriesName: 'APP訂房 訂單數'
+    },
+    {
+			seriesName: 'APP訂房 營業額',
+      title: {
+        text: '金額'
+      },
+      labels: {
+        formatter: (val: number) => {
+					return `$${getCurrencyFormat(val)}`
+				}
+      },
+      opposite: true
+    },
+		{
+			seriesName: 'APP訂房 營業額'
+    },
+    {
+			seriesName: 'APP訂房 訂單數'
+    },
+		{
+			seriesName: 'APP訂房 訂單數'
+    },
+		{
+			seriesName: 'APP訂房 營業額'
+    },
+		{
+			seriesName: 'APP訂房 營業額'
+    },
+		{
+			seriesName: 'APP訂房 訂單數'
+    },
+		{
+			seriesName: 'APP訂房 營業額'
+    },
+		{
+			seriesName: 'APP訂房 營業額'
+    }
+  ],
+  colors: ['#00838f', '#4dd0e1', '#00bcd4', '#b2ebf2', '#ef6c00', '#ffb74d', '#ff9800', '#ffe0b2', '#9c27b0', '#ba68c8', '#e1bee7'],
+  stroke: {
+    width: [3, 3, 1, 1, 3, 3, 1, 1, 3, 1, 1],
+    curve: 'smooth',
+    colors: ['#00838f', '#4dd0e1', 'transparent', 'transparent', '#ef6c00', '#ffb74d', 'transparent', 'transparent', '#9c27b0', 'transparent', 'transparent']
+  },
+  plotOptions: {
+    bar: {
+      columnWidth: '60%',
+			borderRadius: 4,
+			borderRadiusApplication: 'end',
+    }
+  },
+  fill: {
+    opacity: [1, .1, 1, 1, 1, .1, 1, 1, 1, 1, 1]
+  },
+  markers: {
+    size: 0
+  },
+  legend: {
+    position: 'top',
+    horizontalAlign: 'left'
+  },
+  dataLabels: {
+    enabled: false
+  },
+  tooltip: {
+    shared: true,
+    intersect: false,
+    y: {
+      formatter: function (y: number, { seriesIndex }: { seriesIndex: number }) {
+        if ([2, 3, 6, 7, 9, 10].includes(seriesIndex)) {
+          return `$${getCurrencyFormat(y)}`
+        }
+        return getCurrencyFormat(y)
+      }
+    }
+  }
+}
