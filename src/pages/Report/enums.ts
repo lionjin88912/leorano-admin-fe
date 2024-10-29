@@ -89,7 +89,7 @@ export const gmvColumns: QTableProps['columns'] = [
 ]
 
 export const grossMarginLast5WeekColumns: QTableProps['columns'] = [
-	{
+  {
     name: 'group',
     label: '項目',
     align: 'left',
@@ -233,7 +233,7 @@ export const gmvDefaultData = [
   },
   {
     group: 'Commission',
-    label: '金額'
+    label: '金額 (USD)'
   }
 ]
 
@@ -248,11 +248,11 @@ export const grossMarginLast5WeekDefaultData = [
   },
   {
     group: '',
-    label: '營業額'
+    label: '營業額 (USD)'
   },
   {
     group: '',
-    label: '毛利'
+    label: '毛利 (USD)'
   },
   {
     group: '',
@@ -268,11 +268,11 @@ export const grossMarginLast5WeekDefaultData = [
   },
   {
     group: '',
-    label: '營業額'
+    label: '營業額 (USD)'
   },
   {
     group: '',
-    label: '毛利'
+    label: '毛利 (USD)'
   },
   {
     group: '',
@@ -284,11 +284,11 @@ export const grossMarginLast5WeekDefaultData = [
   },
   {
     group: '',
-    label: '營業額'
+    label: '營業額 (USD)'
   },
   {
     group: '',
-    label: '毛利'
+    label: '毛利 (USD)'
   },
   {
     group: '',
@@ -300,72 +300,72 @@ export const grossMarginYearDefaultData = [
   {
     group: 'APP訂房',
     label: '訂單數',
-		year: 0
+    year: 0
   },
   {
     group: '',
     label: '房晚數',
-		year: 0
+    year: 0
   },
   {
     group: '',
-    label: '營業額',
-		year: 0
+    label: '營業額 (USD)',
+    year: 0
   },
   {
     group: '',
-    label: '毛利',
-		year: 0
+    label: '毛利 (USD)',
+    year: 0
   },
   {
     group: '',
-    label: '毛利率',
-		year: 0
+    label: '毛利率 (%)',
+    year: 0
   },
   {
     group: '線下訂房',
     label: '訂單數',
-		year: 0
+    year: 0
   },
   {
     group: '',
     label: '房晚數',
-		year: 0
+    year: 0
   },
   {
     group: '',
-    label: '營業額',
-		year: 0
+    label: '營業額 (USD)',
+    year: 0
   },
   {
     group: '',
-    label: '毛利',
-		year: 0
+    label: '毛利 (USD)',
+    year: 0
   },
   {
     group: '',
-    label: '毛利率',
-		year: 0
+    label: '毛利率 (%)',
+    year: 0
   },
 	{
     group: '其他服務',
     label: '訂單數',
-		year: 0
+    year: 0
   },
   {
     group: '',
-    label: '營業額',
-		year: 0
+    label: '營業額 (USD)',
+    year: 0
   },
   {
     group: '',
-    label: '毛利',
-		year: 0
+    label: '毛利 (USD)',
+    year: 0
   },
   {
     group: '',
-    label: '毛利率',
-		year: 0
+    label: '毛利率 (%)',
+    year: 0
   }
 ]
 
@@ -375,51 +375,51 @@ export const gmvChartOptions = {
     toolbar: {
       show: false
     },
-		zoom: {
-			enabled: false,
-		}
+    zoom: {
+    	enabled: false,
+    }
   },
   xaxis: {
     categories: gmvColumns.slice(2).map(col => col.label)
   },
   yaxis: [
     {
-			seriesName: 'GMV 訂單數',
+    	seriesName: 'GMV 訂單數',
       title: {
         text: '數量'
       },
       labels: {
         formatter: (val: number) => {
-					return getCurrencyFormat(val)
-				}
+        	return getCurrencyFormat(val)
+        }
       }
     },
-		{
-			seriesName: 'GMV 訂單數'
+    {
+    	seriesName: 'GMV 訂單數'
     },
     {
-			seriesName: 'GMV 營業額',
+    	seriesName: 'GMV 營業額',
       title: {
-        text: '金額'
+        text: '金額 USD'
       },
       labels: {
         formatter: (val: number) => {
-					return `$${getCurrencyFormat(val)}`
-				}
+        	return `$${getCurrencyFormat(val)}`
+        }
       },
       opposite: true
     },
-		{
-			seriesName: 'GMV 訂單數'
-    },
-		{
-			seriesName: 'GMV 訂單數'
+    {
+    	seriesName: 'GMV 訂單數'
     },
     {
-			seriesName: 'GMV 營業額'
+    	seriesName: 'GMV 訂單數'
     },
-		{
-			seriesName: 'GMV 營業額'
+    {
+    	seriesName: 'GMV 營業額'
+    },
+    {
+    	seriesName: 'GMV 營業額'
     }
   ],
   colors: ['#0288d1', '#bbdefb', '#64b5f6', '#689f38', '#c8e6c9', '#9ccc65', '#fbc02d'],
@@ -431,8 +431,8 @@ export const gmvChartOptions = {
   plotOptions: {
     bar: {
       columnWidth: '50%',
-			borderRadius: 5,
-			borderRadiusApplication: 'end',
+    	borderRadius: 5,
+    	borderRadiusApplication: 'end',
     }
   },
   fill: {
@@ -468,63 +468,63 @@ export const grossMarginLast5WeekChartOptions = {
     toolbar: {
       show: false
     },
-		zoom: {
-			enabled: false,
-		}
+    zoom: {
+    	enabled: false,
+    }
   },
   xaxis: {
     categories: []
   },
   yaxis: [
     {
-			seriesName: 'APP訂房 訂單數',
+    	seriesName: 'APP訂房 訂單數',
       title: {
         text: '數量'
       },
       labels: {
         formatter: (val: number) => {
-					return getCurrencyFormat(val)
-				}
+        	return getCurrencyFormat(val)
+        }
       }
     },
-		{
-			seriesName: 'APP訂房 訂單數'
+    {
+    	seriesName: 'APP訂房 訂單數'
     },
     {
-			seriesName: 'APP訂房 營業額',
+    	seriesName: 'APP訂房 營業額',
       title: {
-        text: '金額'
+        text: '金額 USD'
       },
       labels: {
         formatter: (val: number) => {
-					return `$${getCurrencyFormat(val)}`
-				}
+        	return `$${getCurrencyFormat(val)}`
+        }
       },
       opposite: true
     },
-		{
-			seriesName: 'APP訂房 營業額'
+    {
+    	seriesName: 'APP訂房 營業額'
     },
     {
-			seriesName: 'APP訂房 訂單數'
+    	seriesName: 'APP訂房 訂單數'
     },
-		{
-			seriesName: 'APP訂房 訂單數'
+    {
+    	seriesName: 'APP訂房 訂單數'
     },
-		{
-			seriesName: 'APP訂房 營業額'
+    {
+    	seriesName: 'APP訂房 營業額'
     },
-		{
-			seriesName: 'APP訂房 營業額'
+    {
+    	seriesName: 'APP訂房 營業額'
     },
-		{
-			seriesName: 'APP訂房 訂單數'
+    {
+    	seriesName: 'APP訂房 訂單數'
     },
-		{
-			seriesName: 'APP訂房 營業額'
+    {
+    	seriesName: 'APP訂房 營業額'
     },
-		{
-			seriesName: 'APP訂房 營業額'
+    {
+    	seriesName: 'APP訂房 營業額'
     }
   ],
   colors: ['#00838f', '#4dd0e1', '#00bcd4', '#b2ebf2', '#ef6c00', '#ffb74d', '#ff9800', '#ffe0b2', '#9c27b0', '#ba68c8', '#e1bee7'],
@@ -536,8 +536,8 @@ export const grossMarginLast5WeekChartOptions = {
   plotOptions: {
     bar: {
       columnWidth: '60%',
-			borderRadius: 4,
-			borderRadiusApplication: 'end',
+    	borderRadius: 4,
+    	borderRadiusApplication: 'end',
     }
   },
   fill: {
@@ -573,63 +573,63 @@ export const grossMarginYearChartOptions = {
     toolbar: {
       show: false
     },
-		zoom: {
-			enabled: false,
-		}
+    zoom: {
+    	enabled: false,
+    }
   },
   xaxis: {
     categories: grossMarginYearColumns.slice(2, 13).map(col => col.label)
   },
   yaxis: [
     {
-			seriesName: 'APP訂房 訂單數',
+    	seriesName: 'APP訂房 訂單數',
       title: {
         text: '數量'
       },
       labels: {
         formatter: (val: number) => {
-					return getCurrencyFormat(val)
-				}
+        	return getCurrencyFormat(val)
+        }
       }
     },
-		{
-			seriesName: 'APP訂房 訂單數'
+    {
+    	seriesName: 'APP訂房 訂單數'
     },
     {
-			seriesName: 'APP訂房 營業額',
+    	seriesName: 'APP訂房 營業額',
       title: {
-        text: '金額'
+        text: '金額 USD'
       },
       labels: {
         formatter: (val: number) => {
-					return `$${getCurrencyFormat(val)}`
-				}
+        	return `$${getCurrencyFormat(val)}`
+        }
       },
       opposite: true
     },
-		{
-			seriesName: 'APP訂房 營業額'
+    {
+    	seriesName: 'APP訂房 營業額'
     },
     {
-			seriesName: 'APP訂房 訂單數'
+    	seriesName: 'APP訂房 訂單數'
     },
-		{
-			seriesName: 'APP訂房 訂單數'
+    {
+    	seriesName: 'APP訂房 訂單數'
     },
-		{
-			seriesName: 'APP訂房 營業額'
+    {
+    	seriesName: 'APP訂房 營業額'
     },
-		{
-			seriesName: 'APP訂房 營業額'
+    {
+    	seriesName: 'APP訂房 營業額'
     },
-		{
-			seriesName: 'APP訂房 訂單數'
+    {
+    	seriesName: 'APP訂房 訂單數'
     },
-		{
-			seriesName: 'APP訂房 營業額'
+    {
+    	seriesName: 'APP訂房 營業額'
     },
-		{
-			seriesName: 'APP訂房 營業額'
+    {
+    	seriesName: 'APP訂房 營業額'
     }
   ],
   colors: ['#00838f', '#4dd0e1', '#00bcd4', '#b2ebf2', '#ef6c00', '#ffb74d', '#ff9800', '#ffe0b2', '#9c27b0', '#ba68c8', '#e1bee7'],
@@ -641,8 +641,8 @@ export const grossMarginYearChartOptions = {
   plotOptions: {
     bar: {
       columnWidth: '60%',
-			borderRadius: 4,
-			borderRadiusApplication: 'end',
+    	borderRadius: 4,
+    	borderRadiusApplication: 'end',
     }
   },
   fill: {
