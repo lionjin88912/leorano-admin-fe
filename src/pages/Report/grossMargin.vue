@@ -184,7 +184,7 @@ const datas = computed(() => {
 	}
 	return yearDatas.value
 })
-const last5WeekColumns = ref(grossMarginLast5WeekColumns)
+const last5WeekColumns = ref(JSON.parse(JSON.stringify(grossMarginLast5WeekColumns)))
 const last5WeekDatas = ref(grossMarginLast5WeekDefaultData);
 const yearDatas = ref(JSON.parse(JSON.stringify(grossMarginYearDefaultData)));
 /* 表格資料 End */
