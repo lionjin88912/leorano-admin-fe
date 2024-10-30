@@ -150,6 +150,8 @@ export const updateMarketingNotify = (id, data) =>
 export const deleteMarketingNotify = (id) => baseService.delete(`/notification/marketing/${id}`)
 export const batchUpdateMarketingNotifyStatus = (data) =>
   baseService.patch(`/notification/marketing/batchUpdate`, data)
+// iframe
+export const getMarketingCode = (id, data) => baseService.get(`/marketing/${id}`, { params: data })
 // 取匯率
 export const getExchangeRate = (from, to) =>
   axios.post('https://dev-api-demo.wotaluxe.com/v1/exchange/convert', {

@@ -345,6 +345,20 @@ const routes: RouteRecordRaw[] = [
     ],
   },
   {
+    path: '/iframe',
+    name: 'Iframe',
+    meta: {
+      title: 'iframe',
+    },
+    children: [
+      {
+        name: 'MarketingCode',
+        path: 'marketing/code',
+        component: () => import('pages/Iframe/MarketingCode.vue'),
+      },
+    ],
+  },
+  {
     name: 'NoPermissionPage',
     path: '/no-permission',
     component: () => import('pages/NoPermission.vue'),
