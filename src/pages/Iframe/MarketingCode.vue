@@ -29,13 +29,13 @@ const getCode = async () => {
   const id = router.currentRoute.value.query.id
   const hash_code = await sha256(getBrowserFingerprint())
   const res = await getMarketingCode(id, { hash: hash_code })
-  if (res.status == 0) {
+  if (res.code == 0) {
     status.value = 'success'
     message.value = `推薦碼：${res.data}`
     code.value = res.data
   } else {
     status.value = 'error'
-    switch (res.status) {
+    switch (res.code) {
       case 1:
         message.value = '推薦碼已用罄'
         break
