@@ -27,8 +27,9 @@ const code = ref()
 const getCode = async () => {
   loading.value = true
   const id = router.currentRoute.value.query.id
+  const card_numberd = router.currentRoute.value.query.card_number
   const hash_code = await sha256(getBrowserFingerprint())
-  const res = await getMarketingCode(id, { hash: hash_code })
+  const res = await getMarketingCode(id, { hash: hash_code, card_number: card_numberd })
   if (res.code == 0) {
     status.value = 'success'
     message.value = `推薦碼：${res.data}`
