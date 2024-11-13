@@ -171,6 +171,18 @@ export const userColumns: TableColumn = [
   }
 ]
 
+export const titleOptions = ['Mr.', 'Mrs.', 'Miss', 'Mx']
+export const arrivalTimeOptions = ['00:00', '01:00', '02:00 ~ 21:00', '22:00', '23:00']
+export const specialRequirementOptions = [
+  { label: '嬰兒床及嬰兒備品', value: 'baby_crib_and_amenities' },
+  { label: '非吸煙房', value: 'nonsmoking_room' },
+  { label: '加床', value: 'extra_bed' },
+  { label: '高樓層', value: 'high_floor' },
+  { label: '聯通房', value: 'connecting_room' },
+  { label: '相鄰隔壁房', value: 'adjoining_room' },
+  { label: '兒童備品', value: 'children_amenities' }
+]
+
 export const customizedOrderStatusOptions = [
   { label: '全部', value: '' },
   { label: '未封存', value: 'online' },
