@@ -100,6 +100,12 @@ export const cancelHotelOrder = (orderNumber, data) =>
 export const updateHotelOrderUser = (id, data) => baseService.put(`/order/hotel/changeUser/${id}`, data)
 export const updateHotelOrderProfit = (id, data) => baseService.put(`/order/hotel/profit/${id}`, data)
 export const updateHotelOrderFinalProfit = (data) => baseService.put(`/order/hotel/final_profit`, data)
+// 訂單管理-酒店訂單-新增訂單
+export const getHotelAutoComplete = (data) => baseService.get('/hotel/booking/autoComplete', { params: data })
+export const getHotelSearchList = (data) => baseService.get(`/hotel/booking/availability`, { params: data })
+export const getHotelSearchRoomList = (id, data) => baseService.get(`/hotel/booking/room/${id}`, { params: data })
+export const getHotelSearchPlan = (data) => baseService.get('/hotel/booking/detail', { params: data })
+export const createHotelOrder = (data) => baseService.post('/hotel/booking/confirm', data )
 // 訂單管理-客製訂單
 export const getCustomizedOrderList = (data) => baseService.get('/order/customized/list', { params: data })
 export const getCustomizedOrderVoucher = (id) => baseService.get(`/order/customized/voucher/${id}`)
@@ -150,6 +156,8 @@ export const updateMarketingNotify = (id, data) =>
 export const deleteMarketingNotify = (id) => baseService.delete(`/notification/marketing/${id}`)
 export const batchUpdateMarketingNotifyStatus = (data) =>
   baseService.patch(`/notification/marketing/batchUpdate`, data)
+// iframe
+export const getMarketingCode = (id, data) => baseService.get(`/marketing/${id}`, { params: data })
 // 取匯率
 export const getExchangeRate = (from, to) =>
   axios.post('https://dev-api-demo.wotaluxe.com/v1/exchange/convert', {
