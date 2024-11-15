@@ -80,6 +80,11 @@ const props = defineProps({
         text-align: right;
         padding-right: 6px;
       }
+
+      &-list {
+        list-style: disc;
+        padding-left: 16px;
+      }
     }
   }
 

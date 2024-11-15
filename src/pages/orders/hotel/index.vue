@@ -41,7 +41,8 @@
         </q-field>
         <q-select v-model="filter.status" :options="hotelOrderStatusOptions" outlined dense></q-select>
         <q-space></q-space>
-        <div class="flex items-center justify-end">
+        <div class="flex items-center justify-end q-gutter-sm">
+          <q-btn label="新增訂單" color="primary" @click="goHotelSearch"></q-btn>
           <q-btn label="導出Excel" color="primary" @click="doExcelExport"></q-btn>
         </div>
       </div>
@@ -347,6 +348,10 @@ const doExcelExport = async () => {
 
 const goDetail = (orderNumber) => {
   router.push({ name: "HotelOrderDetail", params: { orderNumber } });
+}
+
+const goHotelSearch = () => {
+  router.push({ name: "HotelOrderSearch" });
 }
 
 const goMember = (userId) => {

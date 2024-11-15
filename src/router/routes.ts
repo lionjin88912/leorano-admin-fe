@@ -152,6 +152,26 @@ const routes: RouteRecordRaw[] = [
             component: () => import('src/pages/orders/hotel/Detail.vue'),
           },
           {
+            path: 'hotel/booking/search',
+            name: 'HotelOrderSearch',
+            meta: {
+              root: { title: '訂單管理' },
+              parent: { title: '新增酒店訂單' },
+              title: '酒店查詢',
+            },
+            component: () => import('src/pages/orders/hotel/Search.vue'),
+          },
+          {
+            path: 'hotel/booking/form',
+            name: 'HotelOrderBooking',
+            meta: {
+              root: { title: '訂單管理' },
+              parent: { title: '新增酒店訂單' },
+              title: '下訂酒店',
+            },
+            component: () => import('src/pages/orders/hotel/Booking.vue'),
+          },
+          {
             path: 'customized',
             name: 'CustomizedOrderList',
             meta: {
@@ -341,6 +361,20 @@ const routes: RouteRecordRaw[] = [
         name: 'LoginIndex',
         path: '',
         component: () => import('pages/Auth/index.vue'),
+      },
+    ],
+  },
+  {
+    path: '/iframe',
+    name: 'Iframe',
+    meta: {
+      title: 'iframe',
+    },
+    children: [
+      {
+        name: 'MarketingCode',
+        path: 'marketing/code',
+        component: () => import('pages/Iframe/MarketingCode.vue'),
       },
     ],
   },
