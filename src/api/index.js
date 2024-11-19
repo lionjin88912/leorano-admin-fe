@@ -92,6 +92,11 @@ export const SaveUserProfile = (id, data) => baseService.patch(`/users/${id}`, d
 
 export const SaveRegisterRecord = (id, data) => baseService.patch(`/registerRecord/${id}`, data)
 
+// 管理者帳號
+export const RequestAdmins = (data) => baseService.get('/account', { params: data })
+export const CreateAdmin = (data) => baseService.post('/account', data)
+export const RequestAdmin = (id) => baseService.get(`/account/${id}`)
+export const UpdateAdmin = (id, data) => baseService.put(`/account/${id}`, data)
 // 訂單管理-酒店訂單
 export const getHotelOrderList = (data) => baseService.get('/order/bookings', { params: data })
 export const getHotelOrder = (orderNumber) => baseService.get(`/order/bookings/${orderNumber}`)
