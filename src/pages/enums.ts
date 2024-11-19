@@ -104,6 +104,12 @@ const menus: Menu[] = [
     ],
   },
   {
+    label: '管理者帳號',
+    module: 'admin',
+    to: '/admins',
+    children: []
+  },
+  {
     label: '匯率查詢',
     module: 'currency',
     to: '/currency/change',

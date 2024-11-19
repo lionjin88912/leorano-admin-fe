@@ -340,9 +340,17 @@ const routes: RouteRecordRaw[] = [
         ],
       },
       {
+        path: '/admins',
+        meta: {
+          title: '管理者帳號',
+          requiresPermission: true,
+          permissionCode: 'admin',
+        },
+        component: () => import('pages/Admin/index.vue'),
+      },
+      {
         path: '/currency/change',
         meta: {
-          requiresAuth: true,
           title: '匯率查詢',
         },
         component: () => import('pages/Currency/index.vue'),
