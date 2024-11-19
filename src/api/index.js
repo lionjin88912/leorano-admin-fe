@@ -165,11 +165,16 @@ export const batchUpdateMarketingNotifyStatus = (data) =>
 export const getMarketingCode = (id, data) => baseService.get(`/marketing/${id}`, { params: data })
 // 取匯率
 export const getExchangeRate = (from, to) =>
-  axios.post('https://dev-api-demo.wotaluxe.com/v1/exchange/convert', {
+  axios.get('https://admin.roartrips.com/api/currency', {
     amount: 1,
     from,
     to
   })
+  // axios.post('https://dev-api-demo.wotaluxe.com/v1/exchange/convert', {
+  //   amount: 1,
+  //   from,
+  //   to
+  // })
 export const RequestDownloadFile = (id, data, cfg) =>
   baseService.get(`/user/${id}/download/${data.fileName}`, cfg)
 
