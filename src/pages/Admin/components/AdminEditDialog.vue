@@ -12,7 +12,7 @@
         <q-form v-if="model" ref="mainForm" @submit="doSubmit" class="edit-form q-gutter-y-md">
           <q-input v-model="model.username" label="使用者名稱" :rules="rules.username" outlined dense />
           <q-input v-model="model.email" label="Email" :rules="rules.email" outlined dense />
-          <q-input v-model="model.role_id" label="權限" autocomplete="off" outlined dense disable />
+          <q-select v-model="model.role_id" :options="roleOptions" label="權限" outlined dense emit-value map-options disable />
           <div class="flex no-wrap q-gutter-sm">
             <q-input v-model="model.password" label="密碼" class="input-password" :type="isPwd ? 'password' : 'text'" :rules="rules.password" autocomplete="new-password" outlined dense>
               <template v-slot:append>
@@ -38,7 +38,7 @@
 import { ref, computed } from 'vue';
 import { useQuasar } from 'quasar';
 import { EditMode } from 'src/pages/enums';
-import { statusOptions } from 'src/pages/Admin/enums';
+import { statusOptions, roleOptions } from 'src/pages/Admin/enums';
 import { isEmpty, isValidEmail, messages } from 'src/utils/validators';
 import { RequestAdmin, CreateAdmin, UpdateAdmin } from 'src/api';
 import to from 'await-to-js'

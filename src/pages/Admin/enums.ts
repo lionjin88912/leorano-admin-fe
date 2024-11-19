@@ -22,7 +22,7 @@ export const adminColumns: QTableProps['columns'] = [
   {
     name: 'role_id',
     label: '權限',
-    field: 'role_id',
+    field: (row) => roleOptions.find((item) => item.value === row.role_id)?.label,
     align: 'left',
   },
   {
@@ -42,4 +42,9 @@ export const adminColumns: QTableProps['columns'] = [
 export const statusOptions = [
   { label: '啟用', value: 1 },
   { label: '停用', value: 0 }
+]
+
+export const roleOptions = [
+  { label: '最高管理員', value: 1 },
+  { label: '雄獅小編', value: 2 }
 ]
