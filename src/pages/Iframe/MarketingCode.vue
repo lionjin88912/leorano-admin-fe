@@ -1,13 +1,11 @@
 <template>
-  <div class="flex justify-center items-center window-height">
-    <q-inner-loading :showing="loading" label="Loading..." />
-    <div v-if="!loading">
-      <q-card class="q-px-xl q-py-lg" :class="{'bg-teal-1 text-teal-8 cursor-pointer': status === 'success', 'bg-red-1 text-red-8': status === 'error'}" flat bordered>
-        <q-card-section>
-          <div class="text-h6">{{ message }}</div>
-        </q-card-section>
-      </q-card>
-    </div>
+  <div v-if="!loading" class="iframe-container flex column items-center">
+    <div v-if="status == 'error' && message" class="warning q-mt-sm">{{ message }}</div>
+    <p v-if="status == 'success'" class="iframe-title">您的 Le Oràno 邀請碼</p>
+    <q-btn v-if="status == 'success'" class="btn full-width" :label="code" @click="copyCode" flat>
+      <q-icon v-if="!showCopyTooltip" name="content_copy" size="28px" class="btn-tip"></q-icon>
+      <div v-else class="btn-tip">已複製</div>
+    </q-btn>
   </div>
 </template>
 
@@ -32,16 +30,15 @@ const getCode = async () => {
   const res = await getMarketingCode(id, { hash: hash_code, card_number: card_numberd })
   if (res.code == 0) {
     status.value = 'success'
-    message.value = `推薦碼：${res.data}`
     code.value = res.data
   } else {
     status.value = 'error'
     switch (res.code) {
-      case 1:
+      case 11014:
         message.value = '推薦碼已用罄'
         break
-      case 2:
-        message.value = '查無此活動'
+      case 11017:
+        message.value = '請確認卡號是否正確後重新輸入'
         break
     }
   }
@@ -66,4 +63,83 @@ async function sha256(message) {
   const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
   return hashHex
 }
+
+async function copyCode() {
+  let permission = await navigator.permissions.query({ name: 'clipboard-write' });
+  if (permission.state == 'granted' || permission.state == 'prompt') {
+    await navigator.clipboard.writeText(code.value);
+    showCopySuccess()
+  } else {
+  const textarea = document.createElement('textarea')
+    textarea.value = code.value
+    textarea.style.position = 'fixed'
+    textarea.style.opacity = '0'
+    document.body.appendChild(textarea)
+    textarea.select()
+    try {
+      document.execCommand('copy')
+      showCopySuccess()
+    } catch (err) {
+      console.error('複製失敗:', err)
+    }
+    document.body.removeChild(textarea)
+  }
+}
+
+const showCopyTooltip = ref(false)
+function showCopySuccess() {
+  showCopyTooltip.value = true
+  setTimeout(() => {
+    showCopyTooltip.value = false
+  }, 2000)
+}
 </script>
+
+<style scoped>
+.iframe-container {
+  font-family: 'Noto Serif TC', 'Times New Roman', serif;
+}
+.iframe-title {
+  font-size: 2.14rem;
+  font-weight: 700;
+  color: #fff;
+  margin-top: 2.28rem;
+}
+.warning {
+  letter-spacing: 0.2em;
+  background-color: #D21C1C;
+  color: #fff;
+  border-radius: .25rem;
+  padding: .25rem 1rem;
+}
+.btn {
+  position: relative;
+  max-width: 585px;
+  min-height: 4.63rem;
+  font-size: 2.14rem;
+  background-color: #F7ECDA;
+  color: #0E3456;
+  margin-top: 1.14rem;
+  border-radius: 0.85rem;
+}
+
+.btn-tip {
+  position: absolute;
+  right: 1rem;
+  font-size: 1.42rem;
+}
+
+@media (max-width: 1230px) {
+  .iframe-title {
+    font-size: 1.42rem;
+  }
+  .btn {
+    min-height: 2.88rem;
+    font-size: 1.28rem;
+    border-radius: 0.57rem;
+  }
+  .btn-tip {
+    font-size: 1.08rem;
+  }
+}
+</style>
