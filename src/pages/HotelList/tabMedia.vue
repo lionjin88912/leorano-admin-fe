@@ -50,7 +50,7 @@ const props = defineProps({
 const $q = useQuasar();
 const confirmRef = ref()
 const popRef = ref()
-const accept = ref(['image/jpg', 'image/jpeg'])
+const accept = ref(['image/jpg', 'image/jpeg', 'image/png', 'image/webp'])
 const hotelId = ref(0)
 const datas = ref<any[]>([])
 
