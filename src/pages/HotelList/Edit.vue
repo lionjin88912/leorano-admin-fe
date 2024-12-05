@@ -26,7 +26,7 @@
 
 <script setup lang="ts">
 
-import { ref, onMounted, computed, watch } from 'vue'
+import { ref, onMounted, onBeforeMount, computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
 import to from 'await-to-js'
@@ -151,13 +151,15 @@ onMounted(async () => {
   // console.log('langdata:', langData.value)
   setDefaultFieldValue();
 
+})
+onBeforeMount(() => {
   /**
    * 接收querystring
    * 可指定跳轉頁籤 (room/rate/plan)、id，
    * 在此切換顯示頁籤，並在該頁籤內跳轉該筆編輯頁面
    */
-  if (route.query.tab) {
-    tab.value = route.query.tab
+  if (route.params.tab) {
+    tab.value = route.params.tab
     currentTab.value = editTab.find((d: any) => d.val === tab.value);
   }
 })
@@ -182,6 +184,7 @@ const handleUpdate = async (val: any) => {
 
 const handleClick = (tabItem: any) => {
   tab.value = tabItem.val
+  router.push({ params: { tab: tabItem.val } })
 }
 
 watch(tab, () => {

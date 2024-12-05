@@ -14,7 +14,8 @@
         <div class="flex-1 column">
           <div class="flex-1 column q-pb-sm">
             <div class="flex items-center q-pb-xs">
-              <q-input v-model="searchData.tagName" label="標籤名稱" :debounce="500" dense @keydown.enter="getList()">
+              <q-input v-model="searchData.tagName" label="標籤名稱" :debounce="500" dense autofocus
+                @keydown.enter="getList()">
                 <template v-slot:append>
                   <q-icon name="search" @click="getList()" class="cursor-pointer" />
                 </template>
@@ -237,7 +238,6 @@ defineExpose({ show });
 <style lang="scss" scoped>
 .dialog-inner {
   height: 600px;
-  min-width: 720px !important;
   padding-bottom: 0 !important;
 
   .content {
@@ -257,6 +257,10 @@ defineExpose({ show });
       background-color: $grey-1;
     }
   }
-
+}
+@media (min-width: 768px) {
+  .dialog-inner {
+    min-width: 720px !important;
+  }
 }
 </style>

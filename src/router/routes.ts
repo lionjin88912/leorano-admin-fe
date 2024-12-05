@@ -27,7 +27,7 @@ const routes: RouteRecordRaw[] = [
             component: () => import('pages/HotelList/index.vue'),
           },
           {
-            path: 'edit/:hotel_id',
+            path: 'edit/:hotel_id/:tab?',
             name: 'EditHotel',
             meta: {
               root: { title: '酒店管理' },
