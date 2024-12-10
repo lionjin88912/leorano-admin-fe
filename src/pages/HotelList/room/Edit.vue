@@ -1,7 +1,7 @@
 <template>
   <div>
-      <section>
-        <div class="flex justify-between q-pb-lg">
+    <section>
+      <div class="flex justify-between q-pb-lg">
         <q-input v-model="searchData.name" :debounce="500" label="房型名稱" clearable dense outlined />
         <div id="relativeButton" class="flex q-gutter-x-sm">
           <q-btn label="新增" color="primary" @click="addRoom" outline />
@@ -48,7 +48,7 @@
             <p class="q-mb-none">最多可選 10 張</p>
           </div>
           <div class="row q-col-gutter-xs">
-            <div v-for="(v, index) in row.photos" :key="index" class="image-wrap ">
+            <div v-for="(v, index) in row.photos" :key="index" class="image-wrap" :class="{ 'pick': v.is_cover }">
               <q-img class="cursor-pointer" :class="{ 'cover': v.is_cover }" :src="releaseUrl(v)" :ratio="1" fit="cover" spinner-color="white" loading="lazy" @click="setCover(row, index)">
                 <div v-if="v.is_cover" class="absolute-bottom text-subtitle2 text-center">
                   封面
@@ -370,6 +370,9 @@ const saveRoom = () => {
 }
 .image-wrap {
   width: 20%;
+  &.pick .q-img {
+    border: 3px solid $positive;
+  }
   .text-subtitle2 {
     padding: 5px;
   }
@@ -384,7 +387,7 @@ const saveRoom = () => {
   margin-bottom: 10px;
   margin-left: auto;
 }
-@media (min-width: 600px) {
+@media (min-width: $breakpoint-sm-min) {
   .room-item {
     .q-input:nth-last-child(-n + 2) {
       padding-bottom: 0;
