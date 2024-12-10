@@ -319,6 +319,18 @@ const rateColumns: QTableProps['columns'] = [
 
 export const planColumns: QTableProps['columns'] = [
   {
+    name: 'is_reviewed',
+    label: '資料已比對',
+    field: '',
+    align: 'center',
+  },
+  {
+    name: 'hide',
+    label: '上架',
+    field: '',
+    align: 'center',
+  },
+  {
     name: 'rate_plan_type',
     label: 'Rate Plan Type',
     field: 'rate_plan_type',
@@ -382,18 +394,6 @@ export const planColumns: QTableProps['columns'] = [
     align: 'right',
   },
   {
-    name: 'is_reviewed',
-    label: '資料已比對',
-    field: '',
-    align: 'center',
-  },
-  {
-    name: 'hide',
-    label: '上架',
-    field: '',
-    align: 'center',
-  },
-  {
     name: 'created_at',
     label: '資料建立日',
     field: (row: any) => getDateString(row.created_at, 'YYYY-MM-DD HH:mm') || '-',
@@ -411,6 +411,34 @@ export const planColumns: QTableProps['columns'] = [
     field: '',
     align: 'center',
   },
+]
+
+export const planCompareColumns: QTableProps['columns'] = [
+  {
+      name: 'rate_plan_type',
+      label: 'Rate Plan Type',
+      field: 'rate_plan_type',
+      align: 'left',
+      sortable: true,
+  },
+  {
+    name: 'room',
+    label: 'Room',
+    field: 'room',
+    align: 'left',
+  },
+  {
+      name: 'rate',
+      label: 'Rate',
+      field: 'rate',
+      align: 'left',
+  },
+  {
+    name: 'operation',
+    label: '操作',
+    field: 'operation',
+    align: 'left',
+  }
 ]
 
 export const GuaranteeTypeOptons = [
