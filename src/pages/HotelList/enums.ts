@@ -413,34 +413,6 @@ export const planColumns: QTableProps['columns'] = [
   },
 ]
 
-export const planCompareColumns: QTableProps['columns'] = [
-  {
-      name: 'rate_plan_type',
-      label: 'Rate Plan Type',
-      field: 'rate_plan_type',
-      align: 'left',
-      sortable: true,
-  },
-  {
-    name: 'room',
-    label: 'Room',
-    field: 'room',
-    align: 'left',
-  },
-  {
-      name: 'rate',
-      label: 'Rate',
-      field: 'rate',
-      align: 'left',
-  },
-  {
-    name: 'operation',
-    label: '操作',
-    field: 'operation',
-    align: 'left',
-  }
-]
-
 export const GuaranteeTypeOptons = [
   { label: 'All', value: null },
   { label: 'Guarantee', value: 'Guarantee' },
