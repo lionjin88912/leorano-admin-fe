@@ -11,7 +11,8 @@
         outlined></q-select>
       <q-space></q-space>
       <!-- <q-btn :label="batchButtonName" :color="batchButtonColor" @click="toggleBatch"></q-btn> -->
-      <q-btn label="上架有 Rate Code 的方案" color="primary" @click="publishRateCodePlans"></q-btn>
+      <q-btn v-if="isNeedEdit" label="整頁編輯" color="primary" @click="doBatchEdit"></q-btn>
+      <q-btn v-if="isNeedEdit" label="上架有 Rate Code 的方案" color="primary" @click="publishRateCodePlans"></q-btn>
       <q-btn label="批次上架" color="green-7" @click="doBatch(true)"></q-btn>
       <q-btn label="批次下架" color="red-7" @click="doBatch(false)"></q-btn>
     </div>
@@ -81,6 +82,7 @@ const rows = ref([]);
 
 const batchMode = ref(true);
 const selection = ref<any>([]);
+const isNeedEdit = ref(false);
 
 // const onRowClick = (event: Event, row: any, index: number) => {
 //   if (!batchMode.value) {
@@ -123,6 +125,7 @@ const doSearch = async () => {
   }
   // console.log('res:', res);
   rows.value = res.data;
+  isNeedEdit.value = rows.value.some((d: any) => d.rate_code);
 }
 
 const localFilter = (rows: any, terms: any, cols: any, getCellValue: any) => {
