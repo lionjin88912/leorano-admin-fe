@@ -97,6 +97,9 @@ export const RequestAdmins = (data) => baseService.get('/account', { params: dat
 export const CreateAdmin = (data) => baseService.post('/account', data)
 export const RequestAdmin = (id) => baseService.get(`/account/${id}`)
 export const UpdateAdmin = (id, data) => baseService.put(`/account/${id}`, data)
+// 訂單管理-歷史紀錄
+export const getOrderHistory = (id) => baseService.get(`/order/op_recode/${id}`)
+export const createOrderHistory = (id, data) => baseService.post(`/order/op_recode/${id}`, data)
 // 訂單管理-酒店訂單
 export const getHotelOrderList = (data) => baseService.get('/order/bookings', { params: data })
 export const getHotelOrder = (orderNumber) => baseService.get(`/order/bookings/${orderNumber}`)
