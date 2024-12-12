@@ -1,6 +1,6 @@
 <template>
   <div>
-    <q-form @submit="handleSubmit" ref="formRef" class="edit-form q-gutter-md">
+    <q-form @submit="handleSubmit" ref="formRef" class="q-gutter-y-lg">
       <div class="flex">
         <div v-if="shareLink" class="flex text-primary cursor-pointer">
           <div class="q-pr-sm">App分享連結</div>
@@ -10,20 +10,20 @@
           <q-popup-proxy class="q-pa-sm">{{ shareLink }}</q-popup-proxy>
         </div>
         <q-space></q-space>
-        <q-btn label="儲存" type="submit" color="primary" />
-      </div>
-      <div class="flex q-gutter-x-md">
-        <q-input v-model="lang.name" class="edit-form-field" label="酒店名稱 *" :rules="rules.name" outlined dense />
-        <div class="flex-1 column items-end justify-end">
-          <div class="text-bold">更新時間</div>
-          <div class="text-grey-7">{{ helpers.getDateString(data.updated_at) }}</div>
+        <div class="text-right q-gutter-y-xs">
+          <div class="text-right q-gutter-x-sm">
+            <span class="text-bold">更新時間</span>
+            <span class="text-grey-7">{{ helpers.getDateString(data.updated_at) }}</span>
+          </div>
+          <q-btn label="儲存" type="submit" color="primary" />
         </div>
       </div>
-      <div class="flex q-gutter-x-md">
-        <q-input class="edit-form-field" v-model="data.hotel_group_name" label="所屬集團" outlined readonly dense />
-        <selectBrand @handle-call-back="setBrand" label="品牌" :default="{ id: data.hotel_brand_id }" />
+      <div class="row q-col-gutter-sm">
+        <q-input v-model="lang.name" class="col-12" label="酒店名稱 *" :rules="rules.name" outlined dense />
+        <q-input class="col-xs-6 col-md-3" v-model="data.hotel_group_name" label="所屬集團" outlined readonly dense />
+        <selectBrand @handle-call-back="setBrand" label="品牌" :default="{ id: data.hotel_brand_id }" class="col-xs-6 col-md-3" />
         <q-input
-          class="edit-form-field"
+          class="col-xs-6 col-md-3"
           v-model="data.hotel_chain"
           label="Hotel Chain"
           maxlength="2"
@@ -33,7 +33,7 @@
           @blur="onHotelChainBlur"
         />
         <q-input
-          class="edit-form-field"
+          class="col-xs-6 col-md-3"
           v-model="lang.hotel_code"
           label="TP Hotel Code *"
           :rules="rules.hotelCode"
@@ -42,83 +42,99 @@
           dense
         />
       </div>
-      <div class="q-mb-md q-mt-lg">
-        <q-separator></q-separator>
-      </div>
-      <div class="flex q-gutter-x-md">
-        <selectCountry
-          @handleCallBack="setCountry"
-          label="國家 *"
-          :default="{ id: data.country_id, name: data.country }"
-          :rules="rules.country"
-        />
-        <selectCity
-          @handleCallBack="setCity"
-          label="城市 *"
-          :default="{ id: data.city_id, name: data.city }"
-          :country="data.country_id"
-          :rules="rules.city"
-        />
-        <q-input class="edit-form-field" style="max-width: 200px" v-model="data.postal_code" label="ZIP code" outlined dense />
-      </div>
-      <div class="flex items-center q-gutter-x-md">
-        <q-input
-          class="edit-form-field"
-          v-model="lang.address"
-          label="酒店地址"
-          :rules="rules.address"
-          outlined
-          dense
-          hide-bottom-space
-        >
-          <template #append>
-            <q-icon class="cursor-pointer" name="location_on" color="red-9" size="32px" @click.prevent="getGeo" />
-            <q-tooltip>定位</q-tooltip>
-          </template>
-        </q-input>
-        <q-field label="酒店座標" style="width: 300px" stack-label outlined dense readonly hide-hint hide-bottom-space>
-          <template v-slot:control>
-            <div class="flex-1 items-center justify-around">
-              <div class="text-grey-9">
-                緯度 <span class="text-grey-6">{{ data.lat }}</span>
-              </div>
-              <div class="text-grey-9">
-                經度 <span class="text-grey-6">{{ data.lng }}</span>
-              </div>
+      <q-separator class="q-mt-md q-mb-lg" />
+      <div class="row q-col-gutter-xl">
+        <div class="col-xs-12 col-sm-7 col-md-8">
+          <div class="text-bold text-grey-9">酒店地址</div>
+          <div class="row q-col-gutter-sm q-mt-xs">
+            <selectCountry
+              @handleCallBack="setCountry"
+              label="國家 *"
+              :default="{ id: data.country_id, name: data.country }"
+              :rules="rules.country"
+              class="col-6"
+            />
+            <q-input class="col-6" v-model="data.postal_code" label="ZIP code" outlined dense />
+            <q-input
+              class="col-xs-12 col-md"
+              v-model="lang.address"
+              label="酒店地址"
+              :rules="rules.address"
+              outlined
+              dense
+              hide-bottom-space
+            >
+              <template #append>
+                <q-icon class="cursor-pointer" name="location_on" color="red-9" size="32px" @click.prevent="getGeo" />
+                <q-tooltip>定位</q-tooltip>
+              </template>
+            </q-input>
+            <q-field label="酒店座標" class="location-field col-xs-12" stack-label outlined dense readonly hide-hint hide-bottom-space>
+              <template v-slot:control>
+                <div class="flex-1 items-center justify-around">
+                  <div class="text-grey-9">
+                    緯度 <span class="text-grey-6">{{ data.lat }}</span>
+                  </div>
+                  <div class="text-grey-9">
+                    經度 <span class="text-grey-6">{{ data.lng }}</span>
+                  </div>
+                </div>
+              </template>
+            </q-field>
+          </div>
+          <GMapMap ref="gmap" :center="center" :zoom="16" map-type-id="terrain" class="gmap q-mt-md" @click="onMapClick">
+            <GMapMarker
+              :key="index"
+              v-for="(m, index) in markers"
+              :position="m.position"
+              :clickable="true"
+              :draggable="true"
+              @dragend="onMarkerDragged"
+              @click="onMarkerClick($event, index)"
+            >
+              <GMapInfoWindow :opened="isOpenMarker(index)" :closeclick="true" @closeclick="currentMarkerIndex = null">
+                {{ m.title }}
+              </GMapInfoWindow>
+            </GMapMarker>
+          </GMapMap>
+        </div>
+        <div class="col-xs-12 col-sm-5 col-md-4">
+          <div class="text-bold text-grey-9">酒店圖片</div>
+          <div class="flex q-gutter-md items-center">
+            <div class="text-grey-7">最多可選 {{ maxPicAmount }} 張圖片</div>
+            <q-btn label="選擇圖片" color="primary" @click="openMedia" outline></q-btn>
+          </div>
+          <div class="row q-col-gutter-xs q-mt-md">
+            <div v-for="(v, key) in chooseMedia" :key="key" class="image-wrap col-4" :class="{ 'pick': v.isCover }">
+              <q-img
+                class="cursor-pointer" 
+                :class="{ 'cover': v.isCover }"
+                :src="releaseUrl(v.src)" 
+                :ratio="1" 
+                fit="cover"
+                spinner-color="white"
+                loading="lazy"
+                @click="handleCoverSelect(key)">
+                <div v-if="v.isCover" class="absolute-bottom text-subtitle2 text-center">
+                  封面
+                </div>
+              </q-img>
             </div>
-          </template>
-        </q-field>
+          </div>
+        </div>
       </div>
-      <div>
-        <GMapMap ref="gmap" :center="center" :zoom="16" map-type-id="terrain" class="gmap" @click="onMapClick">
-          <GMapMarker
-            :key="index"
-            v-for="(m, index) in markers"
-            :position="m.position"
-            :clickable="true"
-            :draggable="true"
-            @dragend="onMarkerDragged"
-            @click="onMarkerClick($event, index)"
-          >
-            <GMapInfoWindow :opened="isOpenMarker(index)" :closeclick="true" @closeclick="currentMarkerIndex = null">
-              {{ m.title }}
-            </GMapInfoWindow>
-          </GMapMarker>
-        </GMapMap>
+      <q-separator class="q-mt-lg q-mb-xs" />
+      <div class="row q-col-gutter-sm">
+        <q-input class="col-xs-12 col-md-6" v-model="data.phone" label="聯絡電話" outlined dense />
+        <q-input class="col-xs-12 col-md-6" v-model="data.fax" label="傳真" outlined dense />
       </div>
-      <div class="flex q-gutter-x-md">
-        <q-input class="edit-form-field" style="max-width: 250px" v-model="data.phone" label="聯絡電話" outlined dense />
-        <q-input class="edit-form-field" style="max-width: 250px" v-model="data.fax" label="傳真" outlined dense />
+      <div class="row q-col-gutter-sm">
+        <q-input class="col-xs-12 col-md-6" v-model="data.email" label="客服信箱" outlined dense />
+        <q-input class="col-xs-12 col-md-6" v-model="data.web_site" label="官方網站" outlined dense />
       </div>
-      <div class="flex q-gutter-x-md">
-        <q-input class="edit-form-field" style="max-width: 485px" v-model="data.email" label="客服信箱" outlined dense />
-      </div>
-      <div class="flex q-gutter-x-md">
-        <q-input class="edit-form-field" style="max-width: 485px" v-model="data.web_site" label="官方網站" outlined dense />
-      </div>
-      <div class="flex q-gutter-x-md" @click="showTagSelect(hotelBenefitTagType)">
+      <div class="row q-col-gutter-sm" @click="showTagSelect(hotelBenefitTagType)">
         <q-field
-          class="edit-form-field cursor-pointer"
+          class="col cursor-pointer"
           label="酒店禮遇標籤"
           :hide-bottom-space="false"
           :hide-hint="false"
@@ -138,9 +154,9 @@
           </template>
         </q-field>
       </div>
-      <div class="flex q-gutter-x-md" @click="showTagSelect(hotelPlanTagType)">
+      <div class="row q-col-gutter-sm" @click="showTagSelect(hotelPlanTagType)">
         <q-field
-          class="edit-form-field cursor-pointer"
+          class="col cursor-pointer"
           label="酒店方案標籤"
           :hide-bottom-space="false"
           :hide-hint="false"
@@ -160,30 +176,8 @@
           </template>
         </q-field>
       </div>
-      <div class="flex q-gutter-x-md">
-        <q-input class="edit-form-field" type="textarea" label="酒店介紹" v-model="lang.desc" rows="8" outlined dense />
-      </div>
-      <div class="q-mb-lg q-pt-sm q-gutter-x-md">
-        <div class="text-bold text-grey-9">酒店圖片</div>
-        <div class="flex q-gutter-md items-center">
-          <div class="text-grey-7">最多可選 {{ maxPicAmount }} 張圖片</div>
-          <q-btn label="選擇圖片" color="primary" @click="openMedia" outline></q-btn>
-        </div>
-        <div class="flex items-start q-gutter-md q-pa-md">
-          <div class="flex column items-center justify-center" v-for="(v, key) in chooseMedia" :key="key">
-            <q-img
-              class="hotel-img"
-              :class="{ cover: v.isCover }"
-              :src="releaseUrl(v.src)"
-              fit="cover"
-              width="160px"
-              height="120px"
-              spinner-color="white"
-              @click="handleCoverSelect(key)"
-            />
-            <div v-if="v.isCover" class="cover-text">封面</div>
-          </div>
-        </div>
+      <div class="row q-col-gutter-sm">
+        <q-input type="textarea" label="酒店介紹" v-model="lang.desc" rows="8" class="col" outlined dense />
       </div>
       <div class="flex justify-end">
         <q-btn label="儲存" type="submit" color="primary" />
@@ -548,39 +542,23 @@ const releaseUrl = (url) => {
 </script>
 
 <style lang="scss" scoped>
-.edit-form {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-
-  &-field {
-    display: flex;
-    flex: 1;
-  }
-}
-
-.hotel-img {
-  cursor: pointer;
-  border-radius: 4px;
-  border: 1px solid $grey-3;
-
-  &:hover {
-    opacity: 0.8;
-    border: 1px solid $grey-5;
-  }
-
-  &.cover {
+.image-wrap {
+  &.pick .q-img {
     border: 3px solid $positive;
   }
-}
-
-.cover-text {
-  font-size: 16px;
-  color: $grey-6;
+  .text-subtitle2 {
+    padding: 5px;
+  }
 }
 
 .gmap {
-  width: 100vw;
+  width: 100%;
   height: 20rem;
+}
+
+@media (min-width: $breakpoint-md-min) {
+  .location-field {
+    width: 300px;
+  }
 }
 </style>
