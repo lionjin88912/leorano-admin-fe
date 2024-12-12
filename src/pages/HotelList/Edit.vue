@@ -8,8 +8,13 @@
           <q-select v-model='lang' :options='localeOptions' borderless dense />
         </template>
       </BreadCrumbs>
-      <q-toggle v-model='data.is_enabled' label="上架" left-label checked-icon='check' color='green' unchecked-icon='clear'
-        @click="setStatus" />
+      <div class="flex q-gutter-lg">
+        <q-btn color="primary" label="API 取得最新資料" @click="updateHotelData" outline :disable="isUpdating">
+          <q-spinner v-if="isUpdating" color="primary" size="sm" class="q-ml-sm" />
+        </q-btn>
+        <q-toggle v-model='data.is_enabled' label="上架" left-label checked-icon='check' color='green' unchecked-icon='clear'
+          @click="setStatus" />
+      </div>
     </div>
     <TabComponent propsStyle='maw-width:400px' :tabArr='editTab' :current-tab="currentTab"
       @update:model-value="handleClick" />
@@ -30,9 +35,10 @@ import { ref, onMounted, onBeforeMount, computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
 import to from 'await-to-js'
-import { RequestHotelByID, RequestUpdateHotel } from 'src/api'
+import { RequestHotelByID, RequestUpdateHotel, getHotelSearchRoomList } from 'src/api'
 import { editTab } from './enums'
 import { localeOptions } from 'src/pages/enums'
+import { getDateString } from 'src/utils/helpers'
 import TabComponent from 'src/components/TabComponent.vue'
 import tabBasic from './tabBasic.vue';
 import tabRule from './tabRule.vue';
@@ -211,6 +217,29 @@ const setStatus = async () => {
       is_enabled: data.value.is_enabled
     }
   })
+}
+
+const isUpdating = ref(false);
+const updateHotelData = async () => {
+  isUpdating.value = true;
+  let today = new Date().getTime();
+  for (let i = 15; i < 20; i++) {
+    const [err, res] = await to(getHotelSearchRoomList(data.value.id, {
+      from: getDateString(new Date(today + (14 * 24 * 60 * 60 * 1000)), 'YYYY-MM-DD'),
+      to: getDateString(new Date(today + (i * 24 * 60 * 60 * 1000)), 'YYYY-MM-DD'),
+      num_of_adults: 2,
+      currency: 'TWD',
+      lang: 'zh-TW'
+    }))
+  }
+  $q.notify({
+    position: 'top',
+    message: '更新完成',
+    color: 'teal',
+    icon: 'tag_faces',
+    timeout: 5000
+  })
+  isUpdating.value = false;
 }
 </script>
 <style scoped></style>

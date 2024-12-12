@@ -319,6 +319,18 @@ const rateColumns: QTableProps['columns'] = [
 
 export const planColumns: QTableProps['columns'] = [
   {
+    name: 'is_reviewed',
+    label: '資料已比對',
+    field: '',
+    align: 'center',
+  },
+  {
+    name: 'hide',
+    label: '上架',
+    field: '',
+    align: 'center',
+  },
+  {
     name: 'rate_plan_type',
     label: 'Rate Plan Type',
     field: 'rate_plan_type',
@@ -380,18 +392,6 @@ export const planColumns: QTableProps['columns'] = [
     label: 'Max Guest Number',
     field: (row: any) => (row.room?.max_guest_number ? row.room.max_guest_number : 'N/A'),
     align: 'right',
-  },
-  {
-    name: 'is_reviewed',
-    label: '資料已比對',
-    field: '',
-    align: 'center',
-  },
-  {
-    name: 'hide',
-    label: '上架',
-    field: '',
-    align: 'center',
   },
   {
     name: 'created_at',

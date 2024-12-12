@@ -59,7 +59,7 @@ const state = reactive({
   title: '',
   model: {},
 });
-const wideView = ref(false);
+const wideView = ref(true);
 
 const show = async ({ data }) => {
   state.visible = true;
@@ -114,7 +114,7 @@ const onUpdateStatus = async (data) => {
 }
 
 watch(() => state.visible, () => {
-  wideView.value = false;
+  wideView.value = true;
 })
 
 defineExpose({

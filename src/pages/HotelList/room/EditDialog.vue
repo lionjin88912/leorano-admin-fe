@@ -49,7 +49,7 @@
       <q-card-actions align="right" class="">
         <div class="flex items-center q-pr-lg q-gutter-lg bg-white">
           <q-btn class="action-button" label="Cancel" color="primary" outline v-close-popup />
-          <q-btn class="action-button" label="Save" color="primary" @click="doSubmit" />
+          <q-btn class="action-button" label="Save" color="primary" @click="doSubmit" v-close-popup />
         </div>
       </q-card-actions>
     </q-card>
