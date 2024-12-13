@@ -16,6 +16,7 @@
       <q-btn label="批次上架" color="green-7" @click="doBatch(true)"></q-btn>
       <q-btn label="批次下架" color="red-7" @click="doBatch(false)"></q-btn>
     </div>
+    <q-toggle v-model="searchData.isDeleted" label="顯示刪除方案" />
     <q-table ref="tableRef" class="data-table" v-model:selected="selection" :columns='planColumns' :rows="rows"
       :pagination="pagination" :filter="filter" :filter-method="localFilter" :sort-method="localSorting"
       :selection="selectionType" flat bordered no-data-label='無方案資料'>
@@ -72,11 +73,14 @@ const pagination = ref({
   rowsPerPage: 50
 });
 const hotelData = ref();
+const searchData = reactive({
+  isDeleted: false
+});
 const filter = reactive({
   guarantee_type: GuaranteeTypeOptons[0],
   rate_category: RateCategoryOptions[0],
   is_enabled: EnabledOptions[0],
-  is_reviewed: ReviewOptions[0]
+  is_reviewed: ReviewOptions[0],
 });
 const rows = ref([]);
 
@@ -113,10 +117,14 @@ const isNeedEdit = ref(false);
 
 const doSearch = async () => {
   $q.loading.show();
-  const [err, res] = await to(GetHotelPlanList({
+  let query: any = {
     hotel_code: hotelData.value.hotel_code,
     // rate_plan_type: searchData.name.trim().length <= 0 ? null : searchData.name,
-  }));
+  }
+  if (searchData.isDeleted) {
+    query.deleted = true;
+  }
+  const [err, res] = await to(GetHotelPlanList(query));
   $q.loading.hide();
 
   if (err) {
@@ -260,6 +268,10 @@ const doBatchEdit = () => {
 watch(() => props.propsData, (newVal) => {
   hotelData.value = newVal;
   // console.log('hotelData:', hotelData.value)
+  doSearch();
+})
+
+watch(searchData, (_newVal) => {
   doSearch();
 })
 

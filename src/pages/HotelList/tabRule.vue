@@ -53,51 +53,38 @@
   </q-form>
 </template>
 
-<script>
+<script setup>
+import { ref, reactive, watch } from 'vue'
 
-import { ref, watch } from 'vue'
-export default {
-  name: 'tabRule',
-  props: {
-    propsData: Object
-  },
-  setup(props, { emit }) {
-    const data = ref(props.propsData)
-    const age = ref({ min: data.value.babe_age, max: data.value.child_age })
-    const start = ref(props.propsData.check_in_time)
-    const end = ref(props.propsData.check_out_time)
+const props = defineProps({
+  propsData: Object
+})
 
-    const handleSubmit = () => {
+const age = ref({ min: 0, max: 0 })
+const start = ref('')
+const end = ref('')
+watch(() => props.propsData, async () => {
+  age.value.min = props.propsData.babe_age;
+  age.value.max = props.propsData.child_age;
+  start.value = props.propsData.check_in_time;
+  end.value = props.propsData.check_out_time;
+})
 
-      emit('handleUpdate', {
-        key: 'rule', hotel: {
-          check_in_time: start.value,
-          check_out_time: end.value,
-          child_age: `${age.value.max}`,
-          babe_age: `${age.value.min}`
-
-        }
-      })
+const emit = defineEmits(['handleUpdate'])
+const handleSubmit = () => {
+  emit('handleUpdate', {
+    key: 'rule', hotel: {
+      check_in_time: start.value,
+      check_out_time: end.value,
+      child_age: `${age.value.max}`,
+      babe_age: `${age.value.min}`
     }
-    watch(() => age.value.min, newVal => {
-      age.value.min = newVal
-    })
-    watch(() => age.value.max, newVal => {
-      age.value.max = newVal
-    })
-    return {
-      handleSubmit,
-      data,
-      age,
-      start,
-      end,
-
-    }
-  },
-  methods: {
-
-  }
+  })
 }
-</script>check_in_time
-
-<style scoped></style>
+watch(() => age.value.min, newVal => {
+  age.value.min = newVal
+})
+watch(() => age.value.max, newVal => {
+  age.value.max = newVal
+})
+</script>
