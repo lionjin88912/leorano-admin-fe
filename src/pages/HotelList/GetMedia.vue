@@ -13,12 +13,12 @@
           </div>
         </div>
         <q-scroll-area class="content-scroll wide">
-          <div class="flex">
-            <div class="img-card" :class="{ 'picked': isPicked(item.media_id) }" v-for="(item, index) in data"
+          <div class="row q-col-gutter-sm">
+            <div class="img-card col-xs-6 col-sm-4 col-md-3 col-lg-2" :class="{ 'picked': isPicked(item.media_id) }" v-for="(item, index) in data"
               :key="index" :title="item.caption">
-              <q-img class="cursor-pointer" :src="releaseUrl(item.url_format)" spinner-color="white" loading="lazy"
+              <q-img class="cursor-pointer" :src="releaseUrl(item.url_format)" spinner-color="white" :ratio="16/9" loading="lazy"
                 @click="() => handlePick(item)">
-                <div class="img-card-caption absolute-bottom">
+                <div class="img-card-caption text-center absolute-bottom">
                   {{ item.caption || '無標題' }}
                 </div>
               </q-img>
@@ -75,6 +75,7 @@ const handleOpenModal = async () => {
 
   data.value = res.data
   card.value = true
+  pick.value = {}
   // pick.value = { ...props.propsDefault }
   if (props.propsDefault) {
     for (let img of data.value) {
@@ -151,7 +152,7 @@ defineExpose({ handleOpenModal });
 <style lang="scss" scoped>
 .container {
   padding: 0px 0px 16px;
-  min-width: 450px;
+  width: 100%;
   max-width: 100%;
   overflow: hidden;
 
@@ -166,54 +167,47 @@ defineExpose({ handleOpenModal });
       width: 100%;
       height: 780px;
       max-height: calc(90vh - 200px);
-
-      &.wide {
-        width: calc(100vw - 200px);
-        max-width: 1200px;
-      }
     }
+  }
+}
 
-    .img-card {
-      display: flex;
-      position: relative;
-      width: 224px;
-      height: 126px;
-      cursor: pointer;
-      border: 1px solid $grey-4;
-      border-radius: 4px;
-      margin: 4px;
+.img-card {
+  position: relative;
+  cursor: pointer;
 
-      &:hover {
-        opacity: .9;
-        border: 1px solid $grey-5;
-      }
+  .q-img {
+    border: 1px solid $grey-4;
+  }
 
-      &.picked {
-        border: 3px solid #0000FF;
-      }
+  &:hover .q-img {
+    opacity: .9;
+    border: 1px solid $grey-5;
+  }
 
-      &-caption {
-        font-size: 12px;
-        white-space: nowrap;
-        text-align: center;
-        padding: 2px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
+  &.picked .q-img {
+    border: 3px solid $green-6;
+  }
 
-      &-zoom {
-        position: absolute;
-        top: 5px;
-        right: 5px;
-        text-shadow: 1px 0px 10px #666;
-      }
-    }
+  &-caption {
+    font-size: 12px;
+    white-space: nowrap;
+    padding: 2px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &-zoom {
+    position: absolute;
+    top: 12px;
+    right: 5px;
+    text-shadow: 1px 0px 10px #666;
   }
 }
 
 .zoom-container {
   position: relative;
-  width: 720px;
+  max-width: 720px;
+  width: 100vw;
   background-color: $grey-10;
   overflow: hidden;
 

@@ -37,7 +37,7 @@
       </div>
       <div class="bg-grey-2">
         <q-expansion-item header-class="text-primary" label="新舊資料比對" :content-inset-level="0" switch-toggle-side dense
-          expand-separator @show="emit('comparing')" @hide="emit('compared')">
+          expand-separator @show="emit('comparing')" @hide="emit('compared')" default-opened>
           <div class="flex-1 column q-pa-md">
             <div class="flex q-gutter-x-sm q-pb-sm">
               <q-input v-model="newTpRoom" class="flex-1" label="New Room" type="textarea" :rows="1" autogrow outlined
