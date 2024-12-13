@@ -59,6 +59,13 @@
           :country="data.country_id"
           :rules="rules.city"
         />
+        <selectCity
+          @handleCallBack="setCity"
+          label="城市 *"
+          :default="{ id: data.city_id, name: data.city }"
+          :country="data.country_id"
+          :rules="rules.city"
+        />
         <q-input class="edit-form-field" style="max-width: 200px" v-model="data.postal_code" label="ZIP code" outlined dense />
       </div>
       <div class="flex items-center q-gutter-x-md">
