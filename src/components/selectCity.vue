@@ -115,6 +115,11 @@ const hasCountry = computed(() => {
   return props.country && props.country > 0
 })
 
+const updateOptions = () => {
+  getOptions();
+}
+defineExpose({ updateOptions });
+
 onMounted(() => {
   if (props.loadOnInit) {
     getOptions();
