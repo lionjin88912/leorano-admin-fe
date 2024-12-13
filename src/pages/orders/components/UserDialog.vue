@@ -3,13 +3,13 @@
     <q-card class="container">
       <q-card-section class="sticky-top">
         <div class="flex">
-          <div class="text-h6">修改出行人</div>
+          <div class="text-h6">{{ LABEL[state.type] }}</div>
           <q-space></q-space>
           <q-btn icon="close" flat dense rounded v-close-popup />
         </div>
       </q-card-section>
       <q-card-section class="content">
-        <UserSelector v-model="memberId" :order-member="member" :required="true" />
+        <UserSelector v-model="state.memberId" :order-member="state.member" :required="true" />
       </q-card-section>
       <q-card-actions class="sticky-bottom">
         <div class="flex-1 items-center justify-end q-gutter-md">
@@ -22,22 +22,33 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, reactive } from 'vue';
 import UserSelector from '../components/UserSelector.vue';
 
-const memberId = ref();
-const member = ref([]);
+const state = reactive({
+  memberId: null,
+  member: [],
+  type: ''
+});
 
 const visible = ref(false)
+const LABEL = {
+  user: '修改訂購人',
+  passenger: '修改出行人'
+}
 const show = async ({ data }) => {
-  memberId.value = data.id;
-  member.value = data;
+  state.memberId = data.id;
+  state.member = data;
+  state.type = data.type;
   visible.value = true;
 }
 
 const emit = defineEmits(['confirm']);
 function doSubmit() {
-  emit('confirm', memberId.value);
+  emit('confirm', {
+    type: state.type,
+    user_id: state.memberId
+  });
   visible.value = false;
 }
 
