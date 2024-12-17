@@ -112,6 +112,12 @@ export const CodeColumns: QTableProps['columns'] = [
     field: (row) => row.register?.email || '-',
     align: 'left',
   },
+  {
+    name: 'created_at',
+    label: '建立時間',
+    align: 'left',
+    field: (row) => getDateString(row.created_at, 'YYYY-MM-DD HH:mm:ss'),
+  },
 ]
 
 export const InvitationCodeTabs: {
