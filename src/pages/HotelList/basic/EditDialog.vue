@@ -4,6 +4,8 @@
       <q-card-section class="flex items-center q-pb-none">
         <div class="text-h6">{{ state.title }}</div>
         <q-space></q-space>
+        <div v-show="isUpdateOptions" class="text-teal q-mr-md">已更新</div>
+        <q-btn color="primary" label="更新品牌/國家/城市選項" class="q-mr-md" @click="updateHotelOptions" outline />
         <q-btn icon="close" flat dense rounded v-close-popup />
       </q-card-section>
       <q-card-section class="content">
@@ -193,6 +195,17 @@ const getLangModel = computed(() => {
   const langData = state.model.langs.find(d => d.lang === state.currentLocale.value);
   return langData || createEmptyModel();
 })
+
+const isUpdateOptions = ref(false);
+const updateHotelOptions = async () => {
+  let res = await mainForm.value.updateSelectOptions();
+  if (res) {
+    isUpdateOptions.value = true;
+    setTimeout(() => {
+      isUpdateOptions.value = false;
+    }, 2000);
+  }
+}
 
 defineExpose({
   show

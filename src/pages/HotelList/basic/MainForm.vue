@@ -15,7 +15,7 @@
             酒店品牌
             <span v-show="model.hotel_group_name" class="text-grey-6"> (集團:{{ model.hotel_group_name }}) </span>
           </label>
-          <selectBrand @handle-call-back="setBrand" />
+          <selectBrand ref="selectBrandRef" @handle-call-back="setBrand" />
         </div>
         <div class="col-6">
           <label class="custom-form_label">Hotel Chain *</label>
@@ -30,21 +30,12 @@
           <q-input v-model="model.desc" outlined dense type="textarea" />
         </div>
         <div class="col-6">
-          <label class="custom-form_label">國家 *</label>
-          <selectCountry @handle-call-back="setCountry" :default="{}" :rules="rules.country"></selectCountry>
-        </div>
-        <div class="col-6">
           <label class="custom-form_label">當地貨幣</label>
           <q-input v-model="model.localCurrency" readonly outlined dense />
         </div>
         <div class="col-6">
-          <label class="custom-form_label">城市 *</label>
-          <selectCity @handle-call-back="setCity" :default="{}" :country="model.country" :rules="rules.city">
-          </selectCity>
-        </div>
-        <div class="col-6">
-          <label class="custom-form_label column">郵遞區號 *</label>
-          <q-input outlined dense v-model.trim="model.postalCode" :rules="rules.postalCode" />
+          <label class="custom-form_label column">郵遞區號</label>
+          <q-input outlined dense v-model.trim="model.postalCode" />
         </div>
         <div class="col-6">
           <label class="custom-form_label">聯絡電話</label>
@@ -85,6 +76,15 @@
         <div class="col-12">
           <label class="custom-form_label">兒童歲數上限</label>
           <q-input type="number" outlined dense v-model="model.childAge" />
+        </div>
+        <div class="col-6">
+          <label class="custom-form_label" @click="updateSelectOptions">國家 *</label>
+          <selectCountry ref="selectCountryRef" @handle-call-back="setCountry" :default="{}" :rules="rules.country"></selectCountry>
+        </div>
+        <div class="col-6">
+          <label class="custom-form_label">城市 *</label>
+          <selectCity ref="selectCityRef" @handle-call-back="setCity" :default="{}" :country="model.country" :rules="rules.city">
+          </selectCity>
         </div>
         <div class="col-12">
           <label class="custom-form_label column">
@@ -172,7 +172,7 @@ const rules = computed(() => {
     country: [(val: any) => !isEmpty(val) || messages.requiredInput()],
     city: [(val: any) => !isEmpty(val) || messages.requiredInput()],
     address: [(val: any) => !isEmpty(val) || messages.requiredInput()],
-    postalCode: [(val: any) => !isEmpty(val) || messages.requiredInput()],
+    // postalCode: [(val: any) => !isEmpty(val) || messages.requiredInput()],
   };
 });
 
@@ -256,6 +256,16 @@ const markers = computed(() => {
   ];
 });
 
+const selectCountryRef = ref();
+const selectCityRef = ref();  
+const selectBrandRef = ref();
+const updateSelectOptions = async () => {
+  await selectCountryRef.value.updateOptions();
+  await selectCityRef.value.updateOptions();
+  await selectBrandRef.value.updateOptions();
+  return true;
+}
+
 watchEffect(() => {
   // console.log('data:', props.data);
   model.value = props.data;
@@ -290,7 +300,7 @@ const getModel = () => {
   };
 };
 
-defineExpose({ validate, getModel });
+defineExpose({ validate, getModel, updateSelectOptions });
 </script>
 
 <style scoped>

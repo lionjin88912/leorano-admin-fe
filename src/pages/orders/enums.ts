@@ -142,6 +142,11 @@ export const customizedColumns: TableColumn = [
     field: 'voucher',
     align: 'center',
   },
+  {
+    name: 'intercom',
+    label: '客服記錄',
+    align: 'center',
+  },
 ]
 
 export const userColumns: TableColumn = [

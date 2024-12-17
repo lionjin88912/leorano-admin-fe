@@ -88,6 +88,11 @@ const onFilter = (val, update, abort) => {
   })
 }
 
+const updateOptions = () => {
+  getOptions();
+}
+defineExpose({ updateOptions });
+
 onMounted(() => {
   getOptions();
 });

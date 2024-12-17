@@ -46,6 +46,13 @@ const hotelColumns: TableColumn = [
     wpx: 100
   },
   {
+    name: 'room_night',
+    label: '房晚數',
+    field: 'room_night',
+    align: 'left',
+    wpx: 100
+  },
+  {
     name: 'price',
     label: '訂單金額',
     field: (row: any) => getCurrencyPriceFormat(row.price),
@@ -54,10 +61,10 @@ const hotelColumns: TableColumn = [
   },
   {
     name: 'profit',
-    label: '利潤',
-    field: 'profit',
+    label: '利潤百分比',
+    field: (row: any) => row.profit + ' %',
     align: 'left',
-    wpx: 100
+    wpx: 100,
   },
   {
     name: 'final_profit',
@@ -116,6 +123,11 @@ const hotelOrderStatusOptions = [
   { label: '取消失敗', value: 'cancel_failed' },
 ]
 
+const hotelOrderProfitOptions = [
+  { label: '全部', value: null },
+  { label: '僅實際利潤', value: 'true' },
+]
+
 const hotelFilters: FieldStruct[] = [
   {
     name: 'created_at',
@@ -137,7 +149,12 @@ const hotelFilters: FieldStruct[] = [
     type: 'text',
     label: '訂單編號',
     icon: 'search'
-  }
+  },
+  {
+    name: 'only_earn',
+    type: 'select',
+    options: hotelOrderProfitOptions,
+  },
 ]
 
 const customizedFilters: FieldStruct[] = [
@@ -164,7 +181,7 @@ interface PageStruct {
 
 export const pages: { [key: string]: PageStruct } = {
   hotel: {
-    pageTitle: '飯店訂單對帳',
+    pageTitle: '酒店訂單對帳',
     filters: hotelFilters,
     columns: hotelColumns,
     detailLinkName: 'HotelOrderDetail',
