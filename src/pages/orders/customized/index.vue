@@ -67,9 +67,16 @@
           <q-btn dense flat icon="send" text-color="primary" @click="sendVoucher(row)" />
         </q-td>
       </template>
+      <template v-slot:body-cell-intercom="props">
+        <q-td>
+          <q-icon class="cursor-pointer" name="history" size="24px" color="primary"
+            @click="showHistory(props.row.order_number)"></q-icon>
+        </q-td>
+      </template>
     </TableComponent>
     <CancelOrderDialog ref="cancelOrderRef" @confirm="onCancelConfirm"></CancelOrderDialog>
     <ProfitDialog ref="editDialog" type="customized" @updated="doSearch"></ProfitDialog>
+    <History ref="historyRef" />
   </div>
 </template>
 
@@ -84,7 +91,8 @@ import BreadCrumbs from 'src/components/BreadCrumbs.vue';
 import DatePicker from 'src/components/DatePicker.vue';
 import TableComponent from 'components/TableComponent.vue';
 import CancelOrderDialog from '../components/CancelOrderDialog.vue';
-import ProfitDialog from '../components/ProfitDialog.vue'
+import ProfitDialog from '../components/ProfitDialog.vue';
+import History from 'src/components/dialog/History.vue';
 import to from 'await-to-js';
 
 const pagination = {
@@ -211,5 +219,13 @@ const sendVoucher = async (item) => {
     console.error('send customized order voucher error:', err);
     return;
   } 
+}
+
+const historyRef = ref();
+const showHistory = (orderNumber) => {
+  historyRef.value.show({
+    orderId: orderNumber,
+    type: 'customized'
+  });
 }
 </script>

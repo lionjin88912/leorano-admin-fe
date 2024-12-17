@@ -116,13 +116,16 @@
       </template>
 
       <template v-slot:body-cell-intercom="props">
-        <q-td>
+        <q-td class="q-gutter-x-md">
+          <q-icon class="cursor-pointer" name="history" size="24px" color="primary"
+            @click="showHistory(props.row.order_number)"></q-icon>
           <q-icon v-if="props.row.ticket_id" class="cursor-pointer" name="open_in_new" size="24px" color="primary"
             @click="goIntercom(props.row.ticket_id)"></q-icon>
         </q-td>
       </template>
     </q-table>
     <ProfitDialog ref="editDialog" type="hotel" @updated="doSearch"></ProfitDialog>
+    <History ref="historyRef" />
   </div>
 </template>
 
@@ -135,6 +138,7 @@ import { hotelColumns, hotelOrderStatusOptions } from '../enums';
 import DatePicker from 'src/components/DatePicker.vue'
 import BreadCrumbs from 'src/components/BreadCrumbs.vue';
 import ProfitDialog from '../components/ProfitDialog.vue'
+import History from 'src/components/dialog/History.vue';
 import XLSX from 'xlsx-js-style'
 import { getDateString, getDateStringNoTz, getCurrencyFormat, getCurrencyPriceFormat } from 'src/utils/helpers';
 import { useMetaStore } from 'src/stores/meta';
@@ -361,6 +365,14 @@ const goMember = (userId) => {
 const goIntercom = (ticketId) => {
   const url = `https://app.intercom.com/a/inbox/rgfj764k/inbox/conversation/${ticketId}`
   window.open(url, '_blank')
+}
+
+const historyRef = ref();
+const showHistory = (orderNumber) => {
+  historyRef.value.show({
+    orderId: orderNumber,
+    type: 'booking'
+  });
 }
 
 const restoreSearchFilter = () => {

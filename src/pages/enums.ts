@@ -69,7 +69,7 @@ const menus: Menu[] = [
     module: 'accounting',
     to: 'accounting',
     children: [
-      { label: '飯店訂單對帳', to: '/accounting/order/hotel' },
+      { label: '酒店訂單對帳', to: '/accounting/order/hotel' },
       { label: '客製訂單對帳', to: '/accounting/order/customized' }
     ],
   },

@@ -170,19 +170,24 @@
         </div>
       </InfoRow>
       <InfoRow title="訂購人資料">
-        <div class="info-field">
-          <div class="info-field-label">姓名</div>
-          <div v-if="model.user.first_name" class="info-field-text">
-            {{ model.user.first_name }} {{ model.user.last_name }}
+        <div class="row items-start q-gutter-lg">
+          <div>
+            <div class="info-field">
+              <div class="info-field-label">姓名</div>
+              <div v-if="model.user.first_name" class="info-field-text">
+                {{ model.user.first_name }} {{ model.user.last_name }}
+              </div>
+            </div>
+            <div class="info-field">
+              <div class="info-field-label">Email</div>
+              <div class="info-field-text">{{ model.user.email }}</div>
+            </div>
+            <div class="info-field">
+              <div class="info-field-label">Phone</div>
+              <div class="info-field-text">{{ model.user.phone }}</div>
+            </div>
           </div>
-        </div>
-        <div class="info-field">
-          <div class="info-field-label">Email</div>
-          <div class="info-field-text">{{ model.user.email }}</div>
-        </div>
-        <div class="info-field">
-          <div class="info-field-label">Phone</div>
-          <div class="info-field-text">{{ model.user.phone }}</div>
+          <q-btn color="primary" label="修改訂購人" @click="onUpdateUser('user', model.user)" />
         </div>
       </InfoRow>
       <InfoRow title="出行人資料">
@@ -203,7 +208,7 @@
               <div class="info-field-text">{{ model.passenger_user.phone }}</div>
             </div>
           </div>
-          <q-btn color="primary" label="修改出行人" @click="onUpdateUser" />
+          <q-btn color="primary" label="修改出行人" @click="onUpdateUser('passenger', model.passenger_user)" />
         </div>
       </InfoRow>
       <InfoRow title="入住人資料">
@@ -365,24 +370,21 @@ const onCancelConfirm = async (data: any) => {
 }
 
 const userDialogRef = ref();
-const onUpdateUser = () => {
+const onUpdateUser = (type: string, person: any) => {
   userDialogRef.value.show({
     data: {
-      id: model.value.passenger_user_id,
-      title: model.value.passenger_user.title,
-      name: model.value.passenger_user.first_name + model.value.passenger_user.last_name,
-      email: model.value.passenger_user.email
+      type,
+      id: person.user_id,
+      title: person.title,
+      name: person.first_name + person.last_name,
+      email: person.email
     }
   });
 }
 
 const onUpdateUserConfirm = async (data: any) => {
   $q.loading.show();
-  if (model.value.user.id !== data) {
-    const [err, res] = await to(updateHotelOrderUser(model.value.order_number, {
-      user_id: data
-    }));
-  }
+  const [err, res] = await to(updateHotelOrderUser(model.value.order_number, data));
   $q.loading.hide();
   getData();
 }
@@ -424,7 +426,10 @@ const deadline = computed(() => {
 })
 
 const cancellationText = computed(() => {
-  return 'cancellation: ' + model.value.book_code?.cancellation_texts.join(' ');
+  if (model.value.book_code && model.value.book_code.cancellation_texts) {
+    return 'cancellation: ' + model.value.book_code.cancellation_texts.join(' ');
+  }
+  return '';
 })
 
 const payDescp = computed(() => {

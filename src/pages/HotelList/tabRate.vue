@@ -1,12 +1,13 @@
 <template>
   <section>
     <div class="flex justify-between q-pb-md">
-      <div>
+      <div class="flex items-center q-gutter-x-md">
         <q-input v-model="searchData.name" :debounce="500" label="房價名稱" dense outlined>
           <template v-slot:append>
             <q-icon class="cursor-pointer" name="search" @click="doSearch" />
           </template>
         </q-input>
+        <q-toggle v-model="searchData.isDeleted" label="顯示刪除房價" />
       </div>
       <div class="flex q-gutter-x-md">
         <q-btn label="批次刪除" color="negative" @click="onBatchDelete"></q-btn>
@@ -69,17 +70,22 @@ const confirmRef = ref();
 const rowPageOptions = [50, 10, 20];
 const hotelData = ref();
 const searchData = reactive({
-  name: ''
+  name: '',
+  isDeleted: false
 });
 const rows = ref([]);
 const selection = ref<any>([]);
 
 const doSearch = async () => {
   $q.loading.show();
-  const [err, res] = await to(GetHotelRateList({
+  let query: any = {
     name: searchData.name.trim().length <= 0 ? null : searchData.name,
-    hotel_code: hotelData.value.hotel_code
-  }));
+    hotel_code: hotelData.value.hotel_code,
+  }
+  if (searchData.isDeleted) {
+    query.deleted = true;
+  }
+  const [err, res] = await to(GetHotelRateList(query));
   $q.loading.hide();
 
   if (err) {

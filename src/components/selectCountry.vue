@@ -99,6 +99,11 @@ watchEffect(() => {
   }
 });
 
+const updateOptions = () => {
+  getOptions();
+}
+defineExpose({ updateOptions });
+
 onMounted(() => {
   getOptions();
 })
