@@ -38,7 +38,7 @@ const getCode = async () => {
         message.value = '推薦碼已用罄'
         break
       case 11017:
-        message.value = '請確認卡號是否正確後重新輸入'
+        message.value = '請輸入正確之國泰世華世界卡卡號'
         break
     }
   }
