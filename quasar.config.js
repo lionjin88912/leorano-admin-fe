@@ -152,8 +152,8 @@ module.exports = configure(function (ctx) {
       // chainWebpackCustomSW (/* chain */) {},
 
       manifest: {
-        name: 'Le Orano Admin Panel',
-        short_name: 'Le Orano Admin Panel',
+        name: 'Le Oràno Admin Panel',
+        short_name: 'Le Oràno Admin Panel',
         description: '',
         display: 'standalone',
         orientation: 'portrait',

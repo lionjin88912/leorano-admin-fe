@@ -1,9 +1,9 @@
 {
   "name": "leorano-admin-fe",
   "version": "0.0.1",
-  "description": "Le Orano Console",
-  "productName": "Le Orano Console",
-  "author": "Michael Wu <mikewu@alphacore.cc>",
+  "description": "Le Oràno Console",
+  "productName": "Le Oràno Console",
+  "author": "Tripgds <sunkuo@liontravel.com>",
   "private": true,
   "scripts": {
     "lint": "eslint --ext .js,.ts,.vue ./",
