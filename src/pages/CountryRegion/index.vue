@@ -22,6 +22,7 @@ import { ref, watch, computed, onMounted } from 'vue'
 import { useQuasar } from 'quasar';
 import { RequestCountryCodeList, RequestCityCodeList } from 'src/api'
 import { tabList } from './enums'
+import { router } from 'src/router';
 import CountryList from './CountryList.vue';
 import CityList from './CityList.vue';
 import BreadCrumbs from 'src/components/BreadCrumbs.vue';
@@ -29,7 +30,7 @@ import BreadCrumbs from 'src/components/BreadCrumbs.vue';
 const to = require('await-to-js').default
 
 const $q = useQuasar();
-const currentTab = ref(tabList[0].value)
+const currentTab = ref(router.currentRoute.value.query.tab || tabList[0].value)
 const currentComponent = computed(() => {
   switch (currentTab.value) {
     case 'city':
@@ -87,14 +88,15 @@ const onCountryReload = ({ name }) => {
 }
 
 watch(currentTab, (newVal) => {
-  if (newVal === 'city') {
-    getCityList();
-  } else {
-    getCountryList();
-  }
+  router.push({ query: { tab: newVal } });
 });
 
-onMounted(() => {
-  getCountryList();
+onMounted(async () => {
+  if (currentTab.value === 'city') {
+    await getCountryList();
+    getCityList(router.currentRoute.value.query.keyword, router.currentRoute.value.query.country ? parseInt(router.currentRoute.value.query.country) : countryList.value[0]?.id);
+  } else {
+    getCountryList(router.currentRoute.value.query.keyword);
+  }
 });
 </script>

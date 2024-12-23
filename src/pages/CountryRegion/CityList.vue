@@ -2,9 +2,8 @@
   <div>
     <section class="row justify-between q-mb-lg">
       <div class="flex q-gutter-sm">
-        <q-select v-model="currentCountry" label="國家" :options="countryOptions" :input-debounce="500" dense outlined
-          use-input fill-input hide-selected @update:model-value="doSearch" @filter="onFilter"></q-select>
-        <q-input v-model="searchData.cityName" :debounce="500" style="width: 240px" placeholder="城市名稱" dense outlined>
+        <q-select v-model="filter.country" label="國家" :options="countryOptions" :input-debounce="500" emit-value map-options dense outlined use-input fill-input hide-selected @update:model-value="doSearch" @filter="onFilter"></q-select>
+        <q-input v-model="filter.cityName" :debounce="500" style="width: 240px" placeholder="城市名稱" dense outlined>
           <template v-slot:append>
             <q-icon class="cursor-pointer" name="search" @click="doSearch" />
           </template>
@@ -34,9 +33,10 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, watch, onMounted } from 'vue'
+import { ref, reactive, computed, watch } from 'vue'
 import { useQuasar } from 'quasar'
 import { cityColumns } from './enums'
+import { router } from 'src/router'
 import CityEditDialog from './components/CityEditDialog.vue'
 import Confirm from 'src/components/dialog/Confirm.vue'
 import _ from "lodash";
@@ -48,12 +48,12 @@ const confirmRef = ref();
 const $q = useQuasar();
 const loading = ref(false)
 
-const currentCountry = ref();
 const allOptions = ref([])
 const countryOptions = ref([]);
 const countryFilterText = ref('');
-const searchData = reactive({
-  cityName: null
+const filter = reactive({
+  country: router.currentRoute.value.query.country ? parseInt(router.currentRoute.value.query.country) : null,
+  cityName: router.currentRoute.value.query.keyword || null
 })
 
 const emit = defineEmits(['city-reload'])
@@ -75,7 +75,7 @@ const props = defineProps({
 const doEdit = (item) => {
   editDialog.value.show({
     data: item,
-    country: currentCountry.value,
+    country: filter.country,
     countryList: allOptions.value
   });
 }
@@ -101,12 +101,12 @@ const onDeleteConfirm = async (data) => {
 }
 
 const doSearch = () => {
-  if (!currentCountry.value) {
+  if (!filter.country) {
     return;
   }
   emit('city-reload', {
-    countryId: currentCountry.value?.value,
-    name: searchData.cityName,
+    countryId: filter.country,
+    name: filter.cityName,
   });
 }
 
@@ -130,24 +130,31 @@ const onFilter = (val, update, abort) => {
   })
 }
 
-watch(searchData, (_newVal) => {
-  doSearch();
-});
-
-watch(currentCountry, (newVal) => {
-  doSearch();
+watch(filter, (newVal) => {
+  let query = { ...router.currentRoute.value.query };
+  if (newVal.country) {
+    query.country = newVal.country;
+  } else {
+    delete query.country;
+  }
+  if (newVal.cityName) {
+    query.keyword = newVal.cityName;
+  } else {
+    delete query.keyword;
+  }
+  router.push({ query });
 })
 
-onMounted(() => {
-  if (props.countryList.length > 0) {
-    allOptions.value = props.countryList.map(d => {
+watch(() => props.countryList, (newVal) => {
+  if (newVal.length > 0) {
+    allOptions.value = newVal.map(d => {
       return {
         label: d.name,
         value: d.id,
       }
     });
     countryOptions.value = allOptions.value;
-    currentCountry.value = allOptions.value[0];
+    filter.country = router.currentRoute.value.query.country ? parseInt(router.currentRoute.value.query.country) : allOptions.value[0].value;
   }
 })
 

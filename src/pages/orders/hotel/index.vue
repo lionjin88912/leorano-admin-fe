@@ -169,13 +169,26 @@ const textTypeOptions = [
   { label: "訂購人", value: "user_name" },
   { label: "訂購人Email", value: "user_email" },
 ]
-const currentTextType = ref(textTypeOptions[0]);
+const currentTextType = ref(router.currentRoute.value.query.column
+  ? textTypeOptions.find(d => d.value === router.currentRoute.value.query.column)
+  : textTypeOptions[0]
+);
 
 const filter = reactive({
-  text: null,
-  checkinDuration: null,
-  orderDuration: null,
-  status: hotelOrderStatusOptions[0]
+  text: router.currentRoute.value.query.keyword || null,
+  checkinDuration: router.currentRoute.value.query.check_in_start && router.currentRoute.value.query.check_in_end 
+    ? {
+      from: router.currentRoute.value.query.check_in_start,
+      to: router.currentRoute.value.query.check_in_end
+    } : null,
+  orderDuration: router.currentRoute.value.query.created_at_start && router.currentRoute.value.query.created_at_end 
+    ? {
+      from: router.currentRoute.value.query.created_at_start,
+      to: router.currentRoute.value.query.created_at_end
+    } : null,
+  status: router.currentRoute.value.query.status
+    ? hotelOrderStatusOptions.find(d => d.value === router.currentRoute.value.query.status) 
+    : hotelOrderStatusOptions[0]
 })
 
 // const getLastCancelDate = (row) => {
@@ -278,8 +291,6 @@ const loadExportData = async (datas, page) => {
 }
 
 const getFilterParams = () => {
-  restoreSearchFilter();
-
   const params = {};
   if (filter.text && filter.text.trim().length > 0) {
     params[currentTextType.value.value] = filter.text;
@@ -375,21 +386,6 @@ const showHistory = (orderNumber) => {
   });
 }
 
-const restoreSearchFilter = () => {
-  const savedFilter = SessionStorage.getItem(filterStorageKey);
-  // console.log('savedFilter:', savedFilter);
-  if (savedFilter) {
-    for (const [key, value] of Object.entries(savedFilter)) {
-      filter[key] = value;
-    }
-    SessionStorage.remove(filterStorageKey)
-  }
-}
-
-const saveSearchFilter = (val) => {
-  SessionStorage.set(filterStorageKey, val);
-}
-
 const getUsdTotalPrice = async (row) => {
   if (!row.total_price) {
     return null
@@ -403,14 +399,42 @@ const getUsdTotalPrice = async (row) => {
 }
 
 watch(filter, (newVal) => {
-  saveSearchFilter(newVal);
-  doSearch();
+  let query = { ...router.currentRoute.value.query };
+  if (newVal.text) {
+    query.keyword = newVal.text;
+  } else {
+    delete query.keyword;
+  }
+  if (newVal.checkinDuration) {
+    query.check_in_start = newVal.checkinDuration.from;
+    query.check_in_end = newVal.checkinDuration.to;
+  } else {
+    delete query.check_in_start;
+    delete query.check_in_end;
+  }
+  if (newVal.orderDuration) {
+    query.created_at_start = newVal.orderDuration.from;
+    query.created_at_end = newVal.orderDuration.to;
+  } else {
+    delete query.created_at_start;
+    delete query.created_at_end;
+  }
+  if (newVal.status && newVal.status.value !== null) {
+    query.status = newVal.status.value;
+  } else {
+    delete query.status;
+  }
+  router.push({ query });
 })
 
 watch(currentTextType, (newVal, oldVal) => {
-  if (newVal.value !== oldVal.value && filter.text && filter.text.trim().length > 0) {
-    doSearch();
+  let query = { ...router.currentRoute.value.query };
+  if (newVal.value === 'all') {
+    delete query.column;
+  } else {
+    query.column = newVal.value;
   }
+  router.push({ query });
 })
 
 doSearch();
