@@ -21,8 +21,7 @@
           <q-scroll-area class="content-scroll">
             <q-tab-panels v-model="currentTab" keep-alive animated>
               <q-tab-panel name="main" class="q-px-none">
-                <city-main-form ref="mainForm" :data="model" :country-options="countryOptions"
-                  :country="currentCountry"></city-main-form>
+                <city-main-form ref="mainForm" :data="model" :country-options="countryOptions"></city-main-form>
               </q-tab-panel>
               <q-tab-panel name="lang" class="q-px-none">
                 <div class="flex items-center justify-center q-gutter-md q-pb-md">
@@ -74,7 +73,7 @@ const createEmptyModel = () => {
   return {
     code: null,
     name: null,
-    country_id: null,
+    country_id: currentCountry.value,
     tz: null,
     time_offset: null,
     lng: null,
@@ -92,13 +91,13 @@ const show = async ({ data, country, countryList }) => {
   if (data) {
     title.value = '編輯城市';
     mode.value = EditMode.Edit;
-    currentCountry.value = countryList.find(d => d.value === data.country_id);
+    currentCountry.value = data.country_id;
     await reloadModel(data.id);
   } else {
     title.value = '新增城市';
     mode.value = EditMode.New;
-    model.value = createEmptyModel();
     currentCountry.value = country;
+    model.value = createEmptyModel();
   }
 };
 

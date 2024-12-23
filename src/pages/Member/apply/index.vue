@@ -2,7 +2,7 @@
   <div>
     <BreadCrumbs class="q-pb-md"></BreadCrumbs>
     <q-form class='row'>
-      <q-input v-model='form.search' dense class='q-mx-md q-my-sm' style='width: 240px' outlined placeholder='Search'
+      <q-input v-model='filter.search' dense class='q-mx-md q-my-sm' style='width: 240px' outlined placeholder='Search'
         :debounce="500">
         <template v-slot:append>
           <q-icon class='cursor-pointer' name='search' @click="getList" />
@@ -10,7 +10,7 @@
       </q-input>
       <q-space />
     </q-form>
-    <TabComponent :tabArr='tabArr' @update:model-value="handleClick"></TabComponent>
+    <TabComponent :tabArr='tabArr' :currentTab="currentTab" @update:model-value="handleClick"></TabComponent>
     <TableCardComponent ref='tableChildRef' :propsFilter='filter' :columns='enumColumns' :handleCallApi='getList'>
       <template v-slot:body="slotProps">
         <q-tr :props="slotProps.props" no-hover>
@@ -161,6 +161,7 @@ import { ref, reactive, computed, watch } from 'vue'
 import TableCardComponent from 'components/TableCardComponent.vue';
 import { RequestRegisterRecords, RequestRegisterRecordAction } from 'src/api'
 import { columns as enumColumns, tabArr } from './enums';
+import { router } from 'src/router';
 import TabComponent from 'src/components/TabComponent.vue';
 import apply from './components/apply.vue'
 import finished from './components/finished.vue'
@@ -173,10 +174,12 @@ import BreadCrumbs from 'src/components/BreadCrumbs.vue';
 const tableChildRef = ref(null)
 
 const filter = reactive({
-  status: tabArr[0].val
+  search: router.currentRoute.value.query.search || '',
+  status: parseInt(router.currentRoute.value.query.status) || tabArr[0].val
 })
-const form = reactive({
-  search: '',
+
+const currentTab = computed(() => {
+  return tabArr.find((item) => item.val === filter.status)
 })
 
 const instagramParse = (data) => {
@@ -189,15 +192,10 @@ const instagramParse = (data) => {
 
 function getList(params = {}) {
   return RequestRegisterRecords({
-    search: form.search,
     ...filter,
     ...params
   })
 }
-
-watch(() => form.search, () => {
-  getList();
-})
 
 const handleClick = (tabItem) => {
   filter.status = tabItem.val

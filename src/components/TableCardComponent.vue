@@ -9,6 +9,7 @@
 
 <script>
 import { ref, onMounted, watch, defineExpose } from 'vue'
+import { router } from 'src/router';
 export default {
   name: 'tableComponent',
   props: {
@@ -31,7 +32,6 @@ export default {
 
 
     onMounted(async () => {
-
       props.handleCallApi().then((res) => {
         loading.value = false
         rows.value = res.data
@@ -80,21 +80,8 @@ export default {
     }
 
     watch(props.propsFilter, (val) => {
-
-      filter.value = val
-      loading.value = true
-      props.handleCallApi({
-        limit: pagination.value.rowsPerPage,
-        page: 1,
-        ...filter.value
-      }).then(res => {
-
-        rows.value = res.data
-        pagination.value.page = res.paging.page
-        pagination.value.rowsPerPage = res.paging.limit
-        pagination.value.rowsNumber = res.paging.total_rows
-      }).finally(() => { loading.value = false })
-
+      let filterNotEmpty = Object.entries(val).filter(([k, v]) => v !== null && v !== undefined && v !== '')
+      router.push({ query: Object.fromEntries(filterNotEmpty) })
     })
 
     const handleReload = () => {

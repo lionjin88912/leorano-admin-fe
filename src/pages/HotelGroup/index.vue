@@ -33,7 +33,8 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed } from 'vue'
+import { ref, reactive, computed, watch } from 'vue'
+import { router } from 'src/router';
 import columns from './enums';
 import hotelGroupModal from './hotelGroupModal'
 import TableComponent from 'components/TableComponent.vue';
@@ -47,7 +48,7 @@ const callback = ref(() => console.log())
 const row = reactive({})
 
 const filter = reactive({
-  name: "",
+  name: router.currentRoute.value.query.name || '',
 })
 // const getList = (params) => {
 //   return RequestGroupByName({

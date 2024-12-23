@@ -28,6 +28,7 @@
 <script setup lang="ts">
 import { ref, onMounted, watch, computed } from 'vue'
 import { LocalStorage } from 'quasar'
+import { router } from 'src/router';
 import to from 'await-to-js';
 
 const emit = defineEmits(['requested'])
@@ -217,9 +218,8 @@ watch(() => props.propsFilter, async (val) => {
     clearTimeout(initQueryTimer);
   }
 
-  filter.value = val
-  pagination.value.page = 1
-  reload()
+  let filterNotEmpty = val ? Object.entries(val).filter(([k, v]) => v !== null && v !== undefined && v !== '') : []
+  router.push({ query: Object.fromEntries(filterNotEmpty) })
 })
 
 

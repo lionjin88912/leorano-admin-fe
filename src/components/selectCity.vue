@@ -41,7 +41,6 @@ const props = defineProps({
   }
 })
 const model = ref(null)
-const countryId = ref(props.country)
 const allOptions = ref([])
 const group_options = ref([])
 
@@ -102,14 +101,17 @@ const onFilter = (val, update, abort) => {
 }
 
 watch(() => props.country, async (newValue) => {
-  countryId.value = props.country
-  if (props.default.name) {
-    model.value = { name: props.default.name, id: props.default.id };
-  } else {
-    model.value = null
-  }
   getOptions();
 })
+
+watchEffect(() => {
+  if (props.default?.id) {
+    let item = allOptions.value.find(d => d.id === props.default.id)
+    if (item) {
+      model.value = { name: item.name, id: props.default.id };
+    }
+  }
+});
 
 const hasCountry = computed(() => {
   return props.country && props.country > 0
