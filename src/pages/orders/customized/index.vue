@@ -25,6 +25,11 @@
       <q-btn label="新增客製訂單" color="primary" @click="goCustomizedOrder('add')" />
     </div>
     <TableComponent ref="tableRef" :props-filter="queryFilter" :columns="customizedColumns" :pagination="pagination" :handleCallApi="getCustomizedOrderList">
+      <template #body-cell-order_number="{ row }">
+        <q-td class="link" @click="goCustomizedOrder(row.id)">
+          {{ row.order_number }}
+        </q-td>
+      </template>
       <template #body-cell-voucher_cancel_code="{ row }">
         <q-td>
           <div v-if="row.voucher" class="flex no-wrap">

@@ -211,6 +211,23 @@ export const RequestUploadUserFile = (id, data) => {
   })
 }
 
+export const RequestUploadAttachedFile = (data) => {
+  let formData = new FormData()
+
+  data['files'].forEach((file) => {
+    formData.append('file[]', file)
+  })
+  formData.append('order_id', data.order_id)
+  formData.append('file_type', data.type)
+
+  return baseService.post(`/files/upload`, formData, {
+    responseType: 'blob',
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  })
+}
+
 // export const RequestGetGEO= (id) => baseService.get(`/meta/city/${id}`)
 
 /**
