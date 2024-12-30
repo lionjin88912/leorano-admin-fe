@@ -2,7 +2,7 @@
   <div v-if="!loading" class="iframe-container flex column items-center">
     <div v-if="status == 'error' && message" class="warning q-mt-sm">{{ message }}</div>
     <p v-if="status == 'success'" class="iframe-title">您的 Le Oràno 邀請碼</p>
-    <q-btn v-if="status == 'success'" class="btn full-width" :label="code" @touchend="copyCode" @click="copyCode" flat>
+    <q-btn v-if="status == 'success'" class="btn full-width" :label="code" @click="copyCode" flat>
       <q-icon v-if="!showCopyTooltip" name="content_copy" size="28px" class="btn-tip"></q-icon>
       <div v-else class="btn-tip">已複製</div>
     </q-btn>
@@ -65,25 +65,32 @@ async function sha256(message) {
 }
 
 async function copyCode() {
-  let permission = await navigator.permissions.query({ name: 'clipboard-write' });
-  if (permission.state == 'granted' || permission.state == 'prompt') {
-    await navigator.clipboard.writeText(code.value);
-    showCopySuccess()
-  } else {
-  const textarea = document.createElement('textarea')
-    textarea.value = code.value
-    textarea.style.position = 'fixed'
-    textarea.style.opacity = '0'
-    document.body.appendChild(textarea)
-    textarea.select()
+  if (navigator.clipboard && navigator.clipboard.writeText) {
     try {
-      document.execCommand('copy')
-      showCopySuccess()
+      await navigator.clipboard.writeText(code.value);
+      showCopySuccess();
     } catch (err) {
-      console.error('複製失敗:', err)
+      fallbackCopy();
     }
-    document.body.removeChild(textarea)
+  } else {
+    fallbackCopy();
   }
+}
+
+function fallbackCopy() {
+  const textarea = document.createElement('textarea');
+  textarea.value = code.value;
+  textarea.style.position = 'fixed';
+  textarea.style.opacity = '0';
+  document.body.appendChild(textarea);
+  textarea.select();
+  try {
+    document.execCommand('copy');
+    showCopySuccess();
+  } catch (err) {
+    console.error('複製失敗:', err);
+  }
+  document.body.removeChild(textarea);
 }
 
 const showCopyTooltip = ref(false)
