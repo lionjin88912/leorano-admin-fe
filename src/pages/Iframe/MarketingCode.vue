@@ -65,25 +65,32 @@ async function sha256(message) {
 }
 
 async function copyCode() {
-  let permission = await navigator.permissions.query({ name: 'clipboard-write' });
-  if (permission.state == 'granted' || permission.state == 'prompt') {
-    await navigator.clipboard.writeText(code.value);
-    showCopySuccess()
-  } else {
-  const textarea = document.createElement('textarea')
-    textarea.value = code.value
-    textarea.style.position = 'fixed'
-    textarea.style.opacity = '0'
-    document.body.appendChild(textarea)
-    textarea.select()
+  if (navigator.clipboard && navigator.clipboard.writeText) {
     try {
-      document.execCommand('copy')
-      showCopySuccess()
+      await navigator.clipboard.writeText(code.value);
+      showCopySuccess();
     } catch (err) {
-      console.error('複製失敗:', err)
+      fallbackCopy();
     }
-    document.body.removeChild(textarea)
+  } else {
+    fallbackCopy();
   }
+}
+
+function fallbackCopy() {
+  const textarea = document.createElement('textarea');
+  textarea.value = code.value;
+  textarea.style.position = 'fixed';
+  textarea.style.opacity = '0';
+  document.body.appendChild(textarea);
+  textarea.select();
+  try {
+    document.execCommand('copy');
+    showCopySuccess();
+  } catch (err) {
+    console.error('複製失敗:', err);
+  }
+  document.body.removeChild(textarea);
 }
 
 const showCopyTooltip = ref(false)
