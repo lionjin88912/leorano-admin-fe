@@ -2,7 +2,7 @@
   <div v-if="!loading" class="iframe-container flex column items-center">
     <div v-if="status == 'error' && message" class="warning q-mt-sm">{{ message }}</div>
     <p v-if="status == 'success'" class="iframe-title">您的 Le Oràno 邀請碼</p>
-    <q-btn v-if="status == 'success'" class="btn full-width" :label="code" @click="copyCode" flat>
+    <q-btn v-if="status == 'success'" class="btn full-width" :label="code" @click="copyCode" @touchend.prevent="copyCode" flat>
       <q-icon v-if="!showCopyTooltip" name="content_copy" size="28px" class="btn-tip"></q-icon>
       <div v-else class="btn-tip">已複製</div>
     </q-btn>
