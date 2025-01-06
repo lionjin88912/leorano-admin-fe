@@ -155,11 +155,7 @@ const changeOrderType = () => {
 /* 上傳附件 Start */
 const accept = ref(['image/jpg', 'image/jpeg', 'image/png', 'image/bmp', 'image/webp', 'application/pdf']);
 const handleUpload = async (files: File[]) => {
-  const [err, res] = await to(RequestUploadAttachedFile({ 
-    order_id: orderNumber,
-    file_type: 'customer_order',
-    files: files 
-  }));
+  const [err, res] = await to(RequestUploadAttachedFile(orderNumber, files));
   if (err) {
     console.error("handleUpload error:", err);
     return;

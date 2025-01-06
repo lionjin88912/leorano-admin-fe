@@ -211,16 +211,11 @@ export const RequestUploadUserFile = (id, data) => {
   })
 }
 
-export const RequestUploadAttachedFile = (data) => {
+export const RequestUploadAttachedFile = (id, files) => {
   let formData = new FormData()
+  formData.append('files[]', files)
 
-  data['files'].forEach((file) => {
-    formData.append('file[]', file)
-  })
-  formData.append('order_id', data.order_id)
-  formData.append('file_type', data.type)
-
-  return baseService.post(`/files/upload`, formData, {
+  return baseService.post(`/files/upload/customer_order/${id}`, formData, {
     responseType: 'blob',
     headers: {
       'Content-Type': 'multipart/form-data'
