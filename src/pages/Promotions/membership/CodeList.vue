@@ -1,12 +1,13 @@
 <template>
   <div>
     <BreadCrumbs :page-title="title"></BreadCrumbs>
-    <div class='flex items-center q-my-md'>
+    <div class='flex items-center q-my-md q-gutter-x-sm'>
       <div class="title">
         <div>{{ title }}</div>
         &nbsp;(<div class="date">{{ dataStart }} ～ {{ dataEnd }}</div>)
       </div>
       <q-space></q-space>
+      <q-btn color="primary" label="兌換統計" @click="goStatistics" outline />
       <q-btn color="primary" label="匯出Excel" @click="doExcelExport" />
     </div>
     <TableComponent ref='tableRef' :columns='CodeColumns' :props-filter="filter" :pagination="{ rowsPerPage: 50 }"
@@ -71,6 +72,16 @@ const goMember = (row: any) => {
     name: 'EditMember',
     params: {
       id: row.register?.user_id
+    }
+  })
+}
+
+const goStatistics = () => {
+  router.push({
+    name: 'PromotionMembershipStatistics',
+    params: {
+      promoMembershipId: promoMembershipId.value,
+      reportTime: 'last5Week'
     }
   })
 }

@@ -1,5 +1,5 @@
 import { QTableProps } from 'quasar'
-import { getDateString } from 'src/utils/helpers'
+import { getDateString, getCurrencyFormat } from 'src/utils/helpers'
 
 export const MembershipColumns: QTableProps['columns'] = [
   {
@@ -155,3 +155,292 @@ export const MmeberStatusOptions = [
   { label: '失敗', value: 5 },
   { label: '失敗', value: 6 },
 ]
+
+export const grossMarginLast5WeekColumns: QTableProps['columns'] = [
+  {
+    name: 'group',
+    label: '項目',
+    align: 'left',
+    field: 'group'
+  },
+  {
+    name: 'label',
+    label: '',
+    align: 'left',
+    field: 'label'
+  }
+]
+
+export const grossMarginYearColumns: QTableProps['columns'] = [
+  {
+    name: 'group',
+    label: '項目',
+    align: 'left',
+    field: 'group'
+  },
+  {
+    name: 'label',
+    label: '',
+    align: 'left',
+    field: 'label'
+  },
+  {
+    name: 'month1',
+    label: '一月累計',
+    align: 'right',
+    field: (row: any) => row.hasOwnProperty('month1') ? getCurrencyFormat(row.month1) : '-'
+  },
+  {
+    name: 'month2',
+    label: '二月累計',
+    align: 'right',
+    field: (row: any) => row.hasOwnProperty('month2') ? getCurrencyFormat(row.month2) : '-'
+  },
+  {
+    name: 'month3',
+    label: '三月累計',
+    align: 'right',
+    field: (row: any) => row.hasOwnProperty('month3') ? getCurrencyFormat(row.month3) : '-'
+  },
+  {
+    name: 'month4',
+    label: '四月累計',
+    align: 'right',
+    field: (row: any) => row.hasOwnProperty('month4') ? getCurrencyFormat(row.month4) : '-'
+  },
+  {
+    name: 'month5',
+    label: '五月累計',
+    align: 'right',
+    field: (row: any) => row.hasOwnProperty('month5') ? getCurrencyFormat(row.month5) : '-'
+  },
+  {
+    name: 'month6',
+    label: '六月累計',
+    align: 'right',
+    field: (row: any) => row.hasOwnProperty('month6') ? getCurrencyFormat(row.month6) : '-'
+  },
+  {
+    name: 'month7',
+    label: '七月累計',
+    align: 'right',
+    field: (row: any) => row.hasOwnProperty('month7') ? getCurrencyFormat(row.month7) : '-'
+  },
+  {
+    name: 'month8',
+    label: '八月累計',
+    align: 'right',
+    field: (row: any) => row.hasOwnProperty('month8') ? getCurrencyFormat(row.month8) : '-'
+  },
+  {
+    name: 'month9',
+    label: '九月累計',
+    align: 'right',
+    field: (row: any) => row.hasOwnProperty('month9') ? getCurrencyFormat(row.month9) : '-'
+  },
+  {
+    name: 'month10',
+    label: '十月累計',
+    align: 'right',
+    field: (row: any) => row.hasOwnProperty('month10') ? getCurrencyFormat(row.month10) : '-'
+  },
+  {
+    name: 'month11',
+    label: '十一月累計',
+    align: 'right',
+    field: (row: any) => row.hasOwnProperty('month11') ? getCurrencyFormat(row.month11) : '-'
+  },
+  {
+    name: 'month12',
+    label: '十二月累計',
+    align: 'right',
+    field: (row: any) => row.hasOwnProperty('month12') ? getCurrencyFormat(row.month12) : '-'
+  }
+]
+
+export const reportTypeOptions = [
+  {slot: 'table', value: 'table'},
+  {slot: 'chart', value: 'chart'}
+]
+
+export const grossMarginTypeOptions = [
+  {label: '近五週', value: 'last5Week'},
+  {label: '指定年份', value: 'year'}
+]
+
+export const grossMarginLast5WeekDefaultData = [
+  {
+    group: '兌換',
+    label: '數量'
+  },
+  {
+    group: '',
+    label: '累計'
+  },
+  {
+    group: '註冊',
+    label: '數量'
+  },
+  {
+    group: '',
+    label: '累計'
+  },
+  {
+    group: '兌換註冊比率',
+    label: '比例 (%)'
+  }
+]
+
+export const grossMarginYearDefaultData = [
+  {
+    group: '兌換',
+    label: '數量',
+    year: 0
+  },
+  {
+    group: '',
+    label: '累計',
+    year: 0
+  },
+  {
+    group: '註冊',
+    label: '數量',
+    year: 0
+  },
+  {
+    group: '',
+    label: '累計',
+    year: 0
+  },
+  {
+    group: '兌換註冊比率',
+    label: '比例 (%)',
+    year: 0
+  }
+]
+
+export const grossMarginLast5WeekChartOptions = {
+  chart: {
+    stacked: false,
+    toolbar: {
+      show: false
+    },
+    zoom: {
+      enabled: false,
+    }
+  },
+  xaxis: {
+    categories: []
+  },
+  yaxis: [
+    {
+      seriesName: '數量',
+      title: {
+        text: '數量'
+      },
+      labels: {
+        formatter: (val: number) => {
+          return getCurrencyFormat(val)
+        }
+      }
+    }
+  ],
+  colors: ['#80cbc4', '#029688', '#ef9a9a', '#f44335'],
+  stroke: {
+    width: [3, 3.5, 3, 3.5],
+    curve: 'smooth',
+    colors: ['transparent', '#029688', 'transparent', '#f44335']
+  },
+  plotOptions: {
+    bar: {
+      columnWidth: '10%',
+      borderRadius: 4,
+      borderRadiusApplication: 'end',
+    }
+  },
+  fill: {
+    opacity: [1, 1, 1, 1]
+  },
+  markers: {
+    size: 0
+  },
+  legend: {
+    position: 'top',
+    horizontalAlign: 'left'
+  },
+  dataLabels: {
+    enabled: false
+  },
+  tooltip: {
+    shared: true,
+    intersect: false,
+    y: {
+      formatter: function (y: number, { seriesIndex }: { seriesIndex: number }) {
+        return getCurrencyFormat(y)
+      }
+    }
+  }
+}
+
+export const grossMarginYearChartOptions = {
+  chart: {
+    stacked: false,
+    toolbar: {
+      show: false
+    },
+    zoom: {
+      enabled: false,
+    }
+  },
+  xaxis: {
+    categories: grossMarginYearColumns.slice(2, 13).map(col => col.label)
+  },
+  yaxis: [
+    {
+      seriesName: '數量',
+      title: {
+        text: '數量'
+      },
+      labels: {
+        formatter: (val: number) => {
+          return getCurrencyFormat(val)
+        }
+      }
+    }
+  ],
+  colors: ['#80cbc4', '#029688', '#ef9a9a', '#f44335'],
+  stroke: {
+    width: [3, 3.5, 3, 3.5],
+    curve: 'smooth',
+    colors: ['transparent', '#029688', 'transparent', '#f44335']
+  },
+  plotOptions: {
+    bar: {
+      columnWidth: '20%',
+      borderRadius: 4,
+      borderRadiusApplication: 'end',
+    }
+  },
+  fill: {
+    opacity: [1, 1, 1, 1]
+  },
+  markers: {
+    size: 0
+  },
+  legend: {
+    position: 'top',
+    horizontalAlign: 'left'
+  },
+  dataLabels: {
+    enabled: false
+  },
+  tooltip: {
+    shared: true,
+    intersect: false,
+    y: {
+      formatter: function (y: number, { seriesIndex }: { seriesIndex: number }) {
+        return getCurrencyFormat(y)
+      }
+    }
+  }
+}
