@@ -54,6 +54,13 @@
               :rules="rules.country"
               class="col-6"
             />
+            <selectCity
+              @handleCallBack="setCity"
+              label="城市 *"
+              :default="{ id: data.city_id, name: data.city }"
+              :country="data.country_id"
+              :rules="rules.city"
+            />
             <q-input class="col-6" v-model="data.postal_code" label="ZIP code" outlined dense />
             <q-input
               class="col-xs-12 col-md"
@@ -107,10 +114,10 @@
           <div class="row q-col-gutter-xs q-mt-md">
             <div v-for="(v, key) in chooseMedia" :key="key" class="image-wrap col-4" :class="{ 'pick': v.isCover }">
               <q-img
-                class="cursor-pointer" 
+                class="cursor-pointer"
                 :class="{ 'cover': v.isCover }"
-                :src="releaseUrl(v.src)" 
-                :ratio="1" 
+                :src="releaseUrl(v.src)"
+                :ratio="1"
                 fit="cover"
                 spinner-color="white"
                 loading="lazy"
