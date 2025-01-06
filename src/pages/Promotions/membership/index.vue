@@ -71,7 +71,8 @@
 
       <template v-slot:body-cell-operation='props'>
         <q-td>
-          <q-btn dense flat icon='edit' @click='doEdit(props.row)' />
+          <q-btn dense flat icon='edit' color="primary" @click='doEdit(props.row)' />
+          <q-btn icon="leaderboard" color="primary" @click="goStatistics(props.row)" dense flat></q-btn>
           <!-- <q-btn icon="delete" text-color="negative" @click="doDelete(props.row)" rounded dense flat /> -->
         </q-td>
       </template>
@@ -91,7 +92,7 @@
 <script setup lang="ts">
 import { useQuasar } from 'quasar';
 import { ref, reactive, computed, onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router';
+import { useRouter } from 'vue-router';
 import to from 'await-to-js';
 import { getPromoMembershipList, deletePromoMembership, batchUpdatePromoMembershipStatus } from 'src/api'
 import { MembershipColumns, StatusOptions, EnabledOptions } from '../enums';
@@ -106,20 +107,15 @@ import { useMetaStore } from 'src/stores/meta';
 const tableRef = ref();
 const editDialog = ref();
 const $q = useQuasar();
-const route = useRoute();
 const router = useRouter();
 const metaStore = useMetaStore();
 const confirmRef = ref();
 const filter = reactive<any>({
-  text: route.query.title || null,
-  membership: route.query.membership ? parseInt(route.query.membership) : null,
-  enabled: route.query.is_disable ? !JSON.parse(route.query.is_disable) : EnabledOptions[0].value,
-  status: route.query.status || StatusOptions[0].value,
-  duration: route.query.start_date && route.query.end_date 
-    ? {
-      from: route.query.start_date,
-      to: route.query.end_date
-    } : null
+  text: null,
+  membership: null,
+  enabled: EnabledOptions[0].value,
+  status: StatusOptions[0].value,
+  duration: null
 })
 const membershipOptions = ref<any>([]);
 
@@ -168,6 +164,16 @@ const goMembershipCode = (row: any) => {
       title: row.title,
       start: getDateString(row.start_date, 'YYYY-MM-DD'),
       end: getDateString(row.end_date, 'YYYY-MM-DD')
+    }
+  })
+}
+
+const goStatistics = (row: any) => {
+  router.push({
+    name: 'PromotionMembershipStatistics',
+    params: {
+      promoMembershipId: row.id,
+      reportTime: 'last5Week'
     }
   })
 }

@@ -203,7 +203,7 @@ export const reportTypeOptions = [
 
 export const grossMarginTypeOptions = [
   {label: '近五週', value: 'last5Week'},
-  {label: '指定年份', value: 'byYear'}
+  {label: '指定年份', value: 'year'}
 ]
 
 export const gmvDefaultData = [

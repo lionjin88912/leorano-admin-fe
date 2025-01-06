@@ -151,6 +151,11 @@ export const batchUpdatePromoMembershipStatus = (data) =>
 // 會籍活動-行銷碼
 export const getPromoMembershipCodeList = (params) =>
   baseService.get(`/promo/membership/${params.promoMembershipId}/codes`, { params })
+// 會籍活動-報表
+export const getPromoMembershipByMonth = (id, year, month) =>
+  baseService.get(`/promo/membership/${id}/statistics/${year}/${month}`)
+export const getPromoMembershipLastWeek = (id) =>
+  baseService.get(`/promo/membership/${id}/statistics/lastWeek`)
 // 會籍資料清單
 export const getMembershipList = (params) => baseService.get('/membership/list', { params })
 // 推播管理
