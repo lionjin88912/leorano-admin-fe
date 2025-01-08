@@ -291,7 +291,7 @@ const routes: RouteRecordRaw[] = [
             component: () => import('src/pages/Promotions/membership/CodeList.vue'),
           },
           {
-            path: 'membership/:promoMembershipId/statistics/:reportTime/:reportType?',
+            path: 'membership/statistics/:promoMembershipId/:reportTime/:reportType?',
             name: 'PromotionMembershipStatistics',
             meta: {
               root: { title: '行銷碼管理' },
