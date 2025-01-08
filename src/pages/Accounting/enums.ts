@@ -18,6 +18,13 @@ const hotelColumns: TableColumn = [
     wpx: 120
   },
   {
+    name: 'order_name',
+    label: '酒店名稱',
+    field: 'order_name',
+    align: 'left',
+    wpx: 180
+  },
+  {
     name: 'order_date',
     label: '訂單日期',
     field: (row: any) => getDateString(row.order_date, 'YYYY-MM-DD'),
@@ -82,6 +89,13 @@ const customizedColumns: TableColumn = [
     field: 'order_number',
     align: 'left',
     wpx: 120
+  },
+  {
+    name: 'title',
+    label: '訂單名稱',
+    field: 'title',
+    align: 'left',
+    wpx: 180
   },
   {
     name: 'order_date',

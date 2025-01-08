@@ -1,32 +1,35 @@
 <template>
   <div>
 	<BreadCrumbs :page-title="isNewOrder ? '新增客製訂單' : '訂製單詳情'"></BreadCrumbs>
+	<div v-if="!isClose" class="row">
+		<q-space></q-space>
+		<q-btn v-if="!isNewOrder" label="結案" color="warning" @click="doClose" />
+	</div>
 	<div class="q-my-sm">
     <q-form ref="form">
       <InfoRow title="訂購人">
         <div class="q-my-md">
-          <UserSelector v-model="data.member_id" :order-member="member" :required="true" />
+          <UserSelector v-model="data.member_id" :order-member="member" :required="true" :disable="isClose" />
         </div>
       </InfoRow>
       <InfoRow title="訂單資訊">
         <div class="q-my-md">
           <div class="row q-col-gutter-md">
-            <q-input v-model="data.title" label="訂單名稱" class="col-6" dense outlined />
-            <selectCurrency v-model="data.currency" label="訂單幣別" class="col-3" :default="data.currency"></selectCurrency>
-            <q-input v-model.number="data.price" type="number" label="訂單金額" class="col-3" dense outlined />
-            <q-input v-model="data.voucher_number" label="憑證資料" class="col-3" dense outlined />
-            <q-select v-model="data.type" label="訂單類型" class="col-3" :options="customizedOrderTypeOptions" @update:modelValue="changeOrderType" emit-value map-options dense outlined />
-            <q-select v-model="data.invoice" label="是否寄送發票" class="col-3" :options="customizedInvoiceOptions" emit-value map-options dense outlined />
+            <q-input v-model="data.title" label="訂單名稱" class="col-6" :disable="isClose" dense outlined />
+            <selectCurrency v-model="data.currency" label="訂單幣別" class="col-3" :default="data.currency" :disable="isClose"></selectCurrency>
+            <q-input v-model.number="data.price" type="number" label="訂單金額" class="col-3" :disable="isClose" dense outlined />
+            <q-select v-model="data.type" label="訂單類型" class="col-3" :options="customizedOrderTypeOptions" @update:modelValue="changeOrderType" :disable="isClose" emit-value map-options dense outlined />
+            <q-select v-model="data.invoice" label="是否寄送發票" class="col-3" :options="customizedInvoiceOptions" :disable="isClose" emit-value map-options dense outlined />
           </div>
         </div>
       </InfoRow>
-      <InfoRow title="附件資訊">
+      <InfoRow v-if="!isNewOrder" title="附件">
         <div class="q-my-md">
-          <uploader btn-text="新增附件" title="新增附件" :accept="accept" @handleUpload="handleUpload" />
+          <uploader v-if="!isClose" btn-text="新增附件" title="新增附件" :accept="accept" @handleUpload="handleUpload" />
           <ol class="q-pl-none invoice-list">
             <li v-for="attached in data.attached" :key="attached" class="row items-center q-col-gutter-x-xs q-pa-xs">
               <a :href="attached" class="col" target="_blank">{{ attached }}</a>
-              <q-btn dense flat icon="delete" text-color="negative" size="16px" @click="deleteAttached(attached)" />
+              <q-btn v-if="!isClose" dense flat icon="delete" text-color="negative" size="16px" @click="deleteAttached(attached)" />
             </li>
           </ol>
         </div>
@@ -38,39 +41,77 @@
         </div>
         <div v-for="(question, index) in data.content" :key="index" class="q-mb-md">
           <div class="row q-col-gutter-md">
-            <q-input v-model="question.column" class="col-3" placeholder="請輸入標題" dense outlined />
-            <q-input v-model="question.value" class="col" placeholder="請輸入資料" dense outlined></q-input>
+            <q-input v-model="question.column" class="col-3" placeholder="請輸入標題" :disable="isClose" dense outlined />
+            <q-input v-model="question.value" class="col" placeholder="請輸入資料" :disable="isClose" dense outlined />
             <div class="flex items-center">
-              <q-btn dense flat icon="delete" text-color="negative" size="16px" @click="deleteQuestion(index)" />
+              <q-btn v-if="!isClose" dense flat icon="delete" text-color="negative" size="16px" @click="deleteQuestion(index)" />
             </div>
           </div>
         </div>
-        <div class="q-my-md row justify-center">
+        <div v-if="!isClose" class="q-my-md row justify-center">
           <q-btn label="新增欄位" text-color="primary" @click="addQuestion" outline />
         </div>
       </InfoRow>
-      <div class="row justify-end q-gutter-md">
+      <InfoRow title="收入/支出">
+        <div class="q-my-md">
+          <q-btn v-if="!isClose" label="新增收入/支出" color="primary" class="q-px-lg q-mb-md" @click="addFinance" />
+          <q-table v-if="data.finance.length > 0" :rows="data.finance" :columns="customizedFinancelColumns" :pagination="pagination" class="data-table finance-table" hide-bottom flat bordered>
+            <template v-slot:body-cell-type="props">
+              <q-td :props="props">
+                <div>
+                  <q-badge :color="customizedOrderFinanceOptions.find((d) => d.value === props.row.type)?.color" :label="customizedOrderFinanceOptions.find((d) => d.value === props.row.type)?.label" />
+                </div>
+              </q-td>
+            </template>
+            <template v-slot:body-cell-exchange_rate="props">
+              <q-td :props="props">
+                <q-input type="number" v-model.number="props.row.exchange_rate" class="exchange-rate" :disable="isClose" dense outlined />
+              </q-td>
+            </template>
+            <template v-slot:bottom-row>
+              <q-tr>
+                <q-td />
+                <q-td class="text-right">
+                  <span class="text-bold text-dark">小計</span>
+                </q-td>
+                <q-td>
+                  <span class="text-h6 text-dark">USD {{ getCurrencyFormat(financeSum) }}</span>
+                </q-td>
+                <q-td />
+                <q-td />
+              </q-tr>
+            </template>
+          </q-table>
+        </div>
+      </InfoRow>
+      <div v-if="!isClose" class="row justify-end q-gutter-md">
         <q-btn label="取消" color="primary" class="q-px-lg" outline @click="cancelEdit" />
         <q-btn v-if="isNewOrder" label="新增" color="primary" class="q-px-lg" @click="addOrder" />
         <q-btn v-else label="儲存" color="primary" class="q-px-lg" @click="saveOrder" />
       </div>
     </q-form>
-	</div>
+  </div>
+  <Confirm ref="closeConfirmRef" @confirm="onCloseConfirm"></Confirm>
+  <FinanceDialog ref="financeDialogRef" @updated="updateFinance"></FinanceDialog>
 </div>
 </template>
 
 <script setup lang="ts">
 import { useQuasar } from 'quasar';
-import { ref, reactive, watch, onMounted } from 'vue'
+import { ref, reactive, watch, onMounted, computed } from 'vue'
 import { router } from 'src/router';
-import { customizedOrderTypeOptions, defaultQuestions, customizedInvoiceOptions } from '../enums';
-import { getCustomizedOrder, createCustomizedOrder, updateCustomizedOrder, RequestUploadAttachedFile } from 'src/api';
+import { customizedOrderTypeOptions, defaultQuestions, customizedInvoiceOptions, customizedOrderFinanceOptions, customizedFinancelColumns } from '../enums';
+import { getCustomizedOrder, createCustomizedOrder, updateCustomizedOrder, closeCustomizedOrder, RequestUploadAttachedFile } from 'src/api';
+import { getDateString, getCurrencyFormat } from 'src/utils/helpers';
 import { useRoute } from 'vue-router';
 import BreadCrumbs from 'src/components/BreadCrumbs.vue';
 import InfoRow from '../components/InfoRow.vue';
 import UserSelector from '../components/UserSelector.vue';
 import selectCurrency from 'src/components/selectCurrency.vue';
+import TableComponent from 'src/components/TableComponent.vue';
 import uploader from 'components/uploader.vue';
+import Confirm from 'src/components/dialog/Confirm.vue'
+import FinanceDialog from '../components/FinanceDialog.vue';
 import to from 'await-to-js';
 import { type } from 'os';
 
@@ -80,30 +121,43 @@ let route = useRoute();
 const orderNumber = Number(route.params.orderNumber);
 const isNewOrder = ref(isNaN(orderNumber));
 
+interface finance {
+  type: string;
+  title: string;
+  currency: string;
+  amount: number|string;
+  exchange_rate: number|string;
+  updated_at: string;
+}
+
 interface Order {
 	member_id: number;
+	closed: boolean;
 	title: string;
 	currency: string;
 	price: number;
-	voucher_number: string;
 	type: string;
 	content: Array<{ column: string; value: string }>;
 	invoice: boolean;
 	attached: Array<string>;
 	deleted_attached: Array<string>;
+	finance: Array<finance>;
+	deleted_at: string|null;
 }
 
 const data: Order = reactive({
 	member_id: 0,
+	closed: false,
 	title: '',
 	currency: 'TWD',
 	price: 0,
-	voucher_number: '',
 	type: 'hotel',
 	content: [],
 	invoice: false,
 	attached: [],
 	deleted_attached: [],
+	finance: [],
+	deleted_at: null,
 });
 
 const member = ref([]);
@@ -113,14 +167,16 @@ onMounted(async () => {
 		let order: any = await getData();
 		if (order) {
 			data.member_id = order.member.id;
+			data.closed = order.closed;
 			data.title = order.title;
 			data.currency = order.currency;
 			data.price = order.price;
-			data.voucher_number = order.voucher;
 			data.type = order.type;
 			data.content = order.content;
 			data.invoice = order.invoice;
 			data.attached = order.attached;
+			data.finance = order.finance;
+			data.deleted_at = order.deleted_at;
 			member.value = order.member;
 		} else {
 			isNewOrder.value = true;
@@ -139,6 +195,28 @@ const getData = async () => {
   }
 	return res.data;
 }
+
+/* 結案 Start */
+const closeConfirmRef = ref();
+const isClose = computed(() => data.closed || data.deleted_at != null);
+const doClose = () => {
+  closeConfirmRef.value.show({
+    title: '結案確認',
+    message: '訂單結案後將該訂單將無法進行任何異動！'
+  });
+}
+const onCloseConfirm = async () => {
+  $q.loading.show();
+  const [err, res] = await to(closeCustomizedOrder(orderNumber));
+  $q.loading.hide();
+
+  if (err) {
+    console.error('close order error:', err);
+    return;
+  }
+  getData();
+}
+/* 結案 End */
 
 /* 變更訂單類型 Start */
 const changeOrderType = () => {
@@ -181,6 +259,31 @@ const deleteQuestion = (index: number) => {
 }
 /* 編輯訂單問題欄位 End */
 
+/* 編輯訂單收入支出 Start */
+const financeDialogRef = ref();
+function addFinance () {
+  financeDialogRef.value.show();
+}
+function updateFinance (finance: finance) {
+  data.finance.push({...finance});
+}
+/* 編輯訂單收入支出 End */
+
+/* 訂單收入支出表格 Start */
+const pagination = ref({
+  rowsPerPage: 0
+})
+const financeSum = computed(() => {
+  return data.finance.reduce((acc, cur) => {
+    if (cur.type === 'revenue') {
+      return acc + Number(cur.amount) * Number(cur.exchange_rate);
+    } else {
+      return acc - Number(cur.amount) * Number(cur.exchange_rate);
+    }
+  }, 0);
+});
+/* 訂單收入支出表格 End */
+
 /* 新增/編輯訂單 Start */
 const form = ref();
 const validate = async () => {
@@ -222,6 +325,11 @@ const saveOrder = async () => {
       counter-increment: num;
       content: counter(num) '.';
     }    
+  }
+}
+.finance-table {
+  .exchange-rate {
+    width: 100px;
   }
 }
 </style>
