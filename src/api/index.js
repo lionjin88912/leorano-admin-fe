@@ -121,6 +121,7 @@ export const deleteCustomizedOrder = (id, data) => baseService.delete(`/order/cu
 export const getCustomizedOrder = (id) => baseService.get(`/order/customized/${id}`)
 export const createCustomizedOrder = (data) => baseService.post(`/order/customized`, data)
 export const updateCustomizedOrder = (id, data) => baseService.put(`/order/customized/${id}`, data)
+export const closeCustomizedOrder = (id) => baseService.post(`/order/customized/closed/${id}`)
 export const getMemberList = (data) => baseService.get('/users/search', { params: data })
 export const getMember = (id) => baseService.get(`/member/${id}`)
 export const updateCustomizedOrderFinalProfit = (data) => baseService.put(`/order/customized/final_profit`, data)
