@@ -218,7 +218,7 @@ export const RequestUploadUserFile = (id, data) => {
 
 export const RequestUploadAttachedFile = (id, files) => {
   let formData = new FormData()
-  formData.append('files[]', files)
+  formData.append('files[]', ...files)
 
   return baseService.post(`/files/upload/customer_order/${id}`, formData, {
     responseType: 'blob',
