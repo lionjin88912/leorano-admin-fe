@@ -2,9 +2,9 @@
   <div>
     <section class="row justify-between q-mb-lg">
       <div class="flex q-gutter-sm">
-        <q-select v-model="currentType" label="標籤類型" :options="typeOptions" dense outlined use-input fill-input
+        <q-select v-model="filter.type" label="標籤類型" :options="typeOptions" emit-value map-options dense outlined use-input fill-input
           hide-selected @update:model-value="doSearch" @filter="onFilter"></q-select>
-        <q-input v-model="searchText" :debounce="500" style="width: 240px" placeholder="Search" dense outlined>
+        <q-input v-model="filter.text" :debounce="500" style="width: 240px" placeholder="Search" dense outlined>
           <template v-slot:append>
             <q-icon class="cursor-pointer" name="search" @click="doSearch" />
           </template>
@@ -35,9 +35,10 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted } from 'vue'
+import { ref, reactive, computed, watch } from 'vue'
 import { useQuasar } from 'quasar'
 import { tagColumns } from './enums'
+import { router } from 'src/router'
 import _ from "lodash";
 import to from 'await-to-js'
 import { getTagRelations, deleteTag } from 'src/api'
@@ -50,10 +51,13 @@ const editDialog = ref();
 const confirmRef = ref();
 const relationRef = ref();
 const loading = ref(false)
-const currentType = ref();
 const allOptions = ref([]);
 const typeOptions = ref([]);
 const searchText = ref();
+const filter = reactive({
+  type: router.currentRoute.value.query.tag_type_id ? parseInt(router.currentRoute.value.query.tag_type_id) : null,
+  text: router.currentRoute.value.query.keyword || null
+})
 
 const emit = defineEmits(['tag-reload'])
 const props = defineProps({
@@ -74,7 +78,7 @@ const props = defineProps({
 const doEdit = (item) => {
   editDialog.value.show({
     data: item,
-    type: currentType.value,
+    type: filter.type,
     typeList: allOptions.value
   });
 }
@@ -132,12 +136,12 @@ const hasRelation = (data) => {
 }
 
 const doSearch = () => {
-  if (!currentType.value) {
+  if (!filter.type) {
     return;
   }
   const data = {
-    typeId: currentType.value.value,
-    name: searchText.value
+    typeId: filter.type,
+    name: filter.text
   };
   // console.log('doSearch data:', data)
   emit('tag-reload', data);
@@ -163,13 +167,24 @@ const onFilter = (val, update, abort) => {
   })
 }
 
-watch(searchText, (_newVal) => {
-  doSearch();
+watch(filter, (newVal) => {
+  let query = { ...router.currentRoute.value.query };
+  if (newVal.type) {
+    query.tag_type_id = newVal.type;
+  } else {
+    delete query.tag_type_id;
+  }
+  if (newVal.text) {
+    query.keyword = newVal.text;
+  } else {
+    delete query.keyword;
+  }
+  router.push({ query });
 });
 
-onMounted(() => {
-  if (props.typeList.length > 0) {
-    allOptions.value = props.typeList.map(d => {
+watch(() => props.typeList, (newVal) => {
+  if (newVal.length > 0) {
+    allOptions.value = newVal.map(d => {
       return {
         label: d.name,
         value: d.id,
@@ -177,7 +192,7 @@ onMounted(() => {
       }
     });
     typeOptions.value = allOptions.value
-    currentType.value = allOptions.value[0];
+    filter.type = router.currentRoute.value.query.tag_type_id ? parseInt(router.currentRoute.value.query.tag_type_id) : allOptions.value[0].value;
   }
 })
 

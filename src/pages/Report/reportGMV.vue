@@ -52,29 +52,34 @@ import { useQuasar, LocalStorage } from 'quasar'
 import { gmvColumns, reportTypeOptions, gmvDefaultData, gmvChartOptions } from './enums'
 import { getCurrencyFormat } from 'src/utils/helpers';
 import { getMonthGMV } from 'src/api'
+import { router } from 'src/router'
 import apexchart from "vue3-apexcharts"
 import BreadCrumbs from 'src/components/BreadCrumbs.vue'
 import YearPicker from 'components/YearPicker.vue'
 import XLSX from 'xlsx-js-style'
+import to from 'await-to-js'
 
 /* 報表類型 Start */
-const reportType = ref('table')
+const reportType = ref(['table', 'chart'].includes(router.currentRoute.value.params.reportType)
+  ? router.currentRoute.value.params.reportType
+  : (LocalStorage.getItem('report') || 'table'))
+
 watch(reportType, newVal => {
   LocalStorage.set('report', newVal);
+  router.push({ params: { reportType: newVal }, query: router.currentRoute.value.query })
 })
 /* 報表類型 End */
 
 /* 報表年份 Start */
-const selectedYear = ref(String(new Date().getFullYear()))
+const selectedYear = ref(router.currentRoute.value.query.year || String(new Date().getFullYear()))
 const changeSelectYear = (val) => {
   selectedYear.value = val
   datas.value = JSON.parse(JSON.stringify(gmvDefaultData))
-  getYearGMVData()
+  router.push({ query: { year: val } })
 }
 /* 報表年份 End */
 
 onMounted(() => {
-	reportType.value = LocalStorage.getItem('report') || 'table';
 	getYearGMVData()
 })
 
@@ -91,7 +96,10 @@ const getYearGMVData = async () => {
   loading.value = false
 }
 const getMonthGMVData = async (m) => {
-  const res = await getMonthGMV(selectedYear.value, m); // Wait for each getMonthGMV call to resolve
+  const [err, res] = await to(getMonthGMV(selectedYear.value, m)); // Wait for each getMonthGMV call to resolve
+  if (err) {
+    return console.error(err)
+  }
   datas.value[0][`month${m}`] = res.data.GMV.order_number
   datas.value[1][`month${m}`] = res.data.GMV.room_night
   datas.value[2][`month${m}`] = res.data.GMV.income

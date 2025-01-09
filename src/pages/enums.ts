@@ -29,7 +29,8 @@ type Menu = {
 }
 type MenuItem = {
   label: string
-  to: string
+  to: string,
+  active?: string
 }
 
 const menus: Menu[] = [
@@ -79,7 +80,7 @@ const menus: Menu[] = [
     to: 'report',
     children: [
       { label: '月進單對照報表', to: '/report/monthGMV' },
-      { label: '營業額報表', to: '/report/grossMargin' },
+      { label: '營業額報表', to: '/report/grossMargin/last5Week', active: '/report/grossMargin' },
     ],
   },
   {

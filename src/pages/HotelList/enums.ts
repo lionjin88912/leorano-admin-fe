@@ -90,7 +90,7 @@ const tabArr: {
   },
   {
     text: '全部',
-    val: 'all',
+    val: '',
   },
 ]
 

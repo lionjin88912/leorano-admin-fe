@@ -1,8 +1,13 @@
 <template>
-  <div>
-    <BreadCrumbs></BreadCrumbs>
+  <div v-if="data">
+    <BreadCrumbs>
+      <template #currentRoute>
+        <q-breadcrumbs-el :label="data.title" :to="path" />
+        <q-breadcrumbs-el :label="router.currentRoute.value.meta.title" />
+      </template>
+    </BreadCrumbs>
     <div class="row q-gutter-sm q-my-md">
-      <q-btn-toggle v-model="reportTime" toggle-text-color="primary" toggle-color="white" color="grey-2" text-color="grey-7" :options="grossMarginTypeOptions" class="report-toggle" unelevated />
+			<q-btn-toggle v-model="reportTime" toggle-text-color="primary" toggle-color="white" color="grey-2" text-color="grey-7" :options="grossMarginTypeOptions" class="report-toggle" unelevated />
       <q-field v-if="reportTime == 'year'" class="cursor-pointer col-2" v-model="selectedYear" label="報表年份" dense outlined>
         <template #default>
           <YearPicker :date="selectedYear" @updated="(val) => changeSelectYear(val)" />
@@ -22,7 +27,6 @@
 			</q-btn-toggle>
       <q-btn label="導出 Excel" color="primary" @click="doExcelExport" unelevated></q-btn>
     </div>
-    <q-inner-loading :showing="loading" label="Loading..." />
 		<q-table v-if="!loading && reportType == 'table'" :rows="datas" :columns="columns" class="report-table data-table" :pagination="pagination" flat bordered hide-pagination>
 			<template v-slot:header-cell-group="props">
 				<q-th class="row-group cell-sticky text-left">{{ props.col.label }}</q-th>
@@ -31,11 +35,8 @@
 				<q-th v-if="reportTime == 'year'" class="row-label cell-sticky text-left">{{ selectedYear }}</q-th>
 				<q-th v-else class="row-label cell-sticky text-left"></q-th>
 			</template>
-			<template v-slot:header-cell-year>
-				<q-th class="text-right last-cell-sticky">{{ selectedYear }}年累計</q-th>
-			</template>
       <template v-slot:body-cell-group="props">
-				<q-td v-if="props.row.group" rowspan="5" class="row-group cell-sticky">
+				<q-td v-if="props.row.group" rowspan="2" class="row-group cell-sticky">
 					<span>{{ props.row.group }}</span>
 				</q-td>
       </template>
@@ -55,18 +56,45 @@
     </div>
   </div>
 </template>
+
 <script setup>
-import { ref, computed, watch, onMounted } from 'vue'
 import { useQuasar, LocalStorage } from 'quasar'
-import { grossMarginLast5WeekColumns, grossMarginYearColumns, reportTypeOptions, grossMarginTypeOptions, grossMarginLast5WeekDefaultData, grossMarginYearDefaultData, grossMarginLast5WeekChartOptions, grossMarginYearChartOptions } from './enums'
-import { getDateStringNoTz, getCurrencyFormat } from 'src/utils/helpers';
-import { getGrossMargin, getGrossMarginLastWeek } from 'src/api'
+import { ref, watch, computed, onMounted } from 'vue'
 import { router } from 'src/router'
+import { getPromoMembership, getPromoMembershipByMonth, getPromoMembershipLastWeek } from 'src/api'
+import { grossMarginLast5WeekColumns, grossMarginYearColumns, reportTypeOptions, grossMarginTypeOptions, grossMarginLast5WeekDefaultData, grossMarginYearDefaultData, grossMarginLast5WeekChartOptions, grossMarginYearChartOptions } from '../enums'
+import { getDateString, getDateStringNoTz, getCurrencyFormat } from 'src/utils/helpers'
 import apexchart from "vue3-apexcharts"
 import BreadCrumbs from 'src/components/BreadCrumbs.vue'
 import YearPicker from 'components/YearPicker.vue'
 import XLSX from 'xlsx-js-style'
 import to from 'await-to-js'
+
+/* 取得 breadcrumb Start */
+const $q = useQuasar();
+const data = ref(null);
+const getPromoMembershipData = async () => {
+  const [err, res] = await to(getPromoMembership(router.currentRoute.value.params.promoMembershipId));
+  if (err) {
+    console.error(err);
+    return;
+  }
+  data.value = res.data;
+}
+const path = computed(() => {
+  return {
+    name: 'PromotionMembershipCodeList',
+    params: {
+      promoMembershipId: data.value.id
+    },
+    state: {
+      title: data.value.title,
+      start: getDateString(data.value.start_date, 'YYYY-MM-DD'),
+      end: getDateString(data.value.end_date, 'YYYY-MM-DD')
+    }
+  }
+})
+/* 取得 breadcrumb End */
 
 /* 報表時間區間、類型 Start */
 const reportTime = ref(['last5Week', 'year'].includes(router.currentRoute.value.params.reportTime)
@@ -90,28 +118,29 @@ const selectedYear = ref(router.currentRoute.value.query.year || String(new Date
 const changeSelectYear = (val) => {
   selectedYear.value = val
 	yearDatas.value = JSON.parse(JSON.stringify(grossMarginYearDefaultData))
-	router.push({ query: { year: val } })
+  router.push({ query: { year: val } })
 }
 /* 報表年份 End */
 
 const chartRef = ref()
+const loading = ref(true)
 onMounted(async () => {
+  $q.loading.show();
   loading.value = true
-  console.log('reportTime:', reportTime.value, '|', router.currentRoute.value.params.reportTime)
-  console.log('reportType:', reportType.value, '|', router.currentRoute.value.params.reportType)
+  getPromoMembershipData();
   if (reportTime.value == 'last5Week') {
-    await getLast5WeekGrossMarginData()
+    await getLast5WeekPromoMembershipData()
     last5WeekChartOptions.value.xaxis.categories = last5WeekColumns.value.slice(2).map(col => col.label)
   } else {
-    await getYearGrossMarginData()
+    await getYearPromoMembershipData()
   }
   loading.value = false
+  $q.loading.hide();
 })
 
 /* 取得報表資料 Start */
-const loading = ref(true)
-const getLast5WeekGrossMarginData = async () => {
-  const [err, res] = await to(getGrossMarginLastWeek());
+const getLast5WeekPromoMembershipData = async () => {
+  const [err, res] = await to(getPromoMembershipLastWeek(router.currentRoute.value.params.promoMembershipId));
   if (err) {
     console.error(err);
     return;
@@ -123,67 +152,32 @@ const getLast5WeekGrossMarginData = async () => {
 			align: 'right',
       field: (row) => row.hasOwnProperty(`week${index + 1}`) ? getCurrencyFormat(row[`week${index + 1}`]) : '-'
 		})
-		last5WeekDatas.value[0][`week${index + 1}`] = data.app_hotel.order_number
-		last5WeekDatas.value[1][`week${index + 1}`] = data.app_hotel.room_night
-		last5WeekDatas.value[2][`week${index + 1}`] = data.app_hotel.income
-		last5WeekDatas.value[3][`week${index + 1}`] = data.app_hotel.gross_margin
-		last5WeekDatas.value[4][`week${index + 1}`] = data.app_hotel.gross_margin_rate
-		last5WeekDatas.value[5][`week${index + 1}`] = data.offline_hotel.order_number
-		last5WeekDatas.value[6][`week${index + 1}`] = data.offline_hotel.room_night
-		last5WeekDatas.value[7][`week${index + 1}`] = data.offline_hotel.income
-		last5WeekDatas.value[8][`week${index + 1}`] = data.offline_hotel.gross_margin
-		last5WeekDatas.value[9][`week${index + 1}`] = data.offline_hotel.gross_margin_rate
-		last5WeekDatas.value[10][`week${index + 1}`] = data.other.order_number
-		last5WeekDatas.value[11][`week${index + 1}`] = data.other.income
-		last5WeekDatas.value[12][`week${index + 1}`] = data.other.gross_margin
-		last5WeekDatas.value[13][`week${index + 1}`] = data.other.gross_margin_rate
+		last5WeekDatas.value[0][`week${index + 1}`] = data.exchange.quantity
+		last5WeekDatas.value[1][`week${index + 1}`] = data.exchange.cumulative
+		last5WeekDatas.value[2][`week${index + 1}`] = data.register.quantity
+		last5WeekDatas.value[3][`week${index + 1}`] = data.register.cumulative
+		last5WeekDatas.value[4][`week${index + 1}`] = data.rate * 100
 	})
 }
-const getYearGrossMarginData = async () => {
-  loading.value = true
+const getYearPromoMembershipData = async () => {
   for (let i = 1; i <= 12; i++) {
     if (selectedYear.value == new Date().getFullYear() && i > new Date().getMonth() + 2) {
       break
     }
-    await getMonthGrossMarginData(i);
+    await getMonthPromoMembershipData(i);
   }
-  loading.value = false
 }
-const getMonthGrossMarginData = async (m) => {
-  const [err, res] = await to(getGrossMargin(selectedYear.value, m));
+const getMonthPromoMembershipData = async (m) => {
+  const [err, res] = await to(getPromoMembershipByMonth(router.currentRoute.value.params.promoMembershipId, selectedYear.value, m));
   if (err) {
     console.error(err)
     return 
   }
-  yearDatas.value[0][`month${m}`] = res.data.app_hotel.order_number
-  yearDatas.value[1][`month${m}`] = res.data.app_hotel.room_night
-  yearDatas.value[2][`month${m}`] = res.data.app_hotel.income
-  yearDatas.value[3][`month${m}`] = res.data.app_hotel.gross_margin
-  yearDatas.value[4][`month${m}`] = res.data.app_hotel.gross_margin_rate
-  yearDatas.value[5][`month${m}`] = res.data.offline_hotel.order_number
-  yearDatas.value[6][`month${m}`] = res.data.offline_hotel.room_night
-  yearDatas.value[7][`month${m}`] = res.data.offline_hotel.income
-  yearDatas.value[8][`month${m}`] = res.data.offline_hotel.gross_margin
-  yearDatas.value[9][`month${m}`] = res.data.offline_hotel.gross_margin_rate
-	yearDatas.value[10][`month${m}`] = res.data.other.order_number
-  yearDatas.value[11][`month${m}`] = res.data.other.income
-  yearDatas.value[12][`month${m}`] = res.data.other.gross_margin
-  yearDatas.value[13][`month${m}`] = res.data.other.gross_margin_rate
-
-	yearDatas.value[0].year += res.data.app_hotel.order_number
-  yearDatas.value[1].year += res.data.app_hotel.room_night
-  yearDatas.value[2].year += res.data.app_hotel.income
-  yearDatas.value[3].year += res.data.app_hotel.gross_margin
-  yearDatas.value[4].year = yearDatas.value[2].year && yearDatas.value[3].year ? yearDatas.value[3].year / yearDatas.value[2].year * 100 : 0
-  yearDatas.value[5].year += res.data.offline_hotel.order_number
-  yearDatas.value[6].year += res.data.offline_hotel.room_night
-  yearDatas.value[7].year += res.data.offline_hotel.income
-  yearDatas.value[8].year += res.data.offline_hotel.gross_margin
-  yearDatas.value[9].year = yearDatas.value[7].year && yearDatas.value[8].year ? yearDatas.value[8].year / yearDatas.value[7].year * 100 : 0
-	yearDatas.value[10].year += res.data.other.order_number
-  yearDatas.value[11].year += res.data.other.income
-  yearDatas.value[12].year += res.data.other.gross_margin
-  yearDatas.value[13].year = yearDatas.value[11].year && yearDatas.value[12].year ? yearDatas.value[12].year / yearDatas.value[11].year * 100 : 0
+  yearDatas.value[0][`month${m}`] = res.data.exchange.quantity
+  yearDatas.value[1][`month${m}`] = res.data.exchange.cumulative
+  yearDatas.value[2][`month${m}`] = res.data.register.quantity
+  yearDatas.value[3][`month${m}`] = res.data.register.cumulative
+  yearDatas.value[4][`month${m}`] = res.data.rate * 100
 }
 /* 取得報表資料 End */
 
@@ -223,116 +217,46 @@ const chartOptions = computed(() => {
 })
 const last5WeekSeries = computed(() => [
   {
-    name: 'APP訂房 訂單數',
-    type: 'line',
+    name: '兌換 數量',
+    type: 'bar',
     data: Object.keys(last5WeekDatas.value[0]).filter(key => key.startsWith('week')).map(key => last5WeekDatas.value[0][key])
   },
   {
-    name: 'APP訂房 房晚數',
-    type: 'area',
+    name: '兌換 累計',
+    type: 'line',
     data: Object.keys(last5WeekDatas.value[1]).filter(key => key.startsWith('week')).map(key => last5WeekDatas.value[1][key])
   },
   {
-    name: 'APP訂房 營業額',
+    name: '註冊 數量',
     type: 'bar',
     data: Object.keys(last5WeekDatas.value[2]).filter(key => key.startsWith('week')).map(key => last5WeekDatas.value[2][key])
   },
   {
-    name: 'APP訂房 毛利',
-    type: 'bar',
+    name: '註冊 累計',
+    type: 'line',
     data: Object.keys(last5WeekDatas.value[3]).filter(key => key.startsWith('week')).map(key => last5WeekDatas.value[3][key])
-  },
-  {
-    name: '線下訂房 訂單數',
-    type: 'line',
-    data: Object.keys(last5WeekDatas.value[5]).filter(key => key.startsWith('week')).map(key => last5WeekDatas.value[5][key])
-  },
-  {
-    name: '線下訂房 房晚數',
-    type: 'area',
-    data: Object.keys(last5WeekDatas.value[6]).filter(key => key.startsWith('week')).map(key => last5WeekDatas.value[6][key])
-  },
-  {
-    name: '線下訂房 營業額',
-    type: 'bar',
-    data: Object.keys(last5WeekDatas.value[7]).filter(key => key.startsWith('week')).map(key => last5WeekDatas.value[7][key])
-  },
-  {
-    name: '線下訂房 毛利',
-    type: 'bar',
-    data: Object.keys(last5WeekDatas.value[8]).filter(key => key.startsWith('week')).map(key => last5WeekDatas.value[8][key])
-  },
-	{
-    name: '其他服務 訂單數',
-    type: 'line',
-    data: Object.keys(last5WeekDatas.value[10]).filter(key => key.startsWith('week')).map(key => last5WeekDatas.value[10][key])
-  },
-  {
-    name: '其他服務 營業額',
-    type: 'bar',
-    data: Object.keys(last5WeekDatas.value[11]).filter(key => key.startsWith('week')).map(key => last5WeekDatas.value[11][key])
-  },
-  {
-    name: '其他服務 毛利',
-    type: 'bar',
-    data: Object.keys(last5WeekDatas.value[12]).filter(key => key.startsWith('week')).map(key => last5WeekDatas.value[12][key])
   }
 ])
 const yearSeries = computed(() => [
   {
-    name: 'APP訂房 訂單數',
-    type: 'line',
+    name: '兌換 數量',
+    type: 'bar',
     data: Object.keys(yearDatas.value[0]).filter(key => key.startsWith('month')).map(key => yearDatas.value[0][key])
   },
   {
-    name: 'APP訂房 房晚數',
-    type: 'area',
+    name: '兌換 累計',
+    type: 'line',
     data: Object.keys(yearDatas.value[1]).filter(key => key.startsWith('month')).map(key => yearDatas.value[1][key])
   },
   {
-    name: 'APP訂房 營業額',
+    name: '註冊 數量',
     type: 'bar',
     data: Object.keys(yearDatas.value[2]).filter(key => key.startsWith('month')).map(key => yearDatas.value[2][key])
   },
   {
-    name: 'APP訂房 毛利',
-    type: 'bar',
+    name: '註冊 累計',
+    type: 'line',
     data: Object.keys(yearDatas.value[3]).filter(key => key.startsWith('month')).map(key => yearDatas.value[3][key])
-  },
-  {
-    name: '線下訂房 訂單數',
-    type: 'line',
-    data: Object.keys(yearDatas.value[5]).filter(key => key.startsWith('month')).map(key => yearDatas.value[5][key])
-  },
-  {
-    name: '線下訂房 房晚數',
-    type: 'area',
-    data: Object.keys(yearDatas.value[6]).filter(key => key.startsWith('month')).map(key => yearDatas.value[6][key])
-  },
-  {
-    name: '線下訂房 營業額',
-    type: 'bar',
-    data: Object.keys(yearDatas.value[7]).filter(key => key.startsWith('month')).map(key => yearDatas.value[7][key])
-  },
-  {
-    name: '線下訂房 毛利',
-    type: 'bar',
-    data: Object.keys(yearDatas.value[8]).filter(key => key.startsWith('month')).map(key => yearDatas.value[8][key])
-  },
-	{
-    name: '其他服務 訂單數',
-    type: 'line',
-    data: Object.keys(yearDatas.value[10]).filter(key => key.startsWith('month')).map(key => yearDatas.value[10][key])
-  },
-  {
-    name: '其他服務 營業額',
-    type: 'bar',
-    data: Object.keys(yearDatas.value[11]).filter(key => key.startsWith('month')).map(key => yearDatas.value[11][key])
-  },
-  {
-    name: '其他服務 毛利',
-    type: 'bar',
-    data: Object.keys(yearDatas.value[12]).filter(key => key.startsWith('month')).map(key => yearDatas.value[12][key])
   }
 ])
 const last5WeekChartOptions = ref(grossMarginLast5WeekChartOptions)
@@ -340,7 +264,6 @@ const yearChartOptions = ref(grossMarginYearChartOptions)
 /* 圖表資料 End */
 
 /* 導出 Excel Start */
-const $q = useQuasar();
 const doExcelExport = async () => {
 	if ($q.loading.isActive) {
     return;
@@ -348,10 +271,10 @@ const doExcelExport = async () => {
 
   $q.loading.show({ message: "導出Excel資料" });
   if (reportTime.value == 'year') {
-    await getLast5WeekGrossMarginData()
+    await getLast5WeekPromoMembershipData()
     last5WeekChartOptions.value.xaxis.categories = last5WeekColumns.value.slice(2).map(col => col.label)
   } else {
-    await getYearGrossMarginData()
+    await getYearPromoMembershipData()
   }
   $q.loading.hide();
 
@@ -373,13 +296,12 @@ const doExcelExport = async () => {
   ws['!cols'] = headers.map(d => { return { wpx: 80 } });
   ws['!rows'] = excelDatas.map(d => { return { hpx: 20 } });
   ws["!merges"] = [
-    XLSX.utils.decode_range("A2:A6"),
-    XLSX.utils.decode_range("A7:A11"),
-		XLSX.utils.decode_range("A12:A15")
+    XLSX.utils.decode_range("A2:A3"),
+    XLSX.utils.decode_range("A4:A5")
   ];
 
   const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, '近五週營業額報表');
+  XLSX.utils.book_append_sheet(wb, ws, '近五週兌換報表');
 
   // 整理資料（全年）
   headers = grossMarginYearColumns.map(c => c.label);
@@ -399,8 +321,7 @@ const doExcelExport = async () => {
       d.month9 ? getCurrencyFormat(d.month9) : '',
       d.month10 ? getCurrencyFormat(d.month10) : '',
       d.month11 ? getCurrencyFormat(d.month11) : '',
-      d.month12 ? getCurrencyFormat(d.month12) : '',
-			d.year ? getCurrencyFormat(d.year) : ''
+      d.month12 ? getCurrencyFormat(d.month12) : ''
 		]
   })
   excelDatas = [headers, ...excelDatas];
@@ -408,13 +329,12 @@ const doExcelExport = async () => {
 	ws['!cols'] = headers.map(d => { return { wpx: 80 } });
   ws['!rows'] = excelDatas.map(d => { return { hpx: 20 } });
   ws["!merges"] = [
-    XLSX.utils.decode_range("A2:A6"),
-    XLSX.utils.decode_range("A7:A11"),
-		XLSX.utils.decode_range("A12:A15")
+    XLSX.utils.decode_range("A2:A3"),
+    XLSX.utils.decode_range("A4:A5")
   ];
 
-  XLSX.utils.book_append_sheet(wb, ws, `${selectedYear.value} 年營業額報表`);
-  const filename = '營業額報表.xlsx';
+  XLSX.utils.book_append_sheet(wb, ws, `${selectedYear.value} 年兌換報表`);
+  const filename = '兌換報表.xlsx';
   XLSX.writeFileXLSX(wb, filename);
 }
 /* 導出 Excel End */
@@ -446,7 +366,7 @@ const doExcelExport = async () => {
 		background-color: $grey-1;
 		border-left-width: 1px;
 	}
-	tr:nth-last-child(4) .row-group {
+	tbody tr:last-child .row-group {
 		border-bottom-width: 0;
 	}
 }

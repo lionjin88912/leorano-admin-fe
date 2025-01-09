@@ -21,8 +21,7 @@
           <q-scroll-area class="content-scroll">
             <q-tab-panels v-model="currentTab" keep-alive animated>
               <q-tab-panel name="main" class="q-px-none">
-                <tag-main-form ref="mainForm" :data="model" :type-options="typeOptions"
-                  :tag-type="currentType"></tag-main-form>
+                <tag-main-form ref="mainForm" :data="model" :type-options="typeOptions"></tag-main-form>
               </q-tab-panel>
               <q-tab-panel name="lang" class="q-px-none">
                 <div class="flex items-center justify-center q-gutter-md q-pb-md">
@@ -76,7 +75,7 @@ const createEmptyModel = () => {
   return {
     name: null,
     note: null,
-    tag_type_id: null,
+    tag_type_id: currentType.value,
     langs: []
   }
 }
@@ -95,13 +94,13 @@ const show = async ({ data, type, typeList, hideOnSaved = false }) => {
   if (data) {
     title.value = '編輯標籤';
     mode.value = EditMode.Edit;
-    currentType.value = typeList.find(d => d.value === data.tag_type_id);
+    currentType.value = data.tag_type_id;
     await reloadModel(data.id);
   } else {
     title.value = '新增標籤';
     mode.value = EditMode.New;
-    model.value = createEmptyModel();
     currentType.value = type;
+    model.value = createEmptyModel();
   }
 };
 
@@ -134,8 +133,6 @@ const doSubmit = () => {
 }
 
 const doMainSubmit = async () => {
-  model.value.tag_type_id = currentType.value.value;
-
   $q.loading.show();
   const api = isEdit.value ? UpdateTag(model.value.id, model.value) : CreateTag(model.value);
   const [err, res] = await to(api);

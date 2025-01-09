@@ -11,7 +11,7 @@
       <q-space />
     </q-form>
     <div class="flex justify-between">
-      <TabComponent :tabArr='tabArr' @update:model-value="handleClick"></TabComponent>
+      <TabComponent :tabArr='tabArr' :currentTab="currentTab" @update:model-value="handleClick"></TabComponent>
       <div class=" q-gutter-sm">
         <q-btn label="新增會員" color="primary" @click="goToAdd()" />
       </div>
@@ -68,8 +68,12 @@ import BreadCrumbs from 'src/components/BreadCrumbs.vue';
 import to from 'await-to-js'
 
 const filter = reactive({
-  membership: tabArr[0].val,
-  search: null
+  search: router.currentRoute.value.query.search || null,
+  membership: router.currentRoute.value.query.status || tabArr[0].val
+})
+
+const currentTab = computed(() => {
+  return tabArr.find((item) => item.val.toLowerCase() === filter.membership)
 })
 
 const pagination = ref({
@@ -80,7 +84,14 @@ const pagination = ref({
 })
 
 watch(filter, (val) => {
-  doSearch()
+  let query = {}
+  if (val.membership) {
+    query.status = val.membership
+  }
+  if (val.search) {
+    query.search = val.search
+  }
+  router.push({ query })
 })
 
 onMounted(() => {
@@ -101,7 +112,7 @@ const doSearch = async () => {
 }
 
 const handleClick = (tabItem) => {
-  filter.membership = tabItem.val
+  filter.membership = tabItem.val.toLowerCase()
 }
 
 const goToAdd = () => {

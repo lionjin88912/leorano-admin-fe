@@ -25,6 +25,11 @@
       <q-btn label="新增客製訂單" color="primary" @click="goCustomizedOrder('add')" />
     </div>
     <TableComponent ref="tableRef" :props-filter="queryFilter" :columns="customizedColumns" :pagination="pagination" :handleCallApi="getCustomizedOrderList">
+      <template #body-cell-order_number="{ row }">
+        <q-td class="link" @click="goCustomizedOrder(row.id)">
+          {{ row.order_number }}
+        </q-td>
+      </template>
       <template #body-cell-voucher_cancel_code="{ row }">
         <q-td>
           <div v-if="row.voucher" class="flex no-wrap">
@@ -100,27 +105,17 @@ const pagination = {
 }
 
 const filter = reactive({
-  orderNumber: null,
-  title: null,
-  member: null,
-  orderStatus: '',
-  orderDuration: null,
+  orderNumber: router.currentRoute.value.query.order_number || null,
+  title: router.currentRoute.value.query.title || null,
+  member: router.currentRoute.value.query.member || null,
+  orderStatus: router.currentRoute.value.query.status || null,
+  orderDuration: router.currentRoute.value.query.created_at_start && router.currentRoute.value.query.created_at_end ? {
+    from: getDateString(router.currentRoute.value.query.created_at_start, 'YYYY-MM-DD'),
+    to: getDateString(router.currentRoute.value.query.created_at_end, 'YYYY-MM-DD'),
+  } : null
 })
 
-const filterStorageKey = 'customized-order-filter';
-const restoreSearchFilter = () => {
-  const savedFilter = SessionStorage.getItem(filterStorageKey);
-  if (savedFilter) {
-    for (const [key, value] of Object.entries(savedFilter)) {
-      filter[key] = value;
-    }
-    SessionStorage.remove(filterStorageKey)
-  }
-}
-
 const getFilterParams = () => {
-  restoreSearchFilter();
-
   const params = {};
   if (filter.orderNumber) {
     params.order_number = filter.orderNumber;
@@ -173,14 +168,6 @@ const onCancelConfirm = async (data) => {
 const tableRef = ref();
 const doSearch = () => {
   tableRef.value.reload()
-}
-
-watch(filter, (newVal) => {
-  saveSearchFilter(newVal);
-})
-
-const saveSearchFilter = (val) => {
-  SessionStorage.set(filterStorageKey, val);
 }
 
 const goCustomizedOrder = (orderNumber) => {

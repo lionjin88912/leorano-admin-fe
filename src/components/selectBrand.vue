@@ -7,7 +7,7 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted } from 'vue'
+import { ref, watch, onMounted, watchEffect } from 'vue'
 import { RequestBrandByName } from 'src/api'
 import to from 'await-to-js';
 import _ from 'lodash'
@@ -101,13 +101,13 @@ watch(() => props.group, (newVal) => {
   getOptions();
 });
 
-watch(() => props.default, async (newValue) => {
-  if (!newValue.id) return;
-
-  // 還原選取值
-  await getOptions();
-  model.value = group_options.value.find(d => d.id === newValue.id)
-  handleSelection()
+watchEffect(() => {
+  if (props.default?.id) {
+    let item = allOptions.value.find(d => d.id === props.default.id)
+    if (item) {
+      model.value = { name: item.name, id: props.default.id };
+    }
+  }
 });
 </script>
 

@@ -21,6 +21,7 @@
 import { ref, watch, computed, onMounted } from 'vue'
 import { useQuasar } from 'quasar';
 import { tabList } from './enums'
+import { router } from 'src/router';
 import TagTypeList from './TagTypeList.vue';
 import TagList from './TagList.vue';
 import BreadCrumbs from 'src/components/BreadCrumbs.vue';
@@ -28,7 +29,7 @@ import { useMetaStore } from 'src/stores/meta';
 
 const $q = useQuasar();
 const metaStore = useMetaStore();
-const currentTab = ref(tabList[0].name)
+const currentTab = ref(router.currentRoute.value.query.tab || tabList[0].name)
 const currentComponent = computed(() => {
   switch (currentTab.value) {
     case 'tag':
@@ -63,14 +64,15 @@ const onTypeReload = ({ name }) => {
 }
 
 watch(currentTab, (newVal) => {
-  if (newVal === 'tag') {
-    getTagList();
-  } else {
-    getTypeList();
-  }
+  router.push({ query: { tab: newVal } });
 });
 
-onMounted(() => {
-  getTypeList();
+onMounted(async () => {
+  if (currentTab.value === 'tag') {
+    await getTypeList();
+    getTagList(router.currentRoute.value.query.keyword, router.currentRoute.value.query.tag_type_id ? parseInt(router.currentRoute.value.query.tag_type_id) : typeList.value[0]?.id);
+  } else {
+    getTypeList(router.currentRoute.value.query.keyword);
+  }
 });
 </script>

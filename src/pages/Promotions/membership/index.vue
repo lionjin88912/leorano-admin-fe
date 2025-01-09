@@ -71,7 +71,8 @@
 
       <template v-slot:body-cell-operation='props'>
         <q-td>
-          <q-btn dense flat icon='edit' @click='doEdit(props.row)' />
+          <q-btn dense flat icon='edit' color="primary" @click='doEdit(props.row)' />
+          <q-btn icon="leaderboard" color="primary" @click="goStatistics(props.row)" dense flat></q-btn>
           <!-- <q-btn icon="delete" text-color="negative" @click="doDelete(props.row)" rounded dense flat /> -->
         </q-td>
       </template>
@@ -163,6 +164,16 @@ const goMembershipCode = (row: any) => {
       title: row.title,
       start: getDateString(row.start_date, 'YYYY-MM-DD'),
       end: getDateString(row.end_date, 'YYYY-MM-DD')
+    }
+  })
+}
+
+const goStatistics = (row: any) => {
+  router.push({
+    name: 'PromotionMembershipStatistics',
+    params: {
+      promoMembershipId: row.id,
+      reportTime: 'last5Week'
     }
   })
 }

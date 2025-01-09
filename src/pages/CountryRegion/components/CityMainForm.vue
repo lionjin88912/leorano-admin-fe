@@ -2,8 +2,7 @@
   <div class="flex-1">
     <q-form ref="form" class="edit-form q-gutter-md">
       <div class="flex-1">
-        <q-select class="edit-form-field q-pr-md" v-model="currentCountry" label="國家" :options="filteredCountryOptions"
-          @update:model-value="onCountrySelected" @input-value="onFilterCountry" use-input hide-bottom-space dense
+        <q-select class="edit-form-field q-pr-md" v-model="model.country_id" label="國家" :options="filteredCountryOptions" @input-value="onFilterCountry" emit-value map-options use-input hide-bottom-space dense
           outlined></q-select>
       </div>
       <div class="flex-1">
@@ -73,12 +72,6 @@ const props = defineProps({
     default() {
       return []
     }
-  },
-  country: {
-    type: Object,
-    default() {
-      return null;
-    }
   }
 });
 
@@ -86,7 +79,6 @@ const $q = useQuasar();
 const gmapRef = ref();
 const form = ref();
 const model = ref({});
-const currentCountry = ref();
 const filterCountry = ref(null);
 const filterTz = ref(null);
 const filteredCountryOptions = computed(() => {
@@ -120,7 +112,7 @@ const mapOptions = {
 }
 
 const getGeo = async () => {
-  const address = `${currentCountry.value.label} ${model.value.name || ''}`.trim();
+  const address = `${model.value.country} ${model.value.name || ''}`.trim();
 
   if (!address) {
     console.warn('stop get map position: no address or no geo data');
@@ -176,10 +168,6 @@ const rules = computed(() => {
   }
 });
 
-const onCountrySelected = (option) => {
-  model.value.country_id = option.value;
-}
-
 const onFilterCountry = (val) => {
   filterCountry.value = val;
 }
@@ -198,14 +186,12 @@ const onTzSelected = (val) => {
   model.value.time_offset = val.offset
 }
 
-watch(currentCountry, (newVal) => {
+watch(() => model.value.country_id, (newVal) => {
   getGeo();
 })
 
 watchEffect(() => {
   model.value = props.data;
-  model.value.country_id = props.country.value;
-  currentCountry.value = props.country;
   currentTz.value = tzOptions.find(d => d.value === props.data.tz)
 })
 
@@ -220,7 +206,7 @@ const validate = async () => {
 
 const getModel = () => {
   return {
-    country_id: currentCountry.value.value,
+    country_id: model.value.country_id,
     id: model.value.id,
     code: model.value.code,
     name: model.value.name,

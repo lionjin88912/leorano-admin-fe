@@ -244,7 +244,7 @@ const routes: RouteRecordRaw[] = [
         },
         children: [
           {
-            path: 'monthGMV',
+            path: 'monthGMV/:reportType?',
             name: 'GMVReport',
             meta: {
               root: { title: '業績報表' },
@@ -253,7 +253,7 @@ const routes: RouteRecordRaw[] = [
             component: () => import('src/pages/Report/reportGMV.vue'),
           },
           {
-            path: 'grossMargin',
+            path: 'grossMargin/:reportTime/:reportType?',
             name: 'GrossMargin',
             meta: {
               root: { title: '業績報表' },
@@ -289,6 +289,16 @@ const routes: RouteRecordRaw[] = [
               title: '邀請碼清單',
             },
             component: () => import('src/pages/Promotions/membership/CodeList.vue'),
+          },
+          {
+            path: 'membership/statistics/:promoMembershipId/:reportTime/:reportType?',
+            name: 'PromotionMembershipStatistics',
+            meta: {
+              root: { title: '行銷碼管理' },
+              parent: { title: '會籍活動列表', path: '/promotions/membership' },
+              title: '兌換統計',
+            },
+            component: () => import('src/pages/Promotions/membership/Statistics.vue'),
           },
         ],
       },

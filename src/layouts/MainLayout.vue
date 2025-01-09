@@ -64,7 +64,9 @@ const isChildOpened = computed(() => (menu: Menu) => {
 });
 
 const isMenuActive = (item: MenuItem) => {
-  return route.path.includes(item.to) || route.path.includes(item.to.replace('list', 'edit'));
+  return (item.to && route.path.includes(item.to)) || 
+         (item.active && route.path.includes(item.active)) || 
+         (item.to && route.path.includes(item.to.replace('list', 'edit')));
 }
 
 </script>

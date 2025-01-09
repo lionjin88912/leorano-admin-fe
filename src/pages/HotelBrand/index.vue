@@ -37,6 +37,7 @@
 <script setup lang="ts">
 import { useQuasar } from 'quasar';
 import { reactive, ref, computed } from 'vue'
+import { router } from 'src/router';
 import {
   RequestBrandByName,
   RequestCreateBrand,
@@ -54,8 +55,8 @@ const $q = useQuasar()
 const editRef = ref()
 const tableRef = ref()
 const filter = reactive({
-  name: "",
-  group_id: null,
+  name: router.currentRoute.value.query.name || '',
+  group_id: router.currentRoute.value.query.group_id ? parseInt(router.currentRoute.value.query.group_id) : null,
 })
 
 const doEdit = (data?: HotelBrand) => {

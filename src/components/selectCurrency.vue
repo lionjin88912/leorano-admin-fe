@@ -1,6 +1,6 @@
 <template>
     <q-select dense outlined v-model='model' use-input input-debounce='500' :label='label' option-value="id"
-      option-label="name" :options='group_options' fill-input hide-selected @filter="onFilter" @input-value="autoComplete" @update:modelValue="handleSelection" />
+      option-label="name" :options='group_options' fill-input hide-selected @filter="onFilter" @input-value="autoComplete" @update:modelValue="handleSelection" :disable="disable" />
 </template>
 
 <script setup>
@@ -19,6 +19,10 @@ const props = defineProps({
     default() {
       return '選擇幣別'
     }
+  },
+  disable: {
+    type: Boolean,
+    default: false
   }
 })
 const model = defineModel()

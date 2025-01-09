@@ -94,8 +94,11 @@ const onFilter = (val, update, abort) => {
 }
 
 watchEffect(() => {
-  if (props.default.name) {
-    model.value = { name: props.default.name, id: props.default.id };
+  if (props.default.id) {
+    let item = allOptions.value.find(d => d.id === props.default.id)
+    if (item) {
+      model.value = { name: item.name, id: props.default.id };
+    }
   }
 });
 
