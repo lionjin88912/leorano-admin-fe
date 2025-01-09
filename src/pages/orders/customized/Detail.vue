@@ -167,16 +167,16 @@ onMounted(async () => {
 		let order: any = await getData();
 		if (order) {
 			data.member_id = order.member.id;
-			data.closed = order.closed;
+			data.closed = order.closed ?? false;
 			data.title = order.title;
 			data.currency = order.currency;
 			data.price = order.price;
 			data.type = order.type;
 			data.content = order.content;
 			data.invoice = order.invoice;
-			data.attached = order.attached;
-			data.finance = order.finance;
-			data.deleted_at = order.deleted_at;
+			data.attached = order.attached ?? [];
+			data.finance = order.finance ?? [];
+			data.deleted_at = order.deleted_at ?? null;
 			member.value = order.member;
 		} else {
 			isNewOrder.value = true;
