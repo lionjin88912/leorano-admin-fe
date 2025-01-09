@@ -222,7 +222,6 @@ export const RequestUploadAttachedFile = (id, files) => {
   formData.append('files[]', ...files)
 
   return baseService.post(`/files/upload/customer_order/${id}`, formData, {
-    responseType: 'blob',
     headers: {
       'Content-Type': 'multipart/form-data'
     }
