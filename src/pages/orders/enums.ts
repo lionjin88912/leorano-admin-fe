@@ -131,6 +131,12 @@ export const customizedColumns: TableColumn = [
     align: 'center',
   },
   {
+    name: 'invoice_send',
+    label: '是否寄送發票',
+    field: (row: any) => row.invoice_send == true ? '已寄送' : '未寄送',
+    align: 'center',
+  },
+  {
     name: 'voucher_send',
     label: '憑證是否發送過',
     field: 'voucher_send',
@@ -289,6 +295,49 @@ export const hotelOrderStatusOptions = [
 export const customizedVoucherSendOptions = [
   { label: '否', value: false },
   { label: '是', value: true }
+]
+
+export const customizedInvoiceOptions = [
+  { label: '未寄送', value: false },
+  { label: '已寄送', value: true }
+]
+
+export const customizedOrderFinanceOptions = [
+  { label: '收入', value: 'revenue', color: 'positive' },
+  { label: '支出', value: 'expense', color: 'negative' },
+]
+
+export const customizedFinancelColumns: TableColumn = [
+  {
+    name: 'type',
+    label: '項目',
+    field: 'type',
+    align: 'left',
+  },
+  {
+    name: 'title',
+    label: '名稱',
+    field: 'title',
+    align: 'left',
+  },
+  {
+    name: 'amount',
+    label: '金額',
+    field: (row: any) => `${row.currency} ${getCurrencyFormat(row.amount)}`,
+    align: 'left',
+  },
+  {
+    name: 'exchange_rate',
+    label: '對美金匯率',
+    field: 'exchange_rate',
+    align: 'left',
+  },
+  {
+    name: 'updated_at',
+    label: '異動時間',
+    field: 'updated_at',
+    align: 'left',
+  }
 ]
 
 export const memberOrderStatusOptions = [

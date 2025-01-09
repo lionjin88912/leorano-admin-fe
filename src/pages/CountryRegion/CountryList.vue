@@ -33,6 +33,7 @@
 import { ref, watch } from 'vue'
 import { useQuasar } from 'quasar'
 import { countryColumns } from './enums'
+import { router } from 'src/router'
 import CountryEditDialog from './components/CountryEditDialog.vue'
 import Confirm from 'src/components/dialog/Confirm.vue'
 import { DeleteCountry } from 'src/api'
@@ -42,7 +43,7 @@ const $q = useQuasar();
 const editDialog = ref();
 const confirmRef = ref();
 const loading = ref(false)
-const searchText = ref('');
+const searchText = ref(router.currentRoute.value.query.keyword ? router.currentRoute.value.query.keyword : '');
 
 const emit = defineEmits(['country-reload'])
 const props = defineProps({
@@ -88,7 +89,13 @@ const doSearch = () => {
 }
 
 watch(searchText, (_newVal) => {
-  doSearch();
+  let query = { ...router.currentRoute.value.query };
+  if (_newVal) {
+    query.keyword = _newVal;
+  } else {
+    delete query.keyword;
+  }
+  router.push({ query });
 });
 
 </script>

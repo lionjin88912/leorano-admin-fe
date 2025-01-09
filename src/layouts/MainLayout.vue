@@ -3,7 +3,7 @@
     <q-header elevated class="bg-white text-grey-8 q-py-xs" height-hint="50">
       <q-toolbar>
         <q-btn flat dense round icon="menu" aria-label="Menu" @click="toggleLeftDrawer" />
-        <q-toolbar-title> Le Orano Console </q-toolbar-title>
+        <q-toolbar-title> Le Oràno Console </q-toolbar-title>
       </q-toolbar>
     </q-header>
     <q-drawer v-model="leftDrawerOpen" show-if-above bordered :width="200">
@@ -64,7 +64,9 @@ const isChildOpened = computed(() => (menu: Menu) => {
 });
 
 const isMenuActive = (item: MenuItem) => {
-  return route.path.includes(item.to) || route.path.includes(item.to.replace('list', 'edit'));
+  return (item.to && route.path.includes(item.to)) || 
+         (item.active && route.path.includes(item.active)) || 
+         (item.to && route.path.includes(item.to.replace('list', 'edit')));
 }
 
 </script>

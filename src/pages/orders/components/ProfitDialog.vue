@@ -28,7 +28,7 @@
 import { ref, reactive, computed, watchEffect } from 'vue'
 import { useQuasar } from 'quasar';
 import { updateHotelOrderFinalProfit, updateCustomizedOrderFinalProfit } from 'src/api';
-import { isNumberEmpty, isValidDecimal, messages } from 'src/utils/validators';
+import { isNumberEmpty, isNumberDigit, messages } from 'src/utils/validators';
 import { getCurrencyFormat } from 'src/utils/helpers';
 import selectCurrency from 'src/components/selectCurrency.vue';
 import to from 'await-to-js';
@@ -67,7 +67,7 @@ const rules = computed(() => {
   return {
     profit: [
       val => !isNumberEmpty(val) || messages.requiredInput(),
-      val => isValidDecimal(val, 2) || messages.invalidDecimal(2)
+      val => isNumberDigit(val, null, 2) || messages.invalidDecimal(2)
     ]
   }
 });

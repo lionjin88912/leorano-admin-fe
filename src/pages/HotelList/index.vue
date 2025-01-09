@@ -9,9 +9,9 @@
       </q-input>
       <selectGroup @handleCallBack='setSelectFilter' :default='{ id: filter.group_id }' />
       <selectBrand @handleCallBack='setSelectFilter' :default='{ id: filter.brand_id }' :group="filter.group_id" />
-      <selectCountry @handleCallBack='setCountry' :default='{ id: filter.country_id, name: filter.countryName }' />
-      <selectCity @handleCallBack='setCity' :default='{ id: filter.city_id, name: filter.cityName }'
-        :country="filter.country_id" :load-on-init="false" />
+      <selectCountry @handleCallBack='setCountry' :default='{ id: filter.country_id }' />
+      <selectCity @handleCallBack='setCity' :default='{ id: filter.city_id }'
+        :country="filter.country_id" :load-on-init="filter.country_id != null" />
     </div>
     <div class="flex items-center ">
       <TabComponent :current-tab="currentTab" :tabArr='tabArr' @update:model-value="onTabChange"></TabComponent>
@@ -64,22 +64,22 @@ import selectBrand from 'components/selectBrand.vue'
 import selectGroup from 'components/selectGroup.vue'
 import BreadCrumbs from 'src/components/BreadCrumbs.vue';
 import HotelEditDialog from './basic/EditDialog.vue';
+import { route } from 'quasar/wrappers';
 
 const $q = useQuasar();
 const hotelEditDialogRef = ref();
 const filterStorageKey = 'hotel-filter';
 const tableRef = ref(null)
-const currentTab = ref(null)
+const currentTab = computed(() => {
+  return tabArr.find(d => d.val === filter.status)
+})
 const filter = reactive({
-  status: 1,
-  name: "",
-  group_id: null,
-  country_id: null,
-  city_id: null,
-  brand_id: null,
-  // non-filter
-  countryName: null,
-  cityName: null
+  status: router.currentRoute.value.query.status != null && router.currentRoute.value.query.status != undefined ? parseInt(router.currentRoute.value.query.status) : '',
+  name: router.currentRoute.value.query.name || '',
+  group_id: router.currentRoute.value.query.group_id ? parseInt(router.currentRoute.value.query.group_id) : null,
+  country_id: router.currentRoute.value.query.country_id ? parseInt(router.currentRoute.value.query.country_id) : null,
+  city_id: router.currentRoute.value.query.city_id ? parseInt(router.currentRoute.value.query.city_id) : null,
+  brand_id: router.currentRoute.value.query.brand_id ? parseInt(router.currentRoute.value.query.brand_id) : null,
 })
 
 const batchMode = ref(true);
@@ -111,7 +111,7 @@ const doBatch = async (enabled) => {
 }
 
 const onTabChange = (item) => {
-  filter.status = item.val === 'all' ? null : item.val
+  filter.status = item.val
   tableRef.value.clearSelection();
 }
 
@@ -122,22 +122,17 @@ const doHotelCreate = () => {
 }
 
 const setCountry = (model) => {
-  console.log('setCountry:', model);
   if (model && model.id) {
     filter.country_id = model ? model.id : model
-    filter.countryName = model ? model.name : null
   } else {
     filter.country_id = null
-    filter.countryName = null
     filter.city_id = null
-    filter.cityName = null
   }
 }
 
 const setCity = (model) => {
   // console.log('setCity:', model)
   filter.city_id = model ? model.id : model
-  filter.cityName = model ? model.name : null
 }
 
 const setSelectFilter = (model) => {
@@ -163,36 +158,9 @@ const setStatus = async (id, is_enabled) => {
   tableRef.value.reload()
 }
 
-const saveSearchFilter = (val) => {
-  SessionStorage.set(filterStorageKey, val);
-}
-
-const restoreSearchFilter = () => {
-  const oldFilter = SessionStorage.getItem(filterStorageKey);
-  // console.log('restore filter:', oldFilter)
-  if (oldFilter) {
-    for (const [key, value] of Object.entries(oldFilter)) {
-      filter[key] = value;
-    }
-    SessionStorage.remove(filterStorageKey)
-  }
-}
-
 const propsFilter = computed(() => {
   return Object.assign({}, filter)
 })
-watch(filter, (newVal) => {
-  const newStatus = (newVal.status === null || newVal.status === undefined) ? 'all' : newVal.status;
-  const oldTab = tabArr.find(d => d.val === newStatus)
-  currentTab.value = oldTab;
-
-  saveSearchFilter(newVal);
-});
-
-onMounted(() => {
-  restoreSearchFilter();
-})
-
 </script>
 
 <style>

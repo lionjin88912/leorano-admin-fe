@@ -1,11 +1,6 @@
 import dayjs from 'dayjs'
 import _ from 'lodash'
 
-const CHINESE_NUMBER = {
-  1: '一',
-  2: '二',
-}
-
 const messages = {
   requiredInput: () => '此欄位為必填',
   email: () => '不正確的信箱格式',
@@ -14,7 +9,8 @@ const messages = {
   inputPositiveInteger: () => '請輸入正整數',
   invalidDateRange: () => '日期區間有誤',
   invalidRange: (min, max) => `請輸入介於 ${min}-${max} 之間的數字`,
-  invalidDecimal: (place) => `只能輸入到小數第${CHINESE_NUMBER[place]}位`
+  invalidInteger: (place) => `整數最多 ${place} 位數`,
+  invalidDecimal: (place) => `小數最多 ${place} 位數`
 }
 
 /**
@@ -115,12 +111,27 @@ const isMatch = (a, b) => {
   return a === b
 }
 
-
 /**
- * 是否為合法的小數位數
+ * 是否為合法的整數、小數位數
  */
-const isValidDecimal = (val, place) => {
-  const regex = new RegExp(`^-?[0-9]*\.?[0-9]{0,${place}}$`);
+const isNumberDigit = (val, intPlace = null, decimalPlace = null) => {
+  let expression = '^-?[0-9]';
+
+  // 整數
+  if (intPlace !== null) {
+    expression += `{0,${intPlace}}`
+  } else {
+    expression += '*'
+  }
+
+  // 小數
+  let hasDecimal = val.toString().includes('.');
+  if (hasDecimal && decimalPlace !== null) {
+    expression += `\\.?[0-9]{0,${decimalPlace}}`;
+  }
+
+  expression += '$';
+  const regex = new RegExp(expression)
   const result = regex.test(val)
   return result
 }
@@ -136,5 +147,5 @@ export {
   isPositiveInteger,
   isValidDateRange,
   isValidRange,
-  isValidDecimal
+  isNumberDigit
 }

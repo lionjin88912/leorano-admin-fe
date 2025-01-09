@@ -98,7 +98,6 @@ const state = reactive({
     perPages: [10, 20, 50],
   }
 });
-const filterStorageKey = 'member-order-filter';
 const rows = ref([]);
 const textTypeOptions = [
   { label: "訂單編號", value: "order_number" },
@@ -106,13 +105,24 @@ const textTypeOptions = [
   { label: "提名邀請碼", value: "code" },
   { label: "訂購人", value: "user" },
 ]
-const currentTextType = ref(textTypeOptions[0]);
+const currentTextType = ref(router.currentRoute.value.query.column
+  ? textTypeOptions.find(d => d.value === router.currentRoute.value.query.column)
+  : textTypeOptions[0]
+);
 
 const filter = reactive({
-  text: null,
-  orderDuration: null,
-  status: memberOrderStatusOptions[0],
-  payment: paymentStatusOptions[0]
+  text: router.currentRoute.value.query.keyword || null,
+  orderDuration: router.currentRoute.value.query.created_at_start && router.currentRoute.value.query.created_at_end 
+    ? {
+      from: router.currentRoute.value.query.created_at_start,
+      to: router.currentRoute.value.query.created_at_end
+    } : null,
+  status: router.currentRoute.value.query.status
+    ? memberOrderStatusOptions.find(d => d.id === parseInt(router.currentRoute.value.query.status)) 
+    : memberOrderStatusOptions[0],
+  payment: router.currentRoute.value.query.payment
+    ? paymentStatusOptions.find(d => d.value === parseInt(router.currentRoute.value.query.payment)) 
+    : paymentStatusOptions[0]
 })
 
 const doSearch = () => {
@@ -154,8 +164,6 @@ const loadData = async ({ pagination }) => {
 }
 
 const getFilterParams = () => {
-  restoreSearchFilter();
-
   const params = {};
   if (filter.text && filter.text.trim().length > 0) {
     params[currentTextType.value.value] = filter.text;
@@ -252,30 +260,37 @@ const goMember = (userId) => {
   router.push({ name: "EditMember", params: { id: userId } })
 }
 
-const restoreSearchFilter = () => {
-  const savedFilter = SessionStorage.getItem(filterStorageKey);
-  // console.log('savedFilter:', savedFilter);
-  if (savedFilter) {
-    for (const [key, value] of Object.entries(savedFilter)) {
-      filter[key] = value;
-    }
-    SessionStorage.remove(filterStorageKey)
-  }
-}
-
-const saveSearchFilter = (val) => {
-  SessionStorage.set(filterStorageKey, val);
-}
-
 watch(filter, (newVal) => {
-  saveSearchFilter(newVal);
-  doSearch();
+  let query = { ...router.currentRoute.value.query };
+  if (newVal.text) {
+    query.keyword = newVal.text;
+  } else {
+    delete query.keyword;
+  }
+  if (newVal.orderDuration) {
+    query.created_at_start = newVal.orderDuration.from;
+    query.created_at_end = newVal.orderDuration.to;
+  } else {
+    delete query.created_at_start;
+    delete query.created_at_end;
+  }
+  if (newVal.status && newVal.status.value !== null) {
+    query.status = newVal.status.id;
+  } else {
+    delete query.status;
+  }
+  if (newVal.payment && newVal.payment.value !== null) {
+    query.payment = newVal.payment.value;
+  } else {
+    delete query.payment;
+  }
+  router.push({ query });
 });
 
 watch(currentTextType, (newVal, oldVal) => {
-  if (newVal.value !== oldVal.value && filter.text && filter.text.trim().length > 0) {
-    doSearch();
-  }
+  let query = { ...router.currentRoute.value.query };
+  query.column = newVal.value;
+  router.push({ query });
 })
 
 doSearch();

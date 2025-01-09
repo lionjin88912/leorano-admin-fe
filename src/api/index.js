@@ -121,6 +121,7 @@ export const deleteCustomizedOrder = (id, data) => baseService.delete(`/order/cu
 export const getCustomizedOrder = (id) => baseService.get(`/order/customized/${id}`)
 export const createCustomizedOrder = (data) => baseService.post(`/order/customized`, data)
 export const updateCustomizedOrder = (id, data) => baseService.put(`/order/customized/${id}`, data)
+export const closeCustomizedOrder = (id) => baseService.post(`/order/customized/closed/${id}`)
 export const getMemberList = (data) => baseService.get('/users/search', { params: data })
 export const getMember = (id) => baseService.get(`/member/${id}`)
 export const updateCustomizedOrderFinalProfit = (data) => baseService.put(`/order/customized/final_profit`, data)
@@ -151,6 +152,11 @@ export const batchUpdatePromoMembershipStatus = (data) =>
 // 會籍活動-行銷碼
 export const getPromoMembershipCodeList = (params) =>
   baseService.get(`/promo/membership/${params.promoMembershipId}/codes`, { params })
+// 會籍活動-報表
+export const getPromoMembershipByMonth = (id, year, month) =>
+  baseService.get(`/promo/membership/statistics/${id}/${year}/${month}`)
+export const getPromoMembershipLastWeek = (id) =>
+  baseService.get(`/promo/membership/statistics/${id}/lastWeek`)
 // 會籍資料清單
 export const getMembershipList = (params) => baseService.get('/membership/list', { params })
 // 推播管理
@@ -205,6 +211,17 @@ export const RequestUploadUserFile = (id, data) => {
 
   return baseService.post(`/user/${id}/files`, formData, {
     responseType: 'blob',
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  })
+}
+
+export const RequestUploadAttachedFile = (id, files) => {
+  let formData = new FormData()
+  formData.append('files[]', ...files)
+
+  return baseService.post(`/files/upload/customer_order/${id}`, formData, {
     headers: {
       'Content-Type': 'multipart/form-data'
     }

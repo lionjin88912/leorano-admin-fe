@@ -1,8 +1,7 @@
 <template>
   <div class="flex-1">
     <q-form ref="form" class="edit-form q-gutter-md" lazy-rules>
-      <q-select v-model="currentType" label="Tag Type" :options="typeOptions" @update:model-value="onTypeSelected"
-        :readonly="fixedTagType" hide-bottom-space dense outlined></q-select>
+      <q-select v-model="model.tag_type_id" label="Tag Type" :options="typeOptions" :readonly="fixedTagType" emit-value map-options hide-bottom-space dense outlined></q-select>
       <div class="flex">
         <q-input class="edit-form-field q-mr-md" v-model="model.name" label="Name *" :rules="rules.name"
           :maxlength="maxNameLength" hide-bottom-space lazy-rules dense outlined @blur="doAutoCode"></q-input>
@@ -33,19 +32,12 @@ const props = defineProps({
     default() {
       return []
     }
-  },
-  tagType: {
-    type: Object,
-    default() {
-      return null;
-    }
   }
 });
 
 const $q = useQuasar();
 const form = ref();
 const model = ref({});
-const currentType = ref();
 
 const rules = computed(() => {
   return {
@@ -78,7 +70,6 @@ const doAutoCode = () => {
 
 watchEffect(() => {
   model.value = props.data;
-  currentType.value = props.tagType;
 })
 
 const validate = async () => {

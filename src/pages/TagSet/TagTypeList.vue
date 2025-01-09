@@ -32,6 +32,7 @@
 <script setup>
 import { ref, watch } from 'vue'
 import { typeColumns } from './enums'
+import { router } from 'src/router'
 import TagTypeEditDialog from './components/TagTypeEditDialog.vue'
 import Confirm from 'src/components/dialog/Confirm.vue'
 
@@ -40,7 +41,7 @@ const to = require('await-to-js').default
 const editDialog = ref();
 const confirmRef = ref();
 const loading = ref(false)
-const searchText = ref();
+const searchText = ref(router.currentRoute.value.query.keyword ? router.currentRoute.value.query.keyword : '');
 
 const emit = defineEmits(['type-reload'])
 const props = defineProps({
@@ -79,7 +80,13 @@ const doSearch = () => {
 }
 
 watch(searchText, (_newVal) => {
-  doSearch();
+  let query = { ...router.currentRoute.value.query };
+  if (_newVal) {
+    query.keyword = _newVal;
+  } else {
+    delete query.keyword;
+  }
+  router.push({ query });
 });
 
 </script>

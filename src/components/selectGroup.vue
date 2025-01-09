@@ -54,9 +54,6 @@ const getOptions = async (val) => {
   if (res.code != 0) return;
 
   let newArr = res.data.map((item) => {
-    if (props.default.id && item.id === props.default.id) {
-      model.value = { name: item.name, id: item.id }
-    }
     return {
       id: item.id,
       name: item.name,
@@ -92,8 +89,11 @@ const onFilter = (val, update, abort) => {
 }
 
 watchEffect(() => {
-  if (props.default.name) {
-    model.value = { name: props.default.name, id: props.default.id };
+  if (props.default.id) {
+    let item = allOptions.value.find(d => d.id === props.default.id)
+    if (item) {
+      model.value = { name: item.name, id: props.default.id };
+    }
   }
 });
 
