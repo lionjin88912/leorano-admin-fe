@@ -68,13 +68,6 @@ const columns: tableColumn = [
     sortable: true,
   },
   {
-    name: 'SpendingAmount',
-    label: '累積消費金額',
-    field: 'SpendingAmount',
-    align: 'left',
-    sortable: true,
-  },
-  {
     name: 'invite_user',
     label: '推薦人',
     field: '',
