@@ -156,7 +156,7 @@ export const MmeberStatusOptions = [
   { label: '失敗', value: 6 },
 ]
 
-export const grossMarginLast5WeekColumns: QTableProps['columns'] = [
+export const statisticsLast5WeekColumns: QTableProps['columns'] = [
   {
     name: 'group',
     label: '項目',
@@ -171,7 +171,7 @@ export const grossMarginLast5WeekColumns: QTableProps['columns'] = [
   }
 ]
 
-export const grossMarginYearColumns: QTableProps['columns'] = [
+export const statisticsYearColumns: QTableProps['columns'] = [
   {
     name: 'group',
     label: '項目',
@@ -263,12 +263,12 @@ export const reportTypeOptions = [
   {slot: 'chart', value: 'chart'}
 ]
 
-export const grossMarginTypeOptions = [
+export const statisticsTypeOptions = [
   {label: '近五週', value: 'last5Week'},
   {label: '指定年份', value: 'year'}
 ]
 
-export const grossMarginLast5WeekDefaultData = [
+export const statisticsLast5WeekDefaultData = [
   {
     group: '兌換',
     label: '數量'
@@ -291,7 +291,7 @@ export const grossMarginLast5WeekDefaultData = [
   }
 ]
 
-export const grossMarginYearDefaultData = [
+export const statisticsYearDefaultData = [
   {
     group: '兌換',
     label: '數量',
@@ -319,7 +319,7 @@ export const grossMarginYearDefaultData = [
   }
 ]
 
-export const grossMarginLast5WeekChartOptions = {
+export const statisticsLast5WeekChartOptions = {
   chart: {
     stacked: false,
     toolbar: {
@@ -382,7 +382,7 @@ export const grossMarginLast5WeekChartOptions = {
   }
 }
 
-export const grossMarginYearChartOptions = {
+export const statisticsYearChartOptions = {
   chart: {
     stacked: false,
     toolbar: {
@@ -393,7 +393,7 @@ export const grossMarginYearChartOptions = {
     }
   },
   xaxis: {
-    categories: grossMarginYearColumns.slice(2, 13).map(col => col.label)
+    categories: statisticsYearColumns.slice(2, 13).map(col => col.label)
   },
   yaxis: [
     {

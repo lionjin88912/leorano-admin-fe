@@ -134,10 +134,11 @@ export const refundMemberOrder = (orderNumber, data) =>
   baseService.delete(`/order/membership/${orderNumber}/refund`, { data })
 // 訂單對帳管理
 export const getAccountingList = ({type, ...data}) => baseService.get(`/accounting/${type}`, { params: data })
-// 業績報表
+// 報表
 export const getMonthGMV = (year, month) => baseService.get(`/report/monthGMV/${year}/${month}`)
 export const getGrossMargin = (year, month) => baseService.get(`/report/grossMargin/${year}/${month}`)
 export const getGrossMarginLastWeek = () => baseService.get(`/report/grossMargin/lastWeek`)
+export const getConsumption = (year) => baseService.get(`/analysis/consumption/${year}`)
 // 行銷碼管理
 // 會籍活動
 export const getPromoMembershipList = (params) =>
@@ -154,7 +155,7 @@ export const getPromoMembershipCodeList = (params) =>
   baseService.get(`/promo/membership/${params.promoMembershipId}/codes`, { params })
 // 會籍活動-報表
 export const getPromoMembershipByMonth = (id, year, month) =>
-  baseService.get(`/promo/membership/statistics/${id}/${year}/${month}`)
+  baseService.get(`/promo/membership/statistics/${id}`, { params: { year, month } })
 export const getPromoMembershipLastWeek = (id) =>
   baseService.get(`/promo/membership/statistics/${id}/lastWeek`)
 // 會籍資料清單
@@ -173,17 +174,8 @@ export const batchUpdateMarketingNotifyStatus = (data) =>
 // iframe
 export const getMarketingCode = (id, data) => baseService.get(`/marketing/${id}`, { params: data })
 // 取匯率
-export const getExchangeRate = (from, to) =>
-  axios.get('https://admin.roartrips.com/api/currency', {
-    amount: 1,
-    from,
-    to
-  })
-  // axios.post('https://dev-api-demo.wotaluxe.com/v1/exchange/convert', {
-  //   amount: 1,
-  //   from,
-  //   to
-  // })
+export const getExchangeRate = (from, to) => baseService.get(`/currency`, { params: { from, to } })
+
 export const RequestDownloadFile = (id, data, cfg) =>
   baseService.get(`/user/${id}/download/${data.fileName}`, cfg)
 
