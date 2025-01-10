@@ -89,79 +89,9 @@ const datas = reactive({
 })
 const doSearch = async () => {
   loading.value = true
-  // const [err, res] = to(await getConsumption(selectedYear.value))
-  // if (err) {
-  //   return
-  // }
-  const res = {
-    "code":0,
-    "message":"success",
-    "data":{
-      "year":[
-        {
-          "id":1,
-          "name":"wang1",
-          "total_amount":11000
-        },
-        {
-          "id":2,
-          "name":"wang2",
-          "total_amount":10000
-        },
-        {
-          "id":3,
-          "name":"wang3",
-          "total_amount":9000
-        },
-        {
-          "id":4,
-          "name":"wang4",
-          "total_amount":8000
-        },
-        {
-          "id":5,
-          "name":"wang5",
-          "total_amount":7000
-        },
-        {
-          "id":6,
-          "name":"wang6",
-          "total_amount":6000
-        },
-        {
-          "id":7,
-          "name":"wang7",
-          "total_amount":5000
-        },
-        {
-          "id":8,
-          "name":"wang8",
-          "total_amount":4000
-        },
-        {
-          "id":9,
-          "name":"wang9",
-          "total_amount":3000
-        },
-        {
-          "id":10,
-          "name":"wang10",
-          "total_amount":2000
-        },
-        {
-          "id":11,
-          "name":"wang11",
-          "total_amount":1000
-        }
-      ],
-      "all":[
-        {
-          "id":1,
-          "name":"wangall",
-          "total_amount":10000
-        }
-      ]
-    }
+  const [err, res] = to(await getConsumption(selectedYear.value))
+  if (err) {
+    return
   }
   datas.year = res.data.year
   datas.all = res.data.all
