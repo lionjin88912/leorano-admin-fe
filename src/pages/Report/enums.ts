@@ -196,6 +196,27 @@ export const grossMarginYearColumns: QTableProps['columns'] = [
   }
 ]
 
+export const consumptionColumns: QTableProps['columns'] = [
+  {
+    name: 'id',
+    label: '排序',
+    align: 'left',
+    field: 'id'
+  },
+  {
+    name: 'name',
+    label: '姓名',
+    align: 'left',
+    field: 'name'
+  },
+  {
+    name: 'total_amount',
+    label: '金額(USD)',
+    align: 'left',
+    field: (row: any) => row.hasOwnProperty('total_amount') ? getCurrencyFormat(row.total_amount) : '-'
+  }
+]
+
 export const reportTypeOptions = [
   {slot: 'table', value: 'table'},
   {slot: 'chart', value: 'chart'}
@@ -670,4 +691,84 @@ export const grossMarginYearChartOptions = {
       }
     }
   }
+}
+
+export const consumptionYearChartOptions = {
+  chart: {
+    type: 'bar',
+    toolbar: {
+      show: false
+    },
+  },
+  dataLabels: {
+    enabled: false
+  },
+  xaxis: {
+    title: {
+      text: '金額 USD'
+    },
+    categories: [],
+    labels: {
+      formatter: function (val:number) {
+        return `$${getCurrencyFormat(val)}`
+      }
+    }
+  },
+  colors: ['#0277bd'],
+  plotOptions: {
+    bar: {
+      barHeight: '20%',
+      borderRadius: 4,
+      borderRadiusApplication: 'end',
+      horizontal: true,
+    }
+  },
+  tooltip: {
+    shared: false,
+    y: {
+      formatter: function (val:number) {
+        return `$${getCurrencyFormat(val)}`
+      }
+    }
+  },
+}
+
+export const consumptionAllChartOptions = {
+  chart: {
+    type: 'bar',
+    toolbar: {
+      show: false
+    },
+  },
+  dataLabels: {
+    enabled: false
+  },
+  xaxis: {
+    title: {
+      text: '金額 USD'
+    },
+    categories: [],
+    labels: {
+      formatter: function (val:number) {
+        return `$${getCurrencyFormat(val)}`
+      }
+    }
+  },
+  colors: ['#0277bd'],
+  plotOptions: {
+    bar: {
+      barHeight: '20%',
+      borderRadius: 4,
+      borderRadiusApplication: 'end',
+      horizontal: true,
+    }
+  },
+  tooltip: {
+    shared: false,
+    y: {
+      formatter: function (val:number) {
+        return `$${getCurrencyFormat(val)}`
+      }
+    }
+  },
 }

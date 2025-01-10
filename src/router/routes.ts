@@ -247,7 +247,7 @@ const routes: RouteRecordRaw[] = [
             path: 'monthGMV/:reportType?',
             name: 'GMVReport',
             meta: {
-              root: { title: '業績報表' },
+              root: { title: '報表' },
               title: '月進單對照報表',
             },
             component: () => import('src/pages/Report/reportGMV.vue'),
@@ -256,10 +256,19 @@ const routes: RouteRecordRaw[] = [
             path: 'grossMargin/:reportTime/:reportType?',
             name: 'GrossMargin',
             meta: {
-              root: { title: '業績報表' },
+              root: { title: '報表' },
               title: '營業額報表',
             },
             component: () => import('src/pages/Report/grossMargin.vue'),
+          },
+          {
+            path: 'consumption/:reportType?',
+            name: 'Consumption',
+            meta: {
+              root: { title: '報表' },
+              title: '會員消費報表',
+            },
+            component: () => import('src/pages/Report/consumption.vue'),
           },
         ],
       },

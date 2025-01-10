@@ -7,7 +7,7 @@
       </template>
     </BreadCrumbs>
     <div class="row q-gutter-sm q-my-md">
-			<q-btn-toggle v-model="reportTime" toggle-text-color="primary" toggle-color="white" color="grey-2" text-color="grey-7" :options="grossMarginTypeOptions" class="report-toggle" unelevated />
+      <q-btn-toggle v-model="reportTime" toggle-text-color="primary" toggle-color="white" color="grey-2" text-color="grey-7" :options="statisticsTypeOptions" class="report-toggle" unelevated />
       <q-field v-if="reportTime == 'year'" class="cursor-pointer col-2" v-model="selectedYear" label="報表年份" dense outlined>
         <template #default>
           <YearPicker :date="selectedYear" @updated="(val) => changeSelectYear(val)" />
@@ -62,7 +62,7 @@ import { useQuasar, LocalStorage } from 'quasar'
 import { ref, watch, computed, onMounted } from 'vue'
 import { router } from 'src/router'
 import { getPromoMembership, getPromoMembershipByMonth, getPromoMembershipLastWeek } from 'src/api'
-import { grossMarginLast5WeekColumns, grossMarginYearColumns, reportTypeOptions, grossMarginTypeOptions, grossMarginLast5WeekDefaultData, grossMarginYearDefaultData, grossMarginLast5WeekChartOptions, grossMarginYearChartOptions } from '../enums'
+import { statisticsLast5WeekColumns, statisticsYearColumns, reportTypeOptions, statisticsTypeOptions, statisticsLast5WeekDefaultData, statisticsYearDefaultData, statisticsLast5WeekChartOptions, statisticsYearChartOptions } from '../enums'
 import { getDateString, getDateStringNoTz, getCurrencyFormat } from 'src/utils/helpers'
 import apexchart from "vue3-apexcharts"
 import BreadCrumbs from 'src/components/BreadCrumbs.vue'
@@ -117,7 +117,7 @@ watch(reportType, newVal => {
 const selectedYear = ref(router.currentRoute.value.query.year || String(new Date().getFullYear()))
 const changeSelectYear = (val) => {
   selectedYear.value = val
-	yearDatas.value = JSON.parse(JSON.stringify(grossMarginYearDefaultData))
+	yearDatas.value = JSON.parse(JSON.stringify(statisticsYearDefaultData))
   router.push({ query: { year: val } })
 }
 /* 報表年份 End */
@@ -189,7 +189,7 @@ const columns = computed(() => {
 	if (reportTime.value == 'last5Week') {
 		return last5WeekColumns.value
 	}
-	return grossMarginYearColumns
+	return statisticsYearColumns
 })
 const datas = computed(() => {
 	if (reportTime.value == 'last5Week') {
@@ -197,9 +197,9 @@ const datas = computed(() => {
 	}
 	return yearDatas.value
 })
-const last5WeekColumns = ref(JSON.parse(JSON.stringify(grossMarginLast5WeekColumns)))
-const last5WeekDatas = ref(grossMarginLast5WeekDefaultData);
-const yearDatas = ref(JSON.parse(JSON.stringify(grossMarginYearDefaultData)));
+const last5WeekColumns = ref(JSON.parse(JSON.stringify(statisticsLast5WeekColumns)))
+const last5WeekDatas = ref(statisticsLast5WeekDefaultData);
+const yearDatas = ref(JSON.parse(JSON.stringify(statisticsYearDefaultData)));
 /* 表格資料 End */
 
 /* 圖表資料 Start */
@@ -259,8 +259,8 @@ const yearSeries = computed(() => [
     data: Object.keys(yearDatas.value[3]).filter(key => key.startsWith('month')).map(key => yearDatas.value[3][key])
   }
 ])
-const last5WeekChartOptions = ref(grossMarginLast5WeekChartOptions)
-const yearChartOptions = ref(grossMarginYearChartOptions)
+const last5WeekChartOptions = ref(statisticsLast5WeekChartOptions)
+const yearChartOptions = ref(statisticsYearChartOptions)
 /* 圖表資料 End */
 
 /* 導出 Excel Start */
@@ -304,7 +304,7 @@ const doExcelExport = async () => {
   XLSX.utils.book_append_sheet(wb, ws, '近五週兌換報表');
 
   // 整理資料（全年）
-  headers = grossMarginYearColumns.map(c => c.label);
+  headers = statisticsYearColumns.map(c => c.label);
   headers[14] = selectedYear.value + '年累計';
   excelDatas = yearDatas.value.map(d => {
     return [
