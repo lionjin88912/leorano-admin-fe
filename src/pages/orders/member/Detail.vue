@@ -47,7 +47,7 @@
                 <div class="info-field-text">
                   <div class="info-field-text flex">
                     <div class="q-pr-xs">USD</div>
-                    <div class="price">{{ getCurrencyFormat(item.unit_price) }}</div>
+                    <div class="price">{{ getNumberFormat(item.unit_price) }}</div>
                   </div>
                 </div>
               </div>
@@ -63,21 +63,21 @@
           <div class="info-field-label regular">折扣</div>
           <div class="info-field-text flex q-pl-sm">
             <div class="q-pr-xs">USD</div>
-            <div class="price">{{ getCurrencyFormat(itemsDiscount) }}</div>
+            <div class="price">{{ getNumberFormat(itemsDiscount) }}</div>
           </div>
         </div>
         <div class="info-field text-bold q-mx-lg">
           <div class="info-field-label">小計</div>
           <div class="info-field-text flex q-pl-sm">
             <div class="q-pr-xs">USD</div>
-            <div class="price">{{ getCurrencyFormat(itemsAmount) }}</div>
+            <div class="price">{{ getNumberFormat(itemsAmount) }}</div>
           </div>
         </div>
         <div class="info-field q-mx-lg">
           <div class="info-field-label regular">稅金與費用</div>
           <div class="info-field-text flex q-pl-sm">
             <div class="q-pr-xs">USD</div>
-            <div class="price">{{ getCurrencyFormat(taxAndFee) }}</div>
+            <div class="price">{{ getNumberFormat(taxAndFee) }}</div>
           </div>
         </div>
         <div class="flex-1 bordered-dash q-mx-lg"></div>
@@ -85,7 +85,7 @@
           <div class="info-field-label">總金額</div>
           <div class="info-field-text flex q-pl-sm">
             <div class="q-pr-xs">USD</div>
-            <div class="price">{{ getCurrencyFormat(model.amount) }}</div>
+            <div class="price">{{ getNumberFormat(model.amount) }}</div>
           </div>
         </div>
         <div class="info-field">
@@ -157,7 +157,7 @@
             <div class="flex q-pb-xs">
               <div class="info-field-label">退款金額</div>
               <div class="info-field-text">
-                {{ getCurrencyFormat(model.cancel_data?.refund_order?.content?.amount) || '-' }}
+                {{ getNumberFormat(model.cancel_data?.refund_order?.content?.amount) || '-' }}
               </div>
             </div>
             <div class="flex q-pb-xs">
@@ -187,7 +187,7 @@ import InfoRow from '../components/InfoRow.vue';
 import RawDataInfo from 'src/pages/HotelList/plan/RawDataInfo.vue';
 import CancelOrderDialog from '../components/CancelOrderDialog.vue';
 import RefundDialog from '../components/RefundDialog.vue';
-import { getDateString, getCurrencyFormat, getDateStringNoTz, addDays, isDateAfter } from 'src/utils/helpers';
+import { getDateString, getNumberFormat, getDateStringNoTz, addDays, isDateAfter } from 'src/utils/helpers';
 import _ from 'lodash';
 import { memberOrderStatusOptions, paymentStatusOptions, currencyOptions, paymentMethodOptions } from '../enums';
 import BreadCrumbs from 'src/components/BreadCrumbs.vue';

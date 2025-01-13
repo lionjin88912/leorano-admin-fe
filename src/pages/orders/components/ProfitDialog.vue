@@ -29,7 +29,7 @@ import { ref, reactive, computed, watchEffect } from 'vue'
 import { useQuasar } from 'quasar';
 import { updateHotelOrderFinalProfit, updateCustomizedOrderFinalProfit } from 'src/api';
 import { isNumberEmpty, isNumberDigit, messages } from 'src/utils/validators';
-import { getCurrencyFormat } from 'src/utils/helpers';
+import { getNumberFormat } from 'src/utils/helpers';
 import selectCurrency from 'src/components/selectCurrency.vue';
 import to from 'await-to-js';
 

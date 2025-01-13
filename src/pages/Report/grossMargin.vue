@@ -46,7 +46,7 @@
 			</template>
 			<template v-slot:body-cell-year="props">
 				<q-td class="text-right last-cell-sticky">
-					<span>{{ getCurrencyFormat(props.row.year) }}</span>
+					<span>{{ getNumberFormat(props.row.year) }}</span>
 				</q-td>
 			</template>
     </q-table>
@@ -59,7 +59,7 @@
 import { ref, computed, watch, onMounted } from 'vue'
 import { useQuasar, LocalStorage } from 'quasar'
 import { grossMarginLast5WeekColumns, grossMarginYearColumns, reportTypeOptions, grossMarginTypeOptions, grossMarginLast5WeekDefaultData, grossMarginYearDefaultData, grossMarginLast5WeekChartOptions, grossMarginYearChartOptions } from './enums'
-import { getDateStringNoTz, getCurrencyFormat } from 'src/utils/helpers';
+import { getDateStringNoTz, getNumberFormat } from 'src/utils/helpers';
 import { getGrossMargin, getGrossMarginLastWeek } from 'src/api'
 import { router } from 'src/router'
 import apexchart from "vue3-apexcharts"
@@ -121,7 +121,7 @@ const getLast5WeekGrossMarginData = async () => {
 			name: `week${index + 1}`,
 			label: `${getDateStringNoTz(data.start_date, 'MM/DD')} - ${getDateStringNoTz(data.end_date, 'MM/DD')}`,
 			align: 'right',
-      field: (row) => row.hasOwnProperty(`week${index + 1}`) ? getCurrencyFormat(row[`week${index + 1}`]) : '-'
+			field: (row) => row.hasOwnProperty(`week${index + 1}`) ? getNumberFormat(row[`week${index + 1}`]) : '-'
 		})
 		last5WeekDatas.value[0][`week${index + 1}`] = data.app_hotel.order_number
 		last5WeekDatas.value[1][`week${index + 1}`] = data.app_hotel.room_night
@@ -361,11 +361,11 @@ const doExcelExport = async () => {
     return [
 			d.group,
 			d.label,
-      d.week1 ? getCurrencyFormat(d.week1) : '',
-      d.week2 ? getCurrencyFormat(d.week2) : '',
-      d.week3 ? getCurrencyFormat(d.week3) : '',
-      d.week4 ? getCurrencyFormat(d.week4) : '',
-      d.week5 ? getCurrencyFormat(d.week5) : ''
+			d.week1 ? getNumberFormat(d.week1) : '',
+			d.week2 ? getNumberFormat(d.week2) : '',
+			d.week3 ? getNumberFormat(d.week3) : '',
+			d.week4 ? getNumberFormat(d.week4) : '',
+			d.week5 ? getNumberFormat(d.week5) : ''
 		]
   });
   excelDatas = [headers, ...excelDatas];
@@ -388,19 +388,19 @@ const doExcelExport = async () => {
     return [
 			d.group,
 			d.label,
-      d.month1 ? getCurrencyFormat(d.month1) : '',
-      d.month2 ? getCurrencyFormat(d.month2) : '',
-      d.month3 ? getCurrencyFormat(d.month3) : '',
-      d.month4 ? getCurrencyFormat(d.month4) : '',
-      d.month5 ? getCurrencyFormat(d.month5) : '',
-      d.month6 ? getCurrencyFormat(d.month6) : '',
-      d.month7 ? getCurrencyFormat(d.month7) : '',
-      d.month8 ? getCurrencyFormat(d.month8) : '',
-      d.month9 ? getCurrencyFormat(d.month9) : '',
-      d.month10 ? getCurrencyFormat(d.month10) : '',
-      d.month11 ? getCurrencyFormat(d.month11) : '',
-      d.month12 ? getCurrencyFormat(d.month12) : '',
-			d.year ? getCurrencyFormat(d.year) : ''
+			d.month1 ? getNumberFormat(d.month1) : '',
+			d.month2 ? getNumberFormat(d.month2) : '',
+			d.month3 ? getNumberFormat(d.month3) : '',
+			d.month4 ? getNumberFormat(d.month4) : '',
+			d.month5 ? getNumberFormat(d.month5) : '',
+			d.month6 ? getNumberFormat(d.month6) : '',
+			d.month7 ? getNumberFormat(d.month7) : '',
+			d.month8 ? getNumberFormat(d.month8) : '',
+			d.month9 ? getNumberFormat(d.month9) : '',
+			d.month10 ? getNumberFormat(d.month10) : '',
+			d.month11 ? getNumberFormat(d.month11) : '',
+			d.month12 ? getNumberFormat(d.month12) : '',
+			d.year ? getNumberFormat(d.year) : ''
 		]
   })
   excelDatas = [headers, ...excelDatas];

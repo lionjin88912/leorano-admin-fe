@@ -89,13 +89,19 @@ const datas = reactive({
 })
 const doSearch = async () => {
   loading.value = true
-  const [err, res] = to(await getConsumption(selectedYear.value))
+  const [err, res] = await to(getConsumption(selectedYear.value))
   if (err) {
     return
   }
-  datas.year = res.data.year
-  datas.all = res.data.all
+  datas.year = res.data.year ? insertIndex(res.data.year) : []
+  datas.all = res.data.all ? insertIndex(res.data.all) : []
   loading.value = false
+}
+const insertIndex = (datas) => {
+  datas.forEach((row, index) => {
+    row.index = index + 1
+  })
+  return datas
 }
 /* 取得會員消費 End */
 
@@ -138,7 +144,7 @@ const doExcelExport = () => {
   for (const [key, groupData] of Object.entries(datas)) {
     let excelDatas = groupData.map(item => {
       return [
-        item.id,
+        item.index,
         item.name,
         item.total_amount
       ]

@@ -24,7 +24,7 @@
 <script setup>
 import { ref, reactive, computed, onMounted, watch } from 'vue';
 import { useMetaStore } from 'src/stores/meta';
-import { getDateStringNoTz, getCurrencyFormat } from 'src/utils/helpers';
+import { getDateStringNoTz, getNumberFormat } from 'src/utils/helpers';
 import { CurrencyColumns } from './enums';
 import BreadCrumbs from 'src/components/BreadCrumbs.vue';
 import selectCurrency from 'src/components/selectCurrency.vue';
@@ -84,8 +84,8 @@ const updateAmountTo = async () => {
 const records = ref([]);
 const addRecord = () => {
   records.value.unshift({
-    from: `${data.currencyFrom} ${getCurrencyFormat(data.amountFrom)}`, 
-    to: `${data.currencyTo} ${getCurrencyFormat(data.amountTo)}`,
+    from: `${data.currencyFrom} ${getNumberFormat(data.amountFrom)}`, 
+    to: `${data.currencyTo} ${getNumberFormat(data.amountTo)}`,
     time: getDateStringNoTz(new Date())
   });
 };

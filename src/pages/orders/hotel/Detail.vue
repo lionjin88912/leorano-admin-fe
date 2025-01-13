@@ -127,7 +127,7 @@
               {{ getPriceText(rate.local_price).currency }}
             </div>
             <div class="price">
-              ${{ getCurrencyFormat(getPriceText(rate.local_price).price) }}
+              ${{ getNumberFormat(getPriceText(rate.local_price).price) }}
             </div>
           </div>
         </div>
@@ -139,7 +139,7 @@
               {{ model.book_code.plan.total_price.slice(0, 3) }}
             </div>
             <div class="price">
-              ${{ getCurrencyFormat(getTaxAndFee()) }}
+              ${{ getNumberFormat(getTaxAndFee()) }}
             </div>
           </div>
         </div>
@@ -150,7 +150,7 @@
               {{ model.book_code.plan.total_price.slice(0, 3) }}
             </div>
             <div class="price">
-              ${{ getCurrencyFormat(model.book_code.plan.total_price.slice(3)) }}
+              ${{ getNumberFormat(model.book_code.plan.total_price.slice(3)) }}
             </div>
           </div>
         </div>
@@ -291,7 +291,7 @@ import RawDataInfo from 'src/pages/HotelList/plan/RawDataInfo.vue';
 import CancelOrderDialog from '../components/CancelOrderDialog.vue';
 import UserDialog from '../components/UserDialog.vue';
 import BreadCrumbs from 'src/components/BreadCrumbs.vue';
-import { getDateString, getCurrencyFormat, getCurrencyPriceFormat, getDateStringNoTz, isDateBefore } from 'src/utils/helpers';
+import { getDateString, getNumberFormat, getCurrencyPriceFormat, getDateStringNoTz, isDateBefore } from 'src/utils/helpers';
 import _ from 'lodash';
 
 const to = require('await-to-js').default
