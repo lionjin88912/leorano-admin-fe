@@ -1,4 +1,4 @@
-import { getDateString, getDateStringNoTz, getCurrencyFormat } from 'src/utils/helpers'
+import { getDateString, getDateStringNoTz, getNumberFormat } from 'src/utils/helpers'
 
 interface ColumnStruct {
   name: string
@@ -59,7 +59,7 @@ export const hotelColumns: TableColumn = [
     field: '',
     // field: (row: any) =>
     //   row.total_price
-    //     ? `${row.total_price.slice(0, 3)} ${getCurrencyFormat(row.total_price.slice(3))}`
+    //     ? `${row.total_price.slice(0, 3)} ${getNumberFormat(row.total_price.slice(3))}`
     //     : null,
     align: 'left',
   },
@@ -234,7 +234,7 @@ export const memberColumns: TableColumn = [
   {
     name: 'total_price',
     label: '訂單金額',
-    field: (row: any) => getCurrencyFormat(row.amount),
+    field: (row: any) => getNumberFormat(row.amount),
     align: 'left',
   },
   {
@@ -323,7 +323,7 @@ export const customizedFinancelColumns: TableColumn = [
   {
     name: 'amount',
     label: '金額',
-    field: (row: any) => `${row.currency} ${getCurrencyFormat(row.amount)}`,
+    field: (row: any) => `${row.currency} ${getNumberFormat(row.amount)}`,
     align: 'left',
   },
   {

@@ -75,7 +75,7 @@
                   <span class="text-bold text-dark">小計</span>
                 </q-td>
                 <q-td>
-                  <span class="text-h6 text-dark">USD {{ getCurrencyFormat(financeSum) }}</span>
+                  <span class="text-h6 text-dark">USD {{ getNumberFormat(financeSum) }}</span>
                 </q-td>
                 <q-td />
                 <q-td />
@@ -102,7 +102,7 @@ import { ref, reactive, watch, onMounted, computed } from 'vue'
 import { router } from 'src/router';
 import { customizedOrderTypeOptions, defaultQuestions, customizedInvoiceOptions, customizedOrderFinanceOptions, customizedFinancelColumns } from '../enums';
 import { getCustomizedOrder, createCustomizedOrder, updateCustomizedOrder, closeCustomizedOrder, RequestUploadAttachedFile } from 'src/api';
-import { getDateString, getCurrencyFormat } from 'src/utils/helpers';
+import { getDateString, getNumberFormat } from 'src/utils/helpers';
 import { useRoute } from 'vue-router';
 import BreadCrumbs from 'src/components/BreadCrumbs.vue';
 import InfoRow from '../components/InfoRow.vue';

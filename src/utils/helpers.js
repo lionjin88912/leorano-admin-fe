@@ -68,7 +68,7 @@ export const isDateAfterOrEqual = (a, b) => {
   return dayjs(a).isSame(dayjs(b)) || dayjs(a).isAfter(dayjs(b))
 }
 
-export const getCurrencyFormat = (value, locale, options) => {
+export const getNumberFormat = (value, locale, options) => {
   try {
     if (isNaN(value)) {
       return value
@@ -86,7 +86,7 @@ export const getCurrencyFormat = (value, locale, options) => {
 }
 
 export const getCurrencyPriceFormat = value => {
-  return value ? `${value.slice(0, 3)} ${getCurrencyFormat(value.slice(3))}` : '-'
+  return value ? `${value.slice(0, 3)} ${getNumberFormat(value.slice(3))}` : '-'
 }
 
 export const getTimeZoneList = () => {

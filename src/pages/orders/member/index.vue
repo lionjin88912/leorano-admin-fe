@@ -80,7 +80,7 @@ import { router } from 'src/router'
 import { getMemberOrderList } from 'src/api'
 import { memberColumns, memberOrderStatusOptions, paymentStatusOptions, paymentMethodOptions } from '../enums';
 import DatePicker from 'src/components/DatePicker.vue'
-import { getDateString, getCurrencyFormat } from 'src/utils/helpers';
+import { getDateString, getNumberFormat } from 'src/utils/helpers';
 import XLSX from 'xlsx-js-style';
 import BreadCrumbs from 'src/components/BreadCrumbs.vue';
 
@@ -223,7 +223,7 @@ const doExcelExport = async () => {
       d.order_number,
       d.Items.map((d) => `會籍 - ${d.item_name}`).join(', '),
       getDateString(d.created_at, 'YYYY-MM-DD'),
-      getCurrencyFormat(d.amount),
+      getNumberFormat(d.amount),
       memberOrderStatusOptions.find(s => s.value === d.status)?.label,
       paymentStatusOptions.find((d) => d.value === d.payment)?.label,
       getDateString(d.validity_at, 'YYYY-MM-DD'),

@@ -1,5 +1,5 @@
 import { QTableProps } from 'quasar'
-import { getDateString, getCurrencyFormat } from 'src/utils/helpers'
+import { getDateString, getNumberFormat } from 'src/utils/helpers'
 
 export const MembershipColumns: QTableProps['columns'] = [
   {
@@ -188,73 +188,73 @@ export const statisticsYearColumns: QTableProps['columns'] = [
     name: 'month1',
     label: '一月累計',
     align: 'right',
-    field: (row: any) => row.hasOwnProperty('month1') ? getCurrencyFormat(row.month1) : '-'
+    field: (row: any) => row.hasOwnProperty('month1') ? getNumberFormat(row.month1) : '-'
   },
   {
     name: 'month2',
     label: '二月累計',
     align: 'right',
-    field: (row: any) => row.hasOwnProperty('month2') ? getCurrencyFormat(row.month2) : '-'
+    field: (row: any) => row.hasOwnProperty('month2') ? getNumberFormat(row.month2) : '-'
   },
   {
     name: 'month3',
     label: '三月累計',
     align: 'right',
-    field: (row: any) => row.hasOwnProperty('month3') ? getCurrencyFormat(row.month3) : '-'
+    field: (row: any) => row.hasOwnProperty('month3') ? getNumberFormat(row.month3) : '-'
   },
   {
     name: 'month4',
     label: '四月累計',
     align: 'right',
-    field: (row: any) => row.hasOwnProperty('month4') ? getCurrencyFormat(row.month4) : '-'
+    field: (row: any) => row.hasOwnProperty('month4') ? getNumberFormat(row.month4) : '-'
   },
   {
     name: 'month5',
     label: '五月累計',
     align: 'right',
-    field: (row: any) => row.hasOwnProperty('month5') ? getCurrencyFormat(row.month5) : '-'
+    field: (row: any) => row.hasOwnProperty('month5') ? getNumberFormat(row.month5) : '-'
   },
   {
     name: 'month6',
     label: '六月累計',
     align: 'right',
-    field: (row: any) => row.hasOwnProperty('month6') ? getCurrencyFormat(row.month6) : '-'
+    field: (row: any) => row.hasOwnProperty('month6') ? getNumberFormat(row.month6) : '-'
   },
   {
     name: 'month7',
     label: '七月累計',
     align: 'right',
-    field: (row: any) => row.hasOwnProperty('month7') ? getCurrencyFormat(row.month7) : '-'
+    field: (row: any) => row.hasOwnProperty('month7') ? getNumberFormat(row.month7) : '-'
   },
   {
     name: 'month8',
     label: '八月累計',
     align: 'right',
-    field: (row: any) => row.hasOwnProperty('month8') ? getCurrencyFormat(row.month8) : '-'
+    field: (row: any) => row.hasOwnProperty('month8') ? getNumberFormat(row.month8) : '-'
   },
   {
     name: 'month9',
     label: '九月累計',
     align: 'right',
-    field: (row: any) => row.hasOwnProperty('month9') ? getCurrencyFormat(row.month9) : '-'
+    field: (row: any) => row.hasOwnProperty('month9') ? getNumberFormat(row.month9) : '-'
   },
   {
     name: 'month10',
     label: '十月累計',
     align: 'right',
-    field: (row: any) => row.hasOwnProperty('month10') ? getCurrencyFormat(row.month10) : '-'
+    field: (row: any) => row.hasOwnProperty('month10') ? getNumberFormat(row.month10) : '-'
   },
   {
     name: 'month11',
     label: '十一月累計',
     align: 'right',
-    field: (row: any) => row.hasOwnProperty('month11') ? getCurrencyFormat(row.month11) : '-'
+    field: (row: any) => row.hasOwnProperty('month11') ? getNumberFormat(row.month11) : '-'
   },
   {
     name: 'month12',
     label: '十二月累計',
     align: 'right',
-    field: (row: any) => row.hasOwnProperty('month12') ? getCurrencyFormat(row.month12) : '-'
+    field: (row: any) => row.hasOwnProperty('month12') ? getNumberFormat(row.month12) : '-'
   }
 ]
 
@@ -340,7 +340,7 @@ export const statisticsLast5WeekChartOptions = {
       },
       labels: {
         formatter: (val: number) => {
-          return getCurrencyFormat(val)
+          return getNumberFormat(val)
         }
       }
     }
@@ -376,7 +376,7 @@ export const statisticsLast5WeekChartOptions = {
     intersect: false,
     y: {
       formatter: function (y: number, { seriesIndex }: { seriesIndex: number }) {
-        return getCurrencyFormat(y)
+        return getNumberFormat(y)
       }
     }
   }
@@ -403,7 +403,7 @@ export const statisticsYearChartOptions = {
       },
       labels: {
         formatter: (val: number) => {
-          return getCurrencyFormat(val)
+          return getNumberFormat(val)
         }
       }
     }
@@ -439,7 +439,7 @@ export const statisticsYearChartOptions = {
     intersect: false,
     y: {
       formatter: function (y: number, { seriesIndex }: { seriesIndex: number }) {
-        return getCurrencyFormat(y)
+        return getNumberFormat(y)
       }
     }
   }

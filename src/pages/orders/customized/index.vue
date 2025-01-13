@@ -43,7 +43,7 @@
         </q-td>
       </template>
       <template #body-cell-price="{ row }">
-        <q-td>{{ row.currency }} {{ getCurrencyFormat(row.price) }}</q-td>
+        <q-td>{{ row.currency }} {{ getNumberFormat(row.price) }}</q-td>
       </template>
       <template #body-cell-voucher_send="{ row }">
         <q-td align="center">
@@ -90,7 +90,7 @@ import { useQuasar, SessionStorage } from 'quasar';
 import { ref, reactive, computed, watch } from 'vue';
 import { customizedColumns, customizedVoucherSendOptions, customizedOrderStatusOptions } from '../enums';
 import { getCustomizedOrderList, deleteCustomizedOrder, getCustomizedOrderVoucher } from 'src/api';
-import { getDateString, getCurrencyFormat, getCurrencyPriceFormat } from 'src/utils/helpers';
+import { getDateString, getNumberFormat, getCurrencyPriceFormat } from 'src/utils/helpers';
 import { router } from 'src/router'
 import BreadCrumbs from 'src/components/BreadCrumbs.vue';
 import DatePicker from 'src/components/DatePicker.vue';
