@@ -71,7 +71,7 @@ const rules = computed(() => {
     ],
     amount: [
       val => !isEmpty(val) || messages.requiredInput(),
-      val => isNumberDigit(val, 7, null) || messages.invalidInteger(7)
+      val => isNumberDigit(val, 7, 2) || `${messages.invalidInteger(7)}，${messages.invalidDecimal(2)}`
     ],
     exchange_rate: [
       val => !isEmpty(val) || messages.requiredInput(),
