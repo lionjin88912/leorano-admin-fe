@@ -13,7 +13,7 @@
           <q-select v-model="model.type" :options="customizedOrderFinanceOptions" label="項目" class="q-mb-md" emit-value map-options dense outlined />
           <q-input v-model="model.title" label="名稱" :rules="rules.title" outlined dense />
           <div class="row q-col-gutter-sm">
-            <selectCurrency v-model="model.currency" label="幣別" class="col-4" default="TWD"></selectCurrency>
+            <selectCurrency v-model="model.currency" label="幣別" class="col-4" default="TWD" @handleCallBack="setCurrency"></selectCurrency>
             <q-input type="number" v-model.number="model.amount" label="金額" class="col-8" :rules="rules.amount" outlined dense />
           </div>
           <q-input type="number" v-model.number="model.exchange_rate" label="匯率" :rules="rules.exchange_rate" outlined dense />
@@ -79,6 +79,10 @@ const rules = computed(() => {
     ]
   }
 });
+
+const setCurrency = async (currency) => {
+  model.exchange_rate = _.round(await metaStore.getExchangeRate(currency, 'USD'), 2);
+}
 
 const $q = useQuasar();
 const form = ref();
