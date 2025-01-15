@@ -80,8 +80,8 @@ const rules = computed(() => {
   }
 });
 
-const setCurrency = async (currency) => {
-  model.exchange_rate = _.round(await metaStore.getExchangeRate(currency, 'USD'), 2);
+const setCurrency = async () => {
+  model.exchange_rate = _.round(await metaStore.getExchangeRate(model.currency, 'USD'), 2);
 }
 
 const $q = useQuasar();
