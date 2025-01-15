@@ -24,7 +24,7 @@ const props = defineProps({
     default: false
   }
 })
-const model = ref(null)
+const model = defineModel();
 const allOptions = ['USD', 'TWD', 'JPY', 'CNY', 'HKD', 'AED', 'AUD', 'BRL', 'CAD', 'CHF', 'EUR', 'GBP', 'IDR', 'KRW', 'MYR', 'MAD', 'NZD', 'PHP', 'RUB', 'SEK', 'SGD', 'THB', 'VND'];
 const group_options = ref(allOptions)
 
@@ -44,7 +44,7 @@ function autoComplete (val) {
 
 const emit = defineEmits(['handleCallBack'])
 const handleSelection = () => {
-  emit('handleCallBack', model.value)
+  emit('handleCallBack')
 }
 
 watchEffect(() => {
