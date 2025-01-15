@@ -65,7 +65,7 @@
             </template>
             <template v-slot:body-cell-exchange_rate="props">
               <q-td :props="props">
-                <q-input type="number" v-model.number="props.row.exchange_rate" class="exchange-rate" :disable="isClose" dense outlined />
+                <q-input type="number" v-model.number="props.row.exchange_rate" class="exchange-rate" :rules="rules.exchange_rate" :disable="isClose" dense outlined />
               </q-td>
             </template>
             <template v-slot:bottom-row>
@@ -103,6 +103,7 @@ import { router } from 'src/router';
 import { customizedOrderTypeOptions, defaultQuestions, customizedInvoiceOptions, customizedOrderFinanceOptions, customizedFinancelColumns } from '../enums';
 import { getCustomizedOrder, createCustomizedOrder, updateCustomizedOrder, closeCustomizedOrder, RequestUploadAttachedFile } from 'src/api';
 import { getDateString, getNumberFormat } from 'src/utils/helpers';
+import { isEmpty, isNumberDigit, messages } from 'src/utils/validators';
 import { useRoute } from 'vue-router';
 import BreadCrumbs from 'src/components/BreadCrumbs.vue';
 import InfoRow from '../components/InfoRow.vue';
@@ -158,6 +159,15 @@ const data: Order = reactive({
 	deleted_attached: [],
 	finance: [],
 	deleted_at: null,
+});
+
+const rules = computed(() => {
+  return {
+    exchange_rate: [
+      val => !isEmpty(val) || messages.requiredInput(),
+      val => isNumberDigit(val, 4, 2) || `${messages.invalidInteger(4)}，${messages.invalidDecimal(2)}`
+    ]
+  }
 });
 
 const member = ref([]);
@@ -309,7 +319,15 @@ const addOrder = async () => {
 }
 const saveOrder = async () => {
 	$q.loading.show();
-	const [err, res]: [any, any] = await to(updateCustomizedOrder(orderNumber, data));
+	let valid = await validate();
+	if (valid) {
+		const [err, res]: [any, any] = await to(updateCustomizedOrder(orderNumber, data));
+	} else {
+		window.scrollTo({
+			top: 0,
+			behavior: 'smooth'
+		});
+	}
 	$q.loading.hide();
 }
 /* 新增/編輯訂單 End */
