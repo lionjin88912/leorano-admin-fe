@@ -18,9 +18,9 @@ const hotelColumns: TableColumn = [
     wpx: 120
   },
   {
-    name: 'order_name',
+    name: 'hotel_name',
     label: '酒店名稱',
-    field: 'order_name',
+    field: 'hotel_name',
     align: 'left',
     wpx: 180
   },
