@@ -201,11 +201,11 @@ export const customizedOrderStatusOptions = [
 ]
 
 export const customizedOrderTypeOptions = [
-  { label: '飯店', value: 'hotel' },
+  { label: '酒店', value: 'hotel' },
   { label: '票卷', value: 'ticket' },
 ]
 
-// 飯店類型的問題：飯店名稱
+// 酒店類型的問題：酒店名稱
 export const defaultQuestions = {
   hotel: ['Hotel Name', 'Check-in Time', 'Check-out Time', 'Room Type', 'Note'],
   ticket: ['Title', 'Note']
