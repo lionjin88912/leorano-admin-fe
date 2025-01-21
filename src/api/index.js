@@ -216,7 +216,9 @@ export const RequestFile = (data) => baseService.post('/order/customized/get_att
 
 export const RequestUploadAttachedFile = (id, files) => {
   let formData = new FormData()
-  formData.append('files[]', ...files)
+  files.forEach((file) => {
+    formData.append('files[]', file)
+  })
 
   return baseService.post(`/files/upload/customer_order/${id}`, formData, {
     headers: {
