@@ -119,7 +119,7 @@ import { useQuasar } from 'quasar';
 import { ref, reactive, watch, onMounted, computed } from 'vue'
 import { router } from 'src/router';
 import { customizedOrderTypeOptions, defaultQuestions, customizedInvoiceOptions, customizedOrderFinanceOptions, customizedFinancelColumns } from '../enums';
-import { getCustomizedOrder, createCustomizedOrder, updateCustomizedOrder, closeCustomizedOrder, RequestUploadAttachedFile } from 'src/api';
+import { getCustomizedOrder, createCustomizedOrder, updateCustomizedOrder, closeCustomizedOrder, RequestUploadAttachedFile, RequestFile } from 'src/api';
 import { getDateString, getNumberFormat } from 'src/utils/helpers';
 import { isEmpty, isNumberDigit, messages } from 'src/utils/validators';
 import { useRoute } from 'vue-router';
@@ -275,9 +275,25 @@ const getFileType = (url: string) => {
 const getFileName = (url: string) => {
   return url.split('/').pop();
 }
+const CONTENT_TYPE = {
+  'jpg': 'image/jpeg',
+  'jpeg': 'image/jpeg',
+  'png': 'image/png',
+  'pdf': 'application/pdf'
+}
 const getAttachedBlob = async (url: string) => {
-  const res = await axios.get(url, { responseType: 'blob' });
-  return URL.createObjectURL(res.data);
+  const [err, blob] = await to(RequestFile({url}));
+  if (err) {
+    console.error('getAttachedBlob error:', err);
+    return;
+  }
+  const fileType = getFileType(url);
+  if (!fileType || !CONTENT_TYPE[fileType]) {
+    console.error('Unsupported file type:', fileType);
+    return;
+  }
+  const blobChangeType = new Blob([blob], { type: CONTENT_TYPE[fileType] });
+  return URL.createObjectURL(blobChangeType);
 }
 const previewAttached = async (attached: any) => {
   const url = await getAttachedBlob(attached.url);

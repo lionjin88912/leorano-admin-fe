@@ -212,6 +212,8 @@ export const RequestUploadUserFile = (id, data) => {
   })
 }
 
+export const RequestFile = (data) => baseService.post('/order/customized/get_attached_file', data, { responseType: 'blob' })
+
 export const RequestUploadAttachedFile = (id, files) => {
   let formData = new FormData()
   formData.append('files[]', ...files)
