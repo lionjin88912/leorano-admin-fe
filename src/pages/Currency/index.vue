@@ -7,7 +7,7 @@
           <selectCurrency v-model="data.currencyFrom" label="幣別" :default="data.currencyFrom" class="col-2" @handleCallBack="updateAmountTo"></selectCurrency>
           <q-input type="number" v-model="amountFrom" label="金額" :debounce="500" class="col" dense outlined></q-input>
           <q-icon name="sync_alt" size="sm" color="grey-7" />
-          <selectCurrency v-model="data.currencyTo" label="幣別" :default="data.currencyT" class="col-2" @handleCallBack="updateAmountTo"></selectCurrency>
+          <selectCurrency v-model="data.currencyTo" label="幣別" :default="data.currencyTo" class="col-2" @handleCallBack="updateAmountTo"></selectCurrency>
           <q-input type="number" v-model="amountTo" label="金額" :debounce="500" class="col" dense outlined></q-input>
         </div>
         <div class="row justify-end q-mt-md">

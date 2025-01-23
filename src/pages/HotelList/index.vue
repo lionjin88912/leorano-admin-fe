@@ -25,8 +25,7 @@
         <q-btn label="新增酒店" color="primary" @click="doHotelCreate"></q-btn>
       </div>
     </div>
-    <TableComponent ref='tableRef' :props-filter='propsFilter' :columns='columns' :handleCallApi='RequestHotelList'
-      :multiple="batchMode" :click-select="false">
+    <TableComponent ref='tableRef' :props-filter='propsFilter' :columns='columns' :pagination="pagination" :handleCallApi='RequestHotelList' :multiple="batchMode" :click-select="false" :route-pagination="true">
       <template v-slot:body-cell-name='props'>
         <q-td class="link" @click="goToEdit(props.row.id)">
           <div class="text-sm text-grey-7">ID: {{ props.row.hotel_id }}</div>
@@ -80,6 +79,12 @@ const filter = reactive({
   country_id: router.currentRoute.value.query.country_id ? parseInt(router.currentRoute.value.query.country_id) : null,
   city_id: router.currentRoute.value.query.city_id ? parseInt(router.currentRoute.value.query.city_id) : null,
   brand_id: router.currentRoute.value.query.brand_id ? parseInt(router.currentRoute.value.query.brand_id) : null,
+})
+const pagination = reactive({
+  sortBy: router.currentRoute.value.query.sort ?? null,
+  descending: router.currentRoute.value.query.order ? router.currentRoute.value.query.order === 'desc' : false,
+  page: router.currentRoute.value.query.page ? parseInt(router.currentRoute.value.query.page) : 1,
+  rowsPerPage: router.currentRoute.value.query.limit ? parseInt(router.currentRoute.value.query.limit) : 10,
 })
 
 const batchMode = ref(true);
@@ -141,6 +146,7 @@ const setSelectFilter = (model) => {
 }
 
 const goToEdit = (id) => {
+  SessionStorage.set('hotel_list', router.options.history.location);
   router.push({ name: 'EditHotel', params: { hotel_id: id } })
 }
 
