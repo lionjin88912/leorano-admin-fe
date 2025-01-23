@@ -52,7 +52,7 @@
               label="國家 *"
               :default="{ id: data.country_id, name: data.country }"
               :rules="rules.country"
-              class="col-6"
+              class="col-4"
             />
             <selectCity
               @handleCallBack="setCity"
@@ -60,10 +60,11 @@
               :default="{ id: data.city_id, name: data.city }"
               :country="data.country_id"
               :rules="rules.city"
+              class="col-4"
             />
-            <q-input class="col-6" v-model="data.postal_code" label="ZIP code" outlined dense />
+            <q-input class="col-4" v-model="data.postal_code" label="ZIP code" outlined dense />
             <q-input
-              class="col-xs-12 col-md"
+              class="col"
               v-model="lang.address"
               label="酒店地址"
               :rules="rules.address"
@@ -76,7 +77,7 @@
                 <q-tooltip>定位</q-tooltip>
               </template>
             </q-input>
-            <q-field label="酒店座標" class="location-field col-xs-12" stack-label outlined dense readonly hide-hint hide-bottom-space>
+            <q-field label="酒店座標" class="location-field" stack-label outlined dense readonly hide-hint hide-bottom-space>
               <template v-slot:control>
                 <div class="flex-1 items-center justify-around">
                   <div class="text-grey-9">

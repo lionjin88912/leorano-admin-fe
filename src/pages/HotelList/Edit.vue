@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="flex justify-between">
-      <BreadCrumbs>
+      <BreadCrumbs :parentPath="parentPath">
         <template #currentRoute>
           <q-breadcrumbs-el :label='hotelName' />
           <q-breadcrumbs-el :label='$route.meta.title' />
@@ -33,7 +33,7 @@
 
 import { ref, onMounted, onBeforeMount, computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { useQuasar } from 'quasar'
+import { SessionStorage, useQuasar } from 'quasar'
 import to from 'await-to-js'
 import { RequestHotelByID, RequestUpdateHotel, getHotelSearchRoomList } from 'src/api'
 import { editTab } from './enums'
@@ -119,6 +119,7 @@ const readApi = async (id: any) => {
   return res.data
 }
 
+const parentPath = ref(route.meta.parent?.path)
 const currentTabComponent = computed(() => {
   // console.log('currentTab:', tab.value)
   switch (tab.value) {
@@ -157,6 +158,9 @@ onMounted(async () => {
   // console.log('langdata:', langData.value)
   setDefaultFieldValue();
 
+  if (router.options.history.state.back) {
+    parentPath.value = SessionStorage.getItem('hotel_list') as string | undefined;
+  }
 })
 onBeforeMount(() => {
   /**

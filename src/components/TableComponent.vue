@@ -12,7 +12,7 @@
     <q-table class='data-table' :table-class="selectionClass" :class="tableClass" :rows='rows' :columns='props.columns'
       :loading='loading' :no-data-label='noDataLabel' :rows-per-page-options="pagination.perPage"
       v-model:pagination='pagination' v-model:selected="selection" :selection="selectionType" :hide-selected-banner="true"
-      :hide-pagination="hidePagination" :hide-header="hideHeader" :visible-columns="visibleColumns" @row-click="onRowClick" @request='onDataRequest'
+      :hide-pagination="hidePagination" :hide-header="hideHeader" :visible-columns="visibleColumns" @row-click="onRowClick" @request='requestProp => props.routePagination ? updatePagination(requestProp) : onDataRequest(requestProp)'
       binary-state-sort hidde-title flat bordered>
       <template v-for="column in props.columns" v-slot:[`body-cell-${column.name}`]='props'>
         <slot :name='`body-cell-${column.name}`' v-bind='props'>
@@ -61,6 +61,12 @@ const props = defineProps({
     type: Boolean,
     default() {
       return true
+    }
+  },
+  routePagination: {
+    type: Boolean,
+    default() {
+      return false
     }
   },
   apiDataListKey: {
@@ -146,6 +152,38 @@ const getSelection = () => {
 
 const getPagination = () => {
   return pagination.value;
+}
+
+const updatePagination = (data: any) => {
+  let query = { ...router.currentRoute.value.query }
+
+  if (data.pagination.page !== 1) {
+    query.page = data.pagination.page
+  } else {
+    delete query.page
+  }
+
+  if (data.pagination.rowsPerPage !== 10) {
+    query.limit = data.pagination.rowsPerPage
+  } else {
+    delete query.limit
+  }
+
+  if (data.pagination.sortBy) {
+    query.sort = data.pagination.sortBy
+  } else {
+    delete query.sort
+  }
+
+  if (data.pagination.descending) {
+    query.order = 'desc'
+  } else {
+    delete query.order
+  }
+
+  router.push({
+    query: query
+  })
 }
 
 const onDataRequest = async (data: any) => {
