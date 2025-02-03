@@ -45,7 +45,7 @@ import TableComponent from 'src/components/TableComponent.vue'
 import { getAccountingList } from 'src/api'
 import { pages } from './enums'
 import XLSX from 'xlsx-js-style'
-import { getDateString, getDateStringNoTz, getCurrencyFormat } from 'src/utils/helpers';
+import { getDateString, getDateStringNoTz, getNumberFormat } from 'src/utils/helpers';
 import to from 'await-to-js';
 
 const pageType = router.currentRoute.value.params.type

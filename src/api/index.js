@@ -92,6 +92,9 @@ export const SaveUserProfile = (id, data) => baseService.patch(`/users/${id}`, d
 
 export const SaveRegisterRecord = (id, data) => baseService.patch(`/registerRecord/${id}`, data)
 
+// dashboard
+export const getDashboardNewMember = (year, month, day) => baseService.get(`/dashboard/new_member_count/${year}/${month}/${day}`)
+export const getDashboardHotelOrder = (day) => baseService.get(`/dashboard/hotel/order/checkin/${day}`)
 // 管理者帳號
 export const RequestAdmins = (data) => baseService.get('/account', { params: data })
 export const CreateAdmin = (data) => baseService.post('/account', data)
@@ -209,9 +212,13 @@ export const RequestUploadUserFile = (id, data) => {
   })
 }
 
+export const RequestFile = (data) => baseService.post('/order/customized/get_attached_file', data, { responseType: 'blob' })
+
 export const RequestUploadAttachedFile = (id, files) => {
   let formData = new FormData()
-  formData.append('files[]', ...files)
+  files.forEach((file) => {
+    formData.append('files[]', file)
+  })
 
   return baseService.post(`/files/upload/customer_order/${id}`, formData, {
     headers: {

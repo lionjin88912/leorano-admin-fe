@@ -1,6 +1,5 @@
 <template>
-    <q-select dense outlined v-model='model' use-input input-debounce='500' :label='label' option-value="id"
-      option-label="name" :options='group_options' fill-input hide-selected @filter="onFilter" @input-value="autoComplete" @update:modelValue="handleSelection" :disable="disable" />
+    <q-select dense outlined v-model='model' use-input input-debounce='500' :label='label' :options='group_options' fill-input hide-selected @filter="onFilter" @input-value="autoComplete" @update:modelValue="handleSelection" :disable="disable" />
 </template>
 
 <script setup>
@@ -25,7 +24,7 @@ const props = defineProps({
     default: false
   }
 })
-const model = defineModel()
+const model = defineModel();
 const allOptions = ['USD', 'TWD', 'JPY', 'CNY', 'HKD', 'AED', 'AUD', 'BRL', 'CAD', 'CHF', 'EUR', 'GBP', 'IDR', 'KRW', 'MYR', 'MAD', 'NZD', 'PHP', 'RUB', 'SEK', 'SGD', 'THB', 'VND'];
 const group_options = ref(allOptions)
 
@@ -45,7 +44,7 @@ function autoComplete (val) {
 
 const emit = defineEmits(['handleCallBack'])
 const handleSelection = () => {
-  emit('handleCallBack', model.value)
+  emit('handleCallBack')
 }
 
 watchEffect(() => {

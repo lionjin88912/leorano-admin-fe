@@ -16,7 +16,7 @@ export default boot(({ app }) => {
       el.value = ''
       return
     }
-    const result = helpers.getCurrencyFormat(val)
+    const result = helpers.getNumberFormat(val)
     // console.log('formated money:', result);
     if (el.hasOwnProperty('value')) {
       el.value = String(result)

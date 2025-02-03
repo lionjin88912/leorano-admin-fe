@@ -140,7 +140,7 @@ import BreadCrumbs from 'src/components/BreadCrumbs.vue';
 import ProfitDialog from '../components/ProfitDialog.vue'
 import History from 'src/components/dialog/History.vue';
 import XLSX from 'xlsx-js-style'
-import { getDateString, getDateStringNoTz, getCurrencyFormat, getCurrencyPriceFormat } from 'src/utils/helpers';
+import { getDateString, getDateStringNoTz, getNumberFormat, getCurrencyPriceFormat } from 'src/utils/helpers';
 import { useMetaStore } from 'src/stores/meta';
 import to from 'await-to-js';
 import _ from 'lodash'
@@ -337,7 +337,7 @@ const doExcelExport = async () => {
       getDateStringNoTz(d.check_in, 'YYYY-MM-DD'),
       getDateStringNoTz(d.check_out, 'YYYY-MM-DD'),
       d.total_price
-        ? `${d.total_price.slice(0, 3)} ${getCurrencyFormat(d.total_price.slice(3))}`
+        ? `${d.total_price.slice(0, 3)} ${getNumberFormat(d.total_price.slice(3))}`
         : '',
       d.usd_total_price,
       `${d.user.first_name} ${d.user.last_name}`,
@@ -395,7 +395,7 @@ const getUsdTotalPrice = async (row) => {
   const amount = row.total_price.slice(3)
   const rate = await metaStore.getExchangeRate(origCurrency, targetCurrency)
   const targetPrice = _.round(amount * rate, 2)
-  return `${targetCurrency} ${getCurrencyFormat(targetPrice)}`
+  return `${targetCurrency} ${getNumberFormat(targetPrice)}`
 }
 
 watch(filter, (newVal) => {

@@ -3,7 +3,7 @@ import { RouteRecordRaw } from 'vue-router';
 const routes: RouteRecordRaw[] = [
   {
     path: '',
-    redirect: { name: 'HotelList' },
+    redirect: { name: 'Dashboard' },
     meta: {
       requiresAuth: true, // 這個路由需要登入權限
     },
@@ -357,6 +357,16 @@ const routes: RouteRecordRaw[] = [
             component: () => import('pages/CountryRegion/index.vue'),
           },
         ],
+      },
+      {
+        path: '/dashboard',
+        name: 'Dashboard',
+        meta: {
+          title: 'Dashboard',
+          requiresPermission: true,
+          permissionCode: 'dashboard',
+        },
+        component: () => import('pages/Dashboard/index.vue'),
       },
       {
         path: '/admins',

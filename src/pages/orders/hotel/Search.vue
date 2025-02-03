@@ -200,7 +200,7 @@ const selected = reactive({
   room: null,
   plan: null
 })
-// 選擇飯店
+// 選擇酒店
 const changeHotel = (item) => {
   selected.hotel = item
   searchHotelRoom(item.id);

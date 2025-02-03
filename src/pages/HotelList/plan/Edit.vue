@@ -25,7 +25,7 @@
         <q-form ref="formRef" class="row q-gutter-x-lg text-grey-7">
           <div class="plan-type">{{ row.rate_plan_type }}</div>
           <div class="col">
-            <q-select v-model="models[row.id].room" :options="roomOptions" placeholder="Room *" :rules="rules.room" map-options emit-value hide-bottom-space outlined dense use-input fill-input hide-selected input-debounce="500" />
+            <q-select v-model="models[row.id].room" :options="models[row.id].roomOptions" placeholder="Room *" :rules="rules.room" @filter="(val, update, abort) => onfilterRoom(val, update, abort, row.id)" map-options emit-value hide-bottom-space outlined dense use-input fill-input hide-selected input-debounce="500" />
             <div class="text-grey-6">{{ newTpRoom(row) }}</div>
             <div v-if="roomOptions.length > 0 && models[row.id].room" class="row items-center q-gutter-x-xs q-mt-xs">
               <q-badge v-if="models[row.id].isEditRoomCode" :label="newRoomCode(row)" color="grey-4" class="text-black" />
@@ -34,7 +34,7 @@
             </div>
           </div>
           <div class="col">
-            <q-select v-model="models[row.id].rate" :options="rateOptions" placeholder="Rate *" :rules="rules.rate" map-options emit-value hide-bottom-space outlined dense use-input fill-input hide-selected input-debounce="500" />
+            <q-select v-model="models[row.id].rate" :options="models[row.id].rateOptions" placeholder="Rate *" :rules="rules.rate" @filter="(val, update, abort) => onfilterRate(val, update, abort, row.id)" map-options emit-value hide-bottom-space outlined dense use-input fill-input hide-selected input-debounce="500" />
             <div class="text-grey-6">{{ newTpRate(row) }}</div>
             <div v-if="rateOptions.length > 0 && models[row.id].rate" class="row items-center q-gutter-x-xs q-mt-xs">
               <q-badge v-if="models[row.id].isEditRateCode" :label="newRateCode(row)" color="grey-4" class="text-black" />
@@ -81,6 +81,7 @@ import { GetHotelPlanList, GetHotelRoomList, GetHotelRateList, UpdateHotelRoom, 
 import { isEmpty, messages } from 'src/utils/validators';
 import SelectTag from 'src/components/dialog/SelectTag.vue';
 import to from 'await-to-js';
+import _ from 'lodash'
 
 const props = defineProps({
   propsData: Object
@@ -121,7 +122,7 @@ const doSearch = async () => {
     console.error('GetHotelPlanList error:', err);
     return;
   }
-  rows.value = res.data.filter(row => row.rate_code);
+  rows.value = res.data.filter(row => row.is_enabled);
   rows.value.forEach(row => {
     row.tmp_room_code = row.rate_plan_type.slice(0, 3);
     row.tmp_rate_code = row.rate_plan_type.slice(3);
@@ -133,6 +134,8 @@ const doSearch = async () => {
       isEditPlan: null,
       isEditRoomCode: null,
       isEditRateCode: null,
+      roomOptions: JSON.parse(JSON.stringify(roomOptions.value)),
+      rateOptions: JSON.parse(JSON.stringify(rateOptions.value))
     }
   });
 }
@@ -172,6 +175,18 @@ const getHotelRoomList = async (name) => {
     }
   })
   return list
+}
+// 過濾 Room
+const onfilterRoom = async (val, update, abort, index) => {
+  if (val === '') {
+    update(() => {
+      models.value[index].roomOptions = roomOptions.value
+    });
+    return
+  }
+  update(() => {
+    models.value[index].roomOptions = roomOptions.value.filter(d => _.toLower(d.label).includes(_.toLower(val)))
+  });
 }
 // 新舊資料比對
 const newTpRoom = row => {
@@ -226,6 +241,18 @@ const getHotelRateList = async (name) => {
     }
   })
   return list
+}
+// 過濾 Rate
+const onfilterRate = async (val, update, abort, index) => {
+  if (val === '') {
+    update(() => {
+      models.value[index].rateOptions = rateOptions.value
+    });
+    return
+  }
+  update(() => {
+    models.value[index].rateOptions = rateOptions.value.filter(d => _.toLower(d.label).includes(_.toLower(val)))
+  });
 }
 // 新舊資料比對
 const newTpRate = row => {

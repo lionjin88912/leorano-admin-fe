@@ -47,7 +47,7 @@
 			</template>
 			<template v-slot:body-cell-year="props">
 				<q-td class="text-right last-cell-sticky">
-					<span>{{ getCurrencyFormat(props.row.year) }}</span>
+					<span>{{ getNumberFormat(props.row.year) }}</span>
 				</q-td>
 			</template>
     </q-table>
@@ -63,7 +63,7 @@ import { ref, watch, computed, onMounted } from 'vue'
 import { router } from 'src/router'
 import { getPromoMembership, getPromoMembershipByMonth, getPromoMembershipLastWeek } from 'src/api'
 import { statisticsLast5WeekColumns, statisticsYearColumns, reportTypeOptions, statisticsTypeOptions, statisticsLast5WeekDefaultData, statisticsYearDefaultData, statisticsLast5WeekChartOptions, statisticsYearChartOptions } from '../enums'
-import { getDateString, getDateStringNoTz, getCurrencyFormat } from 'src/utils/helpers'
+import { getDateString, getDateStringNoTz, getNumberFormat } from 'src/utils/helpers'
 import apexchart from "vue3-apexcharts"
 import BreadCrumbs from 'src/components/BreadCrumbs.vue'
 import YearPicker from 'components/YearPicker.vue'
@@ -150,7 +150,7 @@ const getLast5WeekPromoMembershipData = async () => {
 			name: `week${index + 1}`,
 			label: `${getDateStringNoTz(data.start_date, 'MM/DD')} - ${getDateStringNoTz(data.end_date, 'MM/DD')}`,
 			align: 'right',
-      field: (row) => row.hasOwnProperty(`week${index + 1}`) ? getCurrencyFormat(row[`week${index + 1}`]) : '-'
+			field: (row) => row.hasOwnProperty(`week${index + 1}`) ? getNumberFormat(row[`week${index + 1}`]) : '-'
 		})
 		last5WeekDatas.value[0][`week${index + 1}`] = data.exchange.quantity
 		last5WeekDatas.value[1][`week${index + 1}`] = data.exchange.cumulative
@@ -284,11 +284,11 @@ const doExcelExport = async () => {
     return [
 			d.group,
 			d.label,
-      d.week1 ? getCurrencyFormat(d.week1) : '',
-      d.week2 ? getCurrencyFormat(d.week2) : '',
-      d.week3 ? getCurrencyFormat(d.week3) : '',
-      d.week4 ? getCurrencyFormat(d.week4) : '',
-      d.week5 ? getCurrencyFormat(d.week5) : ''
+			d.week1 ? getNumberFormat(d.week1) : '',
+			d.week2 ? getNumberFormat(d.week2) : '',
+			d.week3 ? getNumberFormat(d.week3) : '',
+			d.week4 ? getNumberFormat(d.week4) : '',
+			d.week5 ? getNumberFormat(d.week5) : ''
 		]
   });
   excelDatas = [headers, ...excelDatas];
@@ -310,18 +310,18 @@ const doExcelExport = async () => {
     return [
 			d.group,
 			d.label,
-      d.month1 ? getCurrencyFormat(d.month1) : '',
-      d.month2 ? getCurrencyFormat(d.month2) : '',
-      d.month3 ? getCurrencyFormat(d.month3) : '',
-      d.month4 ? getCurrencyFormat(d.month4) : '',
-      d.month5 ? getCurrencyFormat(d.month5) : '',
-      d.month6 ? getCurrencyFormat(d.month6) : '',
-      d.month7 ? getCurrencyFormat(d.month7) : '',
-      d.month8 ? getCurrencyFormat(d.month8) : '',
-      d.month9 ? getCurrencyFormat(d.month9) : '',
-      d.month10 ? getCurrencyFormat(d.month10) : '',
-      d.month11 ? getCurrencyFormat(d.month11) : '',
-      d.month12 ? getCurrencyFormat(d.month12) : ''
+			d.month1 ? getNumberFormat(d.month1) : '',
+			d.month2 ? getNumberFormat(d.month2) : '',
+			d.month3 ? getNumberFormat(d.month3) : '',
+			d.month4 ? getNumberFormat(d.month4) : '',
+			d.month5 ? getNumberFormat(d.month5) : '',
+			d.month6 ? getNumberFormat(d.month6) : '',
+			d.month7 ? getNumberFormat(d.month7) : '',
+			d.month8 ? getNumberFormat(d.month8) : '',
+			d.month9 ? getNumberFormat(d.month9) : '',
+			d.month10 ? getNumberFormat(d.month10) : '',
+			d.month11 ? getNumberFormat(d.month11) : '',
+			d.month12 ? getNumberFormat(d.month12) : ''
 		]
   })
   excelDatas = [headers, ...excelDatas];
