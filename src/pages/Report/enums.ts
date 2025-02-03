@@ -1,5 +1,5 @@
 import { QTableProps } from 'quasar'
-import { getCurrencyFormat } from 'src/utils/helpers';
+import { getNumberFormat } from 'src/utils/helpers';
 
 export const gmvColumns: QTableProps['columns'] = [
   {
@@ -18,73 +18,73 @@ export const gmvColumns: QTableProps['columns'] = [
     name: 'month1',
     label: '一月',
     align: 'right',
-    field: (row: any) => row.hasOwnProperty('month1') ? getCurrencyFormat(row.month1) : '-'
+    field: (row: any) => row.hasOwnProperty('month1') ? getNumberFormat(row.month1) : '-'
   },
   {
     name: 'month2',
     label: '二月',
     align: 'right',
-    field: (row: any) => row.hasOwnProperty('month2') ? getCurrencyFormat(row.month2) : '-'
+    field: (row: any) => row.hasOwnProperty('month2') ? getNumberFormat(row.month2) : '-'
   },
   {
     name: 'month3',
     label: '三月',
     align: 'right',
-    field: (row: any) => row.hasOwnProperty('month3') ? getCurrencyFormat(row.month3) : '-'
+    field: (row: any) => row.hasOwnProperty('month3') ? getNumberFormat(row.month3) : '-'
   },
   {
     name: 'month4',
     label: '四月',
     align: 'right',
-    field: (row: any) => row.hasOwnProperty('month4') ? getCurrencyFormat(row.month4) : '-'
+    field: (row: any) => row.hasOwnProperty('month4') ? getNumberFormat(row.month4) : '-'
   },
   {
     name: 'month5',
     label: '五月',
     align: 'right',
-    field: (row: any) => row.hasOwnProperty('month5') ? getCurrencyFormat(row.month5) : '-'
+    field: (row: any) => row.hasOwnProperty('month5') ? getNumberFormat(row.month5) : '-'
   },
   {
     name: 'month6',
     label: '六月',
     align: 'right',
-    field: (row: any) => row.hasOwnProperty('month6') ? getCurrencyFormat(row.month6) : '-'
+    field: (row: any) => row.hasOwnProperty('month6') ? getNumberFormat(row.month6) : '-'
   },
   {
     name: 'month7',
     label: '七月',
     align: 'right',
-    field: (row: any) => row.hasOwnProperty('month7') ? getCurrencyFormat(row.month7) : '-'
+    field: (row: any) => row.hasOwnProperty('month7') ? getNumberFormat(row.month7) : '-'
   },
   {
     name: 'month8',
     label: '八月',
     align: 'right',
-    field: (row: any) => row.hasOwnProperty('month8') ? getCurrencyFormat(row.month8) : '-'
+    field: (row: any) => row.hasOwnProperty('month8') ? getNumberFormat(row.month8) : '-'
   },
   {
     name: 'month9',
     label: '九月',
     align: 'right',
-    field: (row: any) => row.hasOwnProperty('month9') ? getCurrencyFormat(row.month9) : '-'
+    field: (row: any) => row.hasOwnProperty('month9') ? getNumberFormat(row.month9) : '-'
   },
   {
     name: 'month10',
     label: '十月',
     align: 'right',
-    field: (row: any) => row.hasOwnProperty('month10') ? getCurrencyFormat(row.month10) : '-'
+    field: (row: any) => row.hasOwnProperty('month10') ? getNumberFormat(row.month10) : '-'
   },
   {
     name: 'month11',
     label: '十一月',
     align: 'right',
-    field: (row: any) => row.hasOwnProperty('month11') ? getCurrencyFormat(row.month11) : '-'
+    field: (row: any) => row.hasOwnProperty('month11') ? getNumberFormat(row.month11) : '-'
   },
   {
     name: 'month12',
     label: '十二月',
     align: 'right',
-    field: (row: any) => row.hasOwnProperty('month12') ? getCurrencyFormat(row.month12) : '-'
+    field: (row: any) => row.hasOwnProperty('month12') ? getNumberFormat(row.month12) : '-'
   }
 ]
 
@@ -120,73 +120,73 @@ export const grossMarginYearColumns: QTableProps['columns'] = [
     name: 'month1',
     label: '一月累計',
     align: 'right',
-    field: (row: any) => row.hasOwnProperty('month1') ? getCurrencyFormat(row.month1) : '-'
+    field: (row: any) => row.hasOwnProperty('month1') ? getNumberFormat(row.month1) : '-'
   },
   {
     name: 'month2',
     label: '二月累計',
     align: 'right',
-    field: (row: any) => row.hasOwnProperty('month2') ? getCurrencyFormat(row.month2) : '-'
+    field: (row: any) => row.hasOwnProperty('month2') ? getNumberFormat(row.month2) : '-'
   },
   {
     name: 'month3',
     label: '三月累計',
     align: 'right',
-    field: (row: any) => row.hasOwnProperty('month3') ? getCurrencyFormat(row.month3) : '-'
+    field: (row: any) => row.hasOwnProperty('month3') ? getNumberFormat(row.month3) : '-'
   },
   {
     name: 'month4',
     label: '四月累計',
     align: 'right',
-    field: (row: any) => row.hasOwnProperty('month4') ? getCurrencyFormat(row.month4) : '-'
+    field: (row: any) => row.hasOwnProperty('month4') ? getNumberFormat(row.month4) : '-'
   },
   {
     name: 'month5',
     label: '五月累計',
     align: 'right',
-    field: (row: any) => row.hasOwnProperty('month5') ? getCurrencyFormat(row.month5) : '-'
+    field: (row: any) => row.hasOwnProperty('month5') ? getNumberFormat(row.month5) : '-'
   },
   {
     name: 'month6',
     label: '六月累計',
     align: 'right',
-    field: (row: any) => row.hasOwnProperty('month6') ? getCurrencyFormat(row.month6) : '-'
+    field: (row: any) => row.hasOwnProperty('month6') ? getNumberFormat(row.month6) : '-'
   },
   {
     name: 'month7',
     label: '七月累計',
     align: 'right',
-    field: (row: any) => row.hasOwnProperty('month7') ? getCurrencyFormat(row.month7) : '-'
+    field: (row: any) => row.hasOwnProperty('month7') ? getNumberFormat(row.month7) : '-'
   },
   {
     name: 'month8',
     label: '八月累計',
     align: 'right',
-    field: (row: any) => row.hasOwnProperty('month8') ? getCurrencyFormat(row.month8) : '-'
+    field: (row: any) => row.hasOwnProperty('month8') ? getNumberFormat(row.month8) : '-'
   },
   {
     name: 'month9',
     label: '九月累計',
     align: 'right',
-    field: (row: any) => row.hasOwnProperty('month9') ? getCurrencyFormat(row.month9) : '-'
+    field: (row: any) => row.hasOwnProperty('month9') ? getNumberFormat(row.month9) : '-'
   },
   {
     name: 'month10',
     label: '十月累計',
     align: 'right',
-    field: (row: any) => row.hasOwnProperty('month10') ? getCurrencyFormat(row.month10) : '-'
+    field: (row: any) => row.hasOwnProperty('month10') ? getNumberFormat(row.month10) : '-'
   },
   {
     name: 'month11',
     label: '十一月累計',
     align: 'right',
-    field: (row: any) => row.hasOwnProperty('month11') ? getCurrencyFormat(row.month11) : '-'
+    field: (row: any) => row.hasOwnProperty('month11') ? getNumberFormat(row.month11) : '-'
   },
   {
     name: 'month12',
     label: '十二月累計',
     align: 'right',
-    field: (row: any) => row.hasOwnProperty('month12') ? getCurrencyFormat(row.month12) : '-'
+    field: (row: any) => row.hasOwnProperty('month12') ? getNumberFormat(row.month12) : '-'
   },
   {
     name: 'year',
@@ -198,10 +198,10 @@ export const grossMarginYearColumns: QTableProps['columns'] = [
 
 export const consumptionColumns: QTableProps['columns'] = [
   {
-    name: 'id',
+    name: 'index',
     label: '排序',
     align: 'left',
-    field: 'id'
+    field: 'index'
   },
   {
     name: 'name',
@@ -213,7 +213,7 @@ export const consumptionColumns: QTableProps['columns'] = [
     name: 'total_amount',
     label: '金額(USD)',
     align: 'left',
-    field: (row: any) => row.hasOwnProperty('total_amount') ? getCurrencyFormat(row.total_amount) : '-'
+    field: (row: any) => row.hasOwnProperty('total_amount') ? getNumberFormat(row.total_amount) : '-'
   }
 ]
 
@@ -411,7 +411,7 @@ export const gmvChartOptions = {
       },
       labels: {
         formatter: (val: number) => {
-        	return getCurrencyFormat(val)
+        	return getNumberFormat(val)
         }
       }
     },
@@ -425,7 +425,7 @@ export const gmvChartOptions = {
       },
       labels: {
         formatter: (val: number) => {
-        	return `$${getCurrencyFormat(val)}`
+        	return `$${getNumberFormat(val)}`
         }
       },
       opposite: true
@@ -475,9 +475,9 @@ export const gmvChartOptions = {
     y: {
       formatter: function (y: number, { seriesIndex }: { seriesIndex: number }) {
         if ([2, 5, 6].includes(seriesIndex)) {
-          return `$${getCurrencyFormat(y)}`
+          return `$${getNumberFormat(y)}`
         }
-        return getCurrencyFormat(y)
+        return getNumberFormat(y)
       }
     }
   }
@@ -504,7 +504,7 @@ export const grossMarginLast5WeekChartOptions = {
       },
       labels: {
         formatter: (val: number) => {
-        	return getCurrencyFormat(val)
+        	return getNumberFormat(val)
         }
       }
     },
@@ -518,7 +518,7 @@ export const grossMarginLast5WeekChartOptions = {
       },
       labels: {
         formatter: (val: number) => {
-        	return `$${getCurrencyFormat(val)}`
+        	return `$${getNumberFormat(val)}`
         }
       },
       opposite: true
@@ -580,9 +580,9 @@ export const grossMarginLast5WeekChartOptions = {
     y: {
       formatter: function (y: number, { seriesIndex }: { seriesIndex: number }) {
         if ([2, 3, 6, 7, 9, 10].includes(seriesIndex)) {
-          return `$${getCurrencyFormat(y)}`
+          return `$${getNumberFormat(y)}`
         }
-        return getCurrencyFormat(y)
+        return getNumberFormat(y)
       }
     }
   }
@@ -609,7 +609,7 @@ export const grossMarginYearChartOptions = {
       },
       labels: {
         formatter: (val: number) => {
-        	return getCurrencyFormat(val)
+        	return getNumberFormat(val)
         }
       }
     },
@@ -623,7 +623,7 @@ export const grossMarginYearChartOptions = {
       },
       labels: {
         formatter: (val: number) => {
-        	return `$${getCurrencyFormat(val)}`
+        	return `$${getNumberFormat(val)}`
         }
       },
       opposite: true
@@ -685,9 +685,9 @@ export const grossMarginYearChartOptions = {
     y: {
       formatter: function (y: number, { seriesIndex }: { seriesIndex: number }) {
         if ([2, 3, 6, 7, 9, 10].includes(seriesIndex)) {
-          return `$${getCurrencyFormat(y)}`
+          return `$${getNumberFormat(y)}`
         }
-        return getCurrencyFormat(y)
+        return getNumberFormat(y)
       }
     }
   }
@@ -710,7 +710,7 @@ export const consumptionYearChartOptions = {
     categories: [],
     labels: {
       formatter: function (val:number) {
-        return `$${getCurrencyFormat(val)}`
+        return `$${getNumberFormat(val)}`
       }
     }
   },
@@ -727,7 +727,7 @@ export const consumptionYearChartOptions = {
     shared: false,
     y: {
       formatter: function (val:number) {
-        return `$${getCurrencyFormat(val)}`
+        return `$${getNumberFormat(val)}`
       }
     }
   },
@@ -750,7 +750,7 @@ export const consumptionAllChartOptions = {
     categories: [],
     labels: {
       formatter: function (val:number) {
-        return `$${getCurrencyFormat(val)}`
+        return `$${getNumberFormat(val)}`
       }
     }
   },
@@ -767,7 +767,7 @@ export const consumptionAllChartOptions = {
     shared: false,
     y: {
       formatter: function (val:number) {
-        return `$${getCurrencyFormat(val)}`
+        return `$${getNumberFormat(val)}`
       }
     }
   },

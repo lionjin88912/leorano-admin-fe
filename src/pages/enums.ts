@@ -106,6 +106,12 @@ const menus: Menu[] = [
     ],
   },
   {
+    label: 'Dashboard',
+    module: 'dashboard',
+    to: '/dashboard',
+    children: []
+  },
+  {
     label: '管理者帳號',
     module: 'admin',
     to: '/admins',

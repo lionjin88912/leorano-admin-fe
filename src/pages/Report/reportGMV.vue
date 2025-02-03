@@ -50,7 +50,7 @@
 import { ref, computed, watch, onMounted } from 'vue'
 import { useQuasar, LocalStorage } from 'quasar'
 import { gmvColumns, reportTypeOptions, gmvDefaultData, gmvChartOptions } from './enums'
-import { getCurrencyFormat } from 'src/utils/helpers';
+import { getNumberFormat } from 'src/utils/helpers';
 import { getMonthGMV } from 'src/api'
 import { router } from 'src/router'
 import apexchart from "vue3-apexcharts"
@@ -174,18 +174,18 @@ const doExcelExport = async () => {
     return [
       d.group,
       d.label,
-      d.month1 ? getCurrencyFormat(d.month1) : '',
-      d.month2 ? getCurrencyFormat(d.month2) : '',
-      d.month3 ? getCurrencyFormat(d.month3) : '',
-      d.month4 ? getCurrencyFormat(d.month4) : '',
-      d.month5 ? getCurrencyFormat(d.month5) : '',
-      d.month6 ? getCurrencyFormat(d.month6) : '',
-      d.month7 ? getCurrencyFormat(d.month7) : '',
-      d.month8 ? getCurrencyFormat(d.month8) : '',
-      d.month9 ? getCurrencyFormat(d.month9) : '',
-      d.month10 ? getCurrencyFormat(d.month10) : '',
-      d.month11 ? getCurrencyFormat(d.month11) : '',
-      d.month12 ? getCurrencyFormat(d.month12) : ''
+      d.month1 ? getNumberFormat(d.month1) : '',
+      d.month2 ? getNumberFormat(d.month2) : '',
+      d.month3 ? getNumberFormat(d.month3) : '',
+      d.month4 ? getNumberFormat(d.month4) : '',
+      d.month5 ? getNumberFormat(d.month5) : '',
+      d.month6 ? getNumberFormat(d.month6) : '',
+      d.month7 ? getNumberFormat(d.month7) : '',
+      d.month8 ? getNumberFormat(d.month8) : '',
+      d.month9 ? getNumberFormat(d.month9) : '',
+      d.month10 ? getNumberFormat(d.month10) : '',
+      d.month11 ? getNumberFormat(d.month11) : '',
+      d.month12 ? getNumberFormat(d.month12) : ''
     ]
   })
   excelDatas = [headers, ...excelDatas];

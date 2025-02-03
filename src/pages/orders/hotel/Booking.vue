@@ -48,7 +48,7 @@
                 {{ getPriceText(daily.local_price).currency }}
               </div>
               <div class="price">
-                ${{ getCurrencyFormat(getPriceText(daily.local_price).price) }}
+                ${{ getNumberFormat(getPriceText(daily.local_price).price) }}
               </div>
             </div>
           </div>
@@ -60,7 +60,7 @@
                 {{ bookingStore.state.plan.tax ? getPriceText(bookingStore.state.plan.tax).currency : 'TWD' }}
               </div>
               <div class="price">
-                ${{ bookingStore.state.plan.tax ? getCurrencyFormat(getPriceText(bookingStore.state.plan.tax).price) : 0 }}
+                ${{ bookingStore.state.plan.tax ? getNumberFormat(getPriceText(bookingStore.state.plan.tax).price) : 0 }}
               </div>
             </div>
           </div>
@@ -71,7 +71,7 @@
                 {{ getPriceText(bookingStore.state.plan.local_total_price).currency }}
               </div>
               <div class="price">
-                ${{ getCurrencyFormat(getPriceText(bookingStore.state.plan.local_total_price).price) }}
+                ${{ getNumberFormat(getPriceText(bookingStore.state.plan.local_total_price).price) }}
               </div>
             </div>
           </div>
@@ -82,7 +82,7 @@
                 {{ getPriceText(bookingStore.state.plan.total_price).currency }}
               </div>
               <div class="price">
-                ${{ getCurrencyFormat(getPriceText(bookingStore.state.plan.total_price).price) }}
+                ${{ getNumberFormat(getPriceText(bookingStore.state.plan.total_price).price) }}
               </div>
             </div>
           </div>
@@ -166,7 +166,7 @@ import { ref, reactive, computed, onMounted, onBeforeMount } from 'vue'
 import { router } from 'src/router';
 import InfoRow from '../components/InfoRow.vue'
 import { titleOptions, arrivalTimeOptions, specialRequirementOptions } from '../enums'
-import { getDateStringNoTz, getCurrencyFormat } from 'src/utils/helpers'
+import { getDateStringNoTz, getNumberFormat } from 'src/utils/helpers'
 import { getHotelSearchPlan, createHotelOrder } from 'src/api'
 import { messages, isEmpty, isValidEmail } from "src/utils/validators"
 import { useBookingStore } from "src/stores/booking"

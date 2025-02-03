@@ -33,7 +33,7 @@ export const useMetaStore = defineStore('meta', {
           console.error('getExchangeRate error:', err)
           return null
         }
-        const rate = res.data.data.exchangeRate
+        const rate = res.data.exchangeRate
         this.setExchangeRate(fromCurrency, targetCurrency, rate)
       }
       return this.exchangeRate[key]

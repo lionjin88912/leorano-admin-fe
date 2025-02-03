@@ -7,7 +7,7 @@
           <selectCurrency v-model="data.currencyFrom" label="幣別" :default="data.currencyFrom" class="col-2" @handleCallBack="updateAmountTo"></selectCurrency>
           <q-input type="number" v-model="amountFrom" label="金額" :debounce="500" class="col" dense outlined></q-input>
           <q-icon name="sync_alt" size="sm" color="grey-7" />
-          <selectCurrency v-model="data.currencyTo" label="幣別" :default="data.currencyT" class="col-2" @handleCallBack="updateAmountTo"></selectCurrency>
+          <selectCurrency v-model="data.currencyTo" label="幣別" :default="data.currencyTo" class="col-2" @handleCallBack="updateAmountTo"></selectCurrency>
           <q-input type="number" v-model="amountTo" label="金額" :debounce="500" class="col" dense outlined></q-input>
         </div>
         <div class="row justify-end q-mt-md">
@@ -24,7 +24,7 @@
 <script setup>
 import { ref, reactive, computed, onMounted, watch } from 'vue';
 import { useMetaStore } from 'src/stores/meta';
-import { getDateStringNoTz, getCurrencyFormat } from 'src/utils/helpers';
+import { getDateStringNoTz, getNumberFormat } from 'src/utils/helpers';
 import { CurrencyColumns } from './enums';
 import BreadCrumbs from 'src/components/BreadCrumbs.vue';
 import selectCurrency from 'src/components/selectCurrency.vue';
@@ -84,8 +84,8 @@ const updateAmountTo = async () => {
 const records = ref([]);
 const addRecord = () => {
   records.value.unshift({
-    from: `${data.currencyFrom} ${getCurrencyFormat(data.amountFrom)}`, 
-    to: `${data.currencyTo} ${getCurrencyFormat(data.amountTo)}`,
+    from: `${data.currencyFrom} ${getNumberFormat(data.amountFrom)}`, 
+    to: `${data.currencyTo} ${getNumberFormat(data.amountTo)}`,
     time: getDateStringNoTz(new Date())
   });
 };

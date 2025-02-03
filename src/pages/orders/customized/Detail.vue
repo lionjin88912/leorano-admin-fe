@@ -26,12 +26,30 @@
       <InfoRow v-if="!isNewOrder" title="附件">
         <div class="q-my-md">
           <uploader v-if="!isClose" btn-text="新增附件" title="新增附件" :accept="accept" @handleUpload="handleUpload" />
-          <ol class="q-pl-none invoice-list">
-            <li v-for="attached in data.attached" :key="attached" class="row items-center q-col-gutter-x-xs q-pa-xs">
-              <a :href="attached" class="col" target="_blank">{{ attached }}</a>
-              <q-btn v-if="!isClose" dense flat icon="delete" text-color="negative" size="16px" @click="deleteAttached(attached)" />
-            </li>
-          </ol>
+          <div class="row items-center q-col-gutter-md q-mt-sm">
+            <div v-for="attached in data.attached" :key="attached.url" class="col-12 col-sm-6 col-md-4">
+              <q-card class="bg-grey-2" flat>
+                <q-card-section horizontal>
+                  <q-img :src="attached.url" :ratio="1" class="col-3 bg-grey-3">
+                    <template v-slot:error>
+                      <div class="flex flex-center full-width full-height bg-transparent">
+                        <div class="text-blue-grey-3 text-h6">{{ getFileType(attached.url).toUpperCase() }}</div>
+                      </div>
+                    </template>
+                  </q-img>
+                  <div class="col q-pa-sm">
+                    <q-input v-model="attached.filename" class="bg-white" dense outlined />
+                    <div class="row q-mt-sm">
+                      <q-space />
+                      <q-btn icon="preview" color="primary" @click="previewAttached(attached)" dense flat />
+                      <q-btn icon="download" color="primary" @click="downloadAttached(attached)" dense flat />
+                      <q-btn v-if="!isClose" icon="delete" color="negative" @click="deleteAttached(attached.url)" dense flat />
+                    </div>
+                  </div>
+                </q-card-section>
+              </q-card>
+            </div>
+          </div>
         </div>
       </InfoRow>
       <InfoRow :title="data.type == 'hotel' ? '訂房資訊' : '票卷資訊'">
@@ -65,7 +83,7 @@
             </template>
             <template v-slot:body-cell-exchange_rate="props">
               <q-td :props="props">
-                <q-input type="number" v-model.number="props.row.exchange_rate" class="exchange-rate" :disable="isClose" dense outlined />
+                <q-input type="number" v-model.number="props.row.exchange_rate" class="exchange-rate" :rules="rules.exchange_rate" :disable="isClose" dense outlined />
               </q-td>
             </template>
             <template v-slot:bottom-row>
@@ -75,7 +93,7 @@
                   <span class="text-bold text-dark">小計</span>
                 </q-td>
                 <q-td>
-                  <span class="text-h6 text-dark">USD {{ getCurrencyFormat(financeSum) }}</span>
+                  <span class="text-h6 text-dark">USD {{ getNumberFormat(financeSum) }}</span>
                 </q-td>
                 <q-td />
                 <q-td />
@@ -101,8 +119,9 @@ import { useQuasar } from 'quasar';
 import { ref, reactive, watch, onMounted, computed } from 'vue'
 import { router } from 'src/router';
 import { customizedOrderTypeOptions, defaultQuestions, customizedInvoiceOptions, customizedOrderFinanceOptions, customizedFinancelColumns } from '../enums';
-import { getCustomizedOrder, createCustomizedOrder, updateCustomizedOrder, closeCustomizedOrder, RequestUploadAttachedFile } from 'src/api';
-import { getDateString, getCurrencyFormat } from 'src/utils/helpers';
+import { getCustomizedOrder, createCustomizedOrder, updateCustomizedOrder, closeCustomizedOrder, RequestUploadAttachedFile, RequestFile } from 'src/api';
+import { getDateString, getNumberFormat } from 'src/utils/helpers';
+import { isEmpty, isNumberDigit, messages } from 'src/utils/validators';
 import { useRoute } from 'vue-router';
 import BreadCrumbs from 'src/components/BreadCrumbs.vue';
 import InfoRow from '../components/InfoRow.vue';
@@ -112,6 +131,7 @@ import TableComponent from 'src/components/TableComponent.vue';
 import uploader from 'components/uploader.vue';
 import Confirm from 'src/components/dialog/Confirm.vue'
 import FinanceDialog from '../components/FinanceDialog.vue';
+import axios from 'axios'
 import to from 'await-to-js';
 import { type } from 'os';
 
@@ -139,7 +159,7 @@ interface Order {
 	type: string;
 	content: Array<{ column: string; value: string }>;
 	invoice: boolean;
-	attached: Array<string>;
+	attached: Array<{ url: string; filename: string }>;
 	deleted_attached: Array<string>;
 	finance: Array<finance>;
 	deleted_at: string|null;
@@ -158,6 +178,15 @@ const data: Order = reactive({
 	deleted_attached: [],
 	finance: [],
 	deleted_at: null,
+});
+
+const rules = computed(() => {
+  return {
+    exchange_rate: [
+      val => !isEmpty(val) || messages.requiredInput(),
+      val => isNumberDigit(val, 4, 2) || `${messages.invalidInteger(4)}，${messages.invalidDecimal(2)}`
+    ]
+  }
 });
 
 const member = ref([]);
@@ -240,8 +269,47 @@ const handleUpload = async (files: File[]) => {
   }
   data.attached = data.attached.concat(res.data);
 }
+const getFileType = (url: string) => {
+  return url.split('.').pop();
+}
+const getFileName = (url: string) => {
+  return url.split('/').pop();
+}
+const CONTENT_TYPE = {
+  'jpg': 'image/jpeg',
+  'jpeg': 'image/jpeg',
+  'png': 'image/png',
+  'pdf': 'application/pdf'
+}
+const getAttachedBlob = async (url: string) => {
+  const [err, blob] = await to(RequestFile({url}));
+  if (err) {
+    console.error('getAttachedBlob error:', err);
+    return;
+  }
+  const fileType = getFileType(url);
+  if (!fileType || !CONTENT_TYPE[fileType]) {
+    console.error('Unsupported file type:', fileType);
+    return;
+  }
+  const blobChangeType = new Blob([blob], { type: CONTENT_TYPE[fileType] });
+  return URL.createObjectURL(blobChangeType);
+}
+const previewAttached = async (attached: any) => {
+  const url = await getAttachedBlob(attached.url);
+  window.open(url);
+}
+const downloadAttached = async (attached: any) => {
+  const link = document.createElement('a');
+  const filename = attached.filename ? `${attached.filename}.${getFileType(attached.url)}` : getFileName(attached.url);
+  link.href = await getAttachedBlob(attached.url);
+  link.setAttribute('download', filename);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
 const deleteAttached = (invoice:string) => {
-  data.attached = data.attached.filter((attached) => attached !== invoice);
+  data.attached = data.attached.filter((attached) => attached.url !== invoice);
   data.deleted_attached.push(invoice);
 }
 /* 上傳附件 End */
@@ -309,24 +377,21 @@ const addOrder = async () => {
 }
 const saveOrder = async () => {
 	$q.loading.show();
-	const [err, res]: [any, any] = await to(updateCustomizedOrder(orderNumber, data));
+	let valid = await validate();
+	if (valid) {
+		const [err, res]: [any, any] = await to(updateCustomizedOrder(orderNumber, data));
+	} else {
+		window.scrollTo({
+			top: 0,
+			behavior: 'smooth'
+		});
+	}
 	$q.loading.hide();
 }
 /* 新增/編輯訂單 End */
 </script>
 
 <style lang="scss" scoped>
-.invoice-list {
-  list-style: none;
-  counter-reset: num;
-  li {
-    border-bottom: 1px solid $grey-4;
-    &:before {
-      counter-increment: num;
-      content: counter(num) '.';
-    }    
-  }
-}
 .finance-table {
   .exchange-rate {
     width: 100px;
