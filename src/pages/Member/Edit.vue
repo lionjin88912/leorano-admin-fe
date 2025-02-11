@@ -130,12 +130,42 @@
         </InfoRow>
       </div>
     </q-form>
+    <div class="row q-col-gutter-x-lg q-mt-xl">
+      <div class="col-6">
+        <InfoRow title="Le Oràno Rewards 歷程">
+          <div class="q-mt-sm">
+            <p>目前點數：{{ getNumberFormat(rewards.amount) }}</p>
+            <q-table v-if="rewards.logs.length > 0" :rows="rewards.logs" :columns="pointColumns" :pagination="pagination" row-key="date" class="data-table" flat bordered hide-bottom>
+              <template v-slot:body-cell-amount="props">
+                <q-td>
+                  <span :class="{'text-teal': props.row.amount > 0, 'text-negative': props.row.amount < 0 }">{{ getNumberFormat(props.row.amount) }}</span>
+                </q-td>
+              </template>
+            </q-table>
+          </div>
+        </InfoRow>
+      </div>
+      <div class="col-6">
+        <InfoRow title="Travel Credits 歷程">
+          <div class="q-mt-sm">
+            <p>目前金額：{{ getNumberFormat(credits.amount) }}</p>
+            <q-table v-if="credits.logs.length > 0" :rows="credits.logs" :columns="pointColumns" :pagination="pagination" row-key="date" class="data-table" flat bordered hide-bottom>
+              <template v-slot:body-cell-amount="props">
+                <q-td :props="props">
+                  <span :class="{'text-teal': props.row.amount > 0, 'text-negative': props.row.amount < 0 }">{{ getNumberFormat(props.row.amount) }}</span>
+                </q-td>
+              </template>
+            </q-table>
+          </div>
+        </InfoRow>
+      </div>
+    </div>
     <Confirm ref="confirmRef" @confirm="onConfirm"></Confirm>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, reactive } from 'vue'
 import { useQuasar } from 'quasar';
 import { useRoute } from 'vue-router';
 import { RequestUser, GetLoyalty, SaveUserProfile, RequestUploadUserFile, RequestDownloadFile } from 'src/api';
@@ -143,9 +173,10 @@ import uploader from 'components/uploader.vue';
 import BreadCrumbs from 'src/components/BreadCrumbs.vue';
 import { getDateString } from 'src/utils/helpers';
 import InfoRow from '../orders/components/InfoRow.vue';
-import { TitleOptions, SexualOptions } from './enums';
+import { TitleOptions, SexualOptions, pointColumns } from './enums';
 import Confirm from 'src/components/dialog/Confirm.vue';
 import DatePicker from 'src/components/DatePicker.vue';
+import { getNumberFormat } from 'src/utils/helpers';
 
 const to = require('await-to-js').default
 const $q = useQuasar();
@@ -181,6 +212,23 @@ const tabs = ref([
   { label: '基本資料', value: 'basic' },
   { label: 'Loyalty Program', value: 'royalty' }
 ])
+const pagination = ref({
+  rowsPerPage: 0,
+})
+interface PointLog {
+  date: string;
+  detail: string;
+  amount: number;
+  expire: string;
+}
+const rewards = reactive({
+  amount: 0,
+  logs: [] as PointLog[]
+})
+const credits = reactive({
+  amount: 0,
+  logs: [] as PointLog[]
+})
 
 onMounted(async () => {
   getData();
@@ -207,16 +255,20 @@ const getData = async () => {
   if (data.value.instagram) {
     ig.value = JSON.parse(data.value.instagram).user_account;
   }
+  rewards.amount = res.data.rewards.amount;
+  rewards.logs = res.data.rewards.logs;
+  credits.amount = res.data.credits.amount;
+  credits.logs = res.data.credits.logs;
 
-  [err, res] = await to(GetLoyalty());
+  const [errLoyalty, resLoyalty] = await to(GetLoyalty());
   $q.loading.hide();
 
-  if (err) {
-    console.error('getRoyalty error:', err);
+  if (errLoyalty) {
+    console.error('getRoyalty error:', errLoyalty);
     return;
   }
 
-  loyalties.value = res.data.map((item: any) => {
+  loyalties.value = resLoyalty.data.map((item: any) => {
     let hotelGroup: any = data.value.loyalties?.find((d: any) => d.hotel_group_id == item.id);
     return {
       id: item.id,
