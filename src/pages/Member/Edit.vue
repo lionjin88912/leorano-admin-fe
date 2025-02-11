@@ -135,7 +135,7 @@
         <InfoRow title="Le Oràno Rewards 歷程">
           <div class="q-mt-sm">
             <p>目前點數：{{ getNumberFormat(rewards.amount) }}</p>
-            <q-table v-if="rewards.logs.length > 0" :rows="rewards.logs" :columns="pointColumns" :pagination="pagination" row-key="date" class="data-table" flat bordered hide-bottom>
+            <q-table v-if="rewards.logs" :rows="rewards.logs" :columns="pointColumns" :pagination="pagination" row-key="date" class="data-table" flat bordered hide-bottom>
               <template v-slot:body-cell-amount="props">
                 <q-td>
                   <span :class="{'text-teal': props.row.amount > 0, 'text-negative': props.row.amount < 0 }">{{ getNumberFormat(props.row.amount) }}</span>
@@ -149,7 +149,7 @@
         <InfoRow title="Travel Credits 歷程">
           <div class="q-mt-sm">
             <p>目前金額：{{ getNumberFormat(credits.amount) }}</p>
-            <q-table v-if="credits.logs.length > 0" :rows="credits.logs" :columns="pointColumns" :pagination="pagination" row-key="date" class="data-table" flat bordered hide-bottom>
+            <q-table v-if="credits.logs" :rows="credits.logs" :columns="pointColumns" :pagination="pagination" row-key="date" class="data-table" flat bordered hide-bottom>
               <template v-slot:body-cell-amount="props">
                 <q-td :props="props">
                   <span :class="{'text-teal': props.row.amount > 0, 'text-negative': props.row.amount < 0 }">{{ getNumberFormat(props.row.amount) }}</span>
