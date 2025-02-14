@@ -128,6 +128,12 @@ export const closeCustomizedOrder = (id) => baseService.post(`/order/customized/
 export const getMemberList = (data) => baseService.get('/users/search', { params: data })
 export const getMember = (id) => baseService.get(`/member/${id}`)
 export const updateCustomizedOrderFinalProfit = (data) => baseService.put(`/order/customized/final_profit`, data)
+export const createCustomizedReward = (id, data) => baseService.post(`/order/customized/${id}/rewards/record`, data)
+export const sendCustomizedReward = (id, data) => baseService.post(`/order/customized/${id}/rewards/confirm`, data)
+export const deleteCustomizedReward = (id, data) => baseService.delete(`/order/customized/${id}/rewards/record`, { data })
+export const createCustomizedCredit = (id, data) => baseService.post(`/order/customized/${id}/credits/record`, data)
+export const sendCustomizedCredit = (id, data) => baseService.post(`/order/customized/${id}/credits/confirm`, data)
+export const deleteCustomizedCredit = (id, data) => baseService.delete(`/order/customized/${id}/credits/record`, { data })
 // 訂單管理-酒店訂單
 export const getMemberOrderList = (data) => baseService.get('/order/membership', { params: data })
 export const getMemberOrder = (orderNumber) => baseService.get(`/order/membership/${orderNumber}`)
