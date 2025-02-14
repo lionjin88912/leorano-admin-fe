@@ -6,6 +6,7 @@ const messages = {
   email: () => '不正確的信箱格式',
   enterEmail: () => '請輸入信箱',
   enterPassword: () => '請輸入密碼',
+  maxLength: (max) => `最多 ${max} 字`,
   inputPositiveInteger: () => '請輸入正整數',
   invalidDateRange: () => '日期區間有誤',
   invalidRange: (min, max) => `請輸入介於 ${min}-${max} 之間的數字`,
