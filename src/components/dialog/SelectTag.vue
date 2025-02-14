@@ -213,10 +213,7 @@ const isRemovable = (data) => {
 
 const doAddTag = async () => {
   tagEditDialogRef.value.show({
-    type: {
-      label: state.targetTypeName,
-      value: state.targetTypeId
-    },
+    type: state.targetTypeId,
     typeList: await metaStore.getTagTypeList(),
     hideOnSaved: true,
     // fixedTagType: true
