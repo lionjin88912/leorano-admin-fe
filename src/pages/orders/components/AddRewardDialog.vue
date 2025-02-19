@@ -28,7 +28,7 @@
 import { ref, reactive, computed } from 'vue'
 import { useQuasar } from 'quasar';
 import { useMetaStore } from "src/stores/meta";
-import { isEmpty, isNumberDigit, messages } from 'src/utils/validators';
+import { isEmpty, isPositiveInteger, isNumberDigit, messages } from 'src/utils/validators';
 import to from 'await-to-js';
 import _ from 'lodash';
 
@@ -52,6 +52,7 @@ const rules = computed(() => {
   return {
     amount: [
       val => !isEmpty(val) || messages.requiredInput(),
+      val => isPositiveInteger(val) || messages.inputPositiveInteger(),
       val => isNumberDigit(val, 6) || `${messages.invalidInteger(6)}`
     ],
     reason: [
