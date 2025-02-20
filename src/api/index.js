@@ -114,7 +114,7 @@ export const updateHotelOrderFinalProfit = (data) => baseService.put(`/order/hot
 // 訂單管理-酒店訂單-新增訂單
 export const getHotelAutoComplete = (data) => baseService.get('/hotel/booking/autoComplete', { params: data })
 export const getHotelSearchList = (data) => baseService.get(`/hotel/booking/availability`, { params: data })
-export const getHotelSearchRoomList = (id, data) => baseService.get(`/hotel/booking/room/${id}`, { params: data })
+export const getHotelSearchRoomList = (hotelID, data) => baseService.get(`/hotel/booking/room/${hotelID}`, { params: data })
 export const getHotelSearchPlan = (data) => baseService.get('/hotel/booking/detail', { params: data })
 export const createHotelOrder = (data) => baseService.post('/hotel/booking/confirm', data )
 // 訂單管理-客製訂單

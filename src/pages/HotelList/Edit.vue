@@ -228,7 +228,7 @@ const updateHotelData = async () => {
   isUpdating.value = true;
   let today = new Date().getTime();
   for (let i = 15; i < 20; i++) {
-    const [err, res] = await to(getHotelSearchRoomList(data.value.id, {
+    const [err, res] = await to(getHotelSearchRoomList(data.value.hotel_id, {
       from: getDateString(new Date(today + (14 * 24 * 60 * 60 * 1000)), 'YYYY-MM-DD'),
       to: getDateString(new Date(today + (i * 24 * 60 * 60 * 1000)), 'YYYY-MM-DD'),
       num_of_adults: 2,
