@@ -197,7 +197,7 @@ onBeforeMount(() => {
 
 onMounted(async () => {
   console.log("bookingStore.state", bookingStore.state);
-  const { res } = await to(getHotelSearchPlan(bookingStore.state.hotel_id, {
+  const { res } = await to(getHotelSearchPlan(bookingStore.state.hotelName.id, {
     from: bookingStore.state.checkinDuration.from,
     to: bookingStore.state.checkinDuration.to,
     num_of_adults: bookingStore.state.adults,
