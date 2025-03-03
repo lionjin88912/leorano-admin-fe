@@ -82,6 +82,7 @@ const menus: Menu[] = [
       { label: '月進單對照報表', to: '/report/monthGMV' },
       { label: '營業額報表', to: '/report/grossMargin/last5Week', active: '/report/grossMargin' },
       { label: '會員消費報表', to: '/report/consumption' },
+      { label: '點數報表', to: '/report/reward' },
     ],
   },
   {

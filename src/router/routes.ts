@@ -270,6 +270,15 @@ const routes: RouteRecordRaw[] = [
             },
             component: () => import('src/pages/Report/consumption.vue'),
           },
+          {
+            path: 'reward',
+            name: 'reward',
+            meta: {
+              root: { title: '報表' },
+              title: '點數報表',
+            },
+            component: () => import('src/pages/Report/reward.vue'),
+          }
         ],
       },
       {

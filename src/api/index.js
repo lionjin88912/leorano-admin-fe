@@ -148,6 +148,13 @@ export const getMonthGMV = (year, month) => baseService.get(`/report/monthGMV/${
 export const getGrossMargin = (year, month) => baseService.get(`/report/grossMargin/${year}/${month}`)
 export const getGrossMarginLastWeek = () => baseService.get(`/report/grossMargin/lastWeek`)
 export const getConsumption = (year) => baseService.get(`/analysis/consumption/${year}`)
+// 獎勵報告
+export const getRewardAllSend = () => baseService.get('/report/rewards/all_send')
+export const getRewardAllUsed = () => baseService.get('/report/rewards/all_used')
+export const getRewardAllExpired = () => baseService.get('/report/rewards/all_expired')
+export const getRewardExpired = () => baseService.get('/report/rewards/expired')
+export const getRewardPercentSend = () => baseService.get('/report/rewards/all_point_prop')
+export const getRewardPercentUsed = () => baseService.get('/report/rewards/all_send_prop')
 // 行銷碼管理
 // 會籍活動
 export const getPromoMembershipList = (params) =>
