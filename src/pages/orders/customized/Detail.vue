@@ -32,6 +32,7 @@
               <q-input v-model="data.title" label="訂單名稱" class="col-6" :disable="isClose" dense outlined />
               <selectCurrency v-model="data.currency" label="訂單幣別" class="col-3" :default="data.currency" :disable="isClose"></selectCurrency>
               <q-input v-model.number="data.price" type="number" label="訂單金額" class="col-3" :disable="isClose" dense outlined />
+              <q-input v-model="data.voucher_number" label="憑證編號" class="col-3" :disable="isClose" dense outlined />
               <q-select v-model="data.type" label="訂單類型" class="col-3" :options="customizedOrderTypeOptions" @update:modelValue="changeOrderType" :disable="isClose" emit-value map-options dense outlined />
               <q-select v-model="data.invoice" label="是否寄送發票" class="col-3" :options="customizedInvoiceOptions" :disable="isClose" emit-value map-options dense outlined />
             </div>
@@ -236,6 +237,7 @@ interface Order {
 	title: string;
 	currency: string;
 	price: number;
+	voucher_number: string;
 	type: string;
 	content: Array<{ column: string; value: string }>;
 	invoice: boolean;
@@ -251,6 +253,7 @@ const data: Order = reactive({
 	title: '',
 	currency: 'TWD',
 	price: 0,
+	voucher_number: '',
 	type: 'hotel',
 	content: [],
 	invoice: false,
@@ -334,6 +337,7 @@ onMounted(async () => {
 			data.title = order.title;
 			data.currency = order.currency;
 			data.price = order.price;
+			data.voucher_number = order.voucher;
 			data.type = order.type;
 			data.content = order.content;
 			data.invoice = order.invoice;
