@@ -114,8 +114,8 @@ export const updateHotelOrderFinalProfit = (data) => baseService.put(`/order/hot
 // 訂單管理-酒店訂單-新增訂單
 export const getHotelAutoComplete = (data) => baseService.get('/hotel/booking/autoComplete', { params: data })
 export const getHotelSearchList = (data) => baseService.get(`/hotel/booking/availability`, { params: data })
-export const getHotelSearchRoomList = (id, data) => baseService.get(`/hotel/booking/room/${id}`, { params: data })
-export const getHotelSearchPlan = (data) => baseService.get('/hotel/booking/detail', { params: data })
+export const getHotelSearchRoomList = (hotelID, data) => baseService.get(`/hotel/booking/room/${hotelID}`, { params: data })
+export const getHotelSearchPlan = (hotelID, data) => baseService.get(`/hotel/booking/detail/${hotelID}`, { params: data })
 export const createHotelOrder = (data) => baseService.post('/hotel/booking/confirm', data )
 // 訂單管理-客製訂單
 export const getCustomizedOrderList = (data) => baseService.get('/order/customized/list', { params: data })
@@ -128,6 +128,12 @@ export const closeCustomizedOrder = (id) => baseService.post(`/order/customized/
 export const getMemberList = (data) => baseService.get('/users/search', { params: data })
 export const getMember = (id) => baseService.get(`/member/${id}`)
 export const updateCustomizedOrderFinalProfit = (data) => baseService.put(`/order/customized/final_profit`, data)
+export const createCustomizedReward = (id, data) => baseService.post(`/order/customized/${id}/rewards/record`, data)
+export const sendCustomizedReward = (id, data) => baseService.post(`/order/customized/${id}/rewards/confirm`, data)
+export const deleteCustomizedReward = (id, data) => baseService.delete(`/order/customized/${id}/rewards/record`, { data })
+export const createCustomizedCredit = (id, data) => baseService.post(`/order/customized/${id}/credits/record`, data)
+export const sendCustomizedCredit = (id, data) => baseService.post(`/order/customized/${id}/credits/confirm`, data)
+export const deleteCustomizedCredit = (id, data) => baseService.delete(`/order/customized/${id}/credits/record`, { data })
 // 訂單管理-酒店訂單
 export const getMemberOrderList = (data) => baseService.get('/order/membership', { params: data })
 export const getMemberOrder = (orderNumber) => baseService.get(`/order/membership/${orderNumber}`)
@@ -142,6 +148,13 @@ export const getMonthGMV = (year, month) => baseService.get(`/report/monthGMV/${
 export const getGrossMargin = (year, month) => baseService.get(`/report/grossMargin/${year}/${month}`)
 export const getGrossMarginLastWeek = () => baseService.get(`/report/grossMargin/lastWeek`)
 export const getConsumption = (year) => baseService.get(`/analysis/consumption/${year}`)
+// 獎勵報告
+export const getRewardAllSend = () => baseService.get('/report/rewards/all_send')
+export const getRewardAllUsed = () => baseService.get('/report/rewards/all_used')
+export const getRewardAllExpired = () => baseService.get('/report/rewards/all_expired')
+export const getRewardExpired = () => baseService.get('/report/rewards/expired')
+export const getRewardPercentSend = () => baseService.get('/report/rewards/all_point_prop')
+export const getRewardPercentUsed = () => baseService.get('/report/rewards/all_send_prop')
 // 行銷碼管理
 // 會籍活動
 export const getPromoMembershipList = (params) =>

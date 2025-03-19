@@ -1,6 +1,6 @@
 <template>
   <div>
-    <q-btn :label="btnLabel" color="primary" @click="card = true" />
+    <q-btn :label="btnLabel" color="primary" @click="card = true" :outline="outline" />
     <q-dialog v-model="card">
       <q-card class="container">
         <q-uploader class="uploader" :label='title' multiple batch :accept="acceptString" :factory="handleUploader"
@@ -30,6 +30,12 @@ const props = defineProps({
     }
   },
   imageValidation: {
+    type: Boolean,
+    default() {
+      return false;
+    }
+  },
+  outline: {
     type: Boolean,
     default() {
       return false;

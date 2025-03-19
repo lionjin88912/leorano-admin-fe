@@ -43,7 +43,7 @@
         />
       </div>
       <q-separator class="q-mt-md q-mb-lg" />
-      <div class="row q-col-gutter-xl">
+      <div class="row q-col-gutter-lg">
         <div class="col-xs-12 col-sm-7 col-md-8">
           <div class="text-bold text-grey-9">酒店地址</div>
           <div class="row q-col-gutter-sm q-mt-xs">
@@ -107,86 +107,85 @@
           </GMapMap>
         </div>
         <div class="col-xs-12 col-sm-5 col-md-4">
-          <div class="text-bold text-grey-9">酒店圖片</div>
-          <div class="flex q-gutter-md items-center">
-            <div class="text-grey-7">最多可選 {{ maxPicAmount }} 張圖片</div>
-            <q-btn label="選擇圖片" color="primary" @click="openMedia" outline></q-btn>
-          </div>
-          <div class="row q-col-gutter-xs q-mt-md">
-            <div v-for="(v, key) in chooseMedia" :key="key" class="image-wrap col-4" :class="{ 'pick': v.isCover }">
-              <q-img
-                class="cursor-pointer"
-                :class="{ 'cover': v.isCover }"
-                :src="releaseUrl(v.src)"
-                :ratio="1"
-                fit="cover"
-                spinner-color="white"
-                loading="lazy"
-                @click="handleCoverSelect(key)">
-                <div v-if="v.isCover" class="absolute-bottom text-subtitle2 text-center">
-                  封面
-                </div>
-              </q-img>
+          <div class="text-bold text-grey-9">其他資訊</div>
+          <div class="row q-col-gutter-sm q-mt-xs">
+            <q-input class="col-xs-12 col-md-6" v-model="data.phone" label="聯絡電話" outlined dense />
+            <q-input class="col-xs-12 col-md-6" v-model="data.fax" label="傳真" outlined dense />
+            <q-input class="col-xs-12 col-md-6" v-model="data.email" label="客服信箱" outlined dense />
+            <q-input class="col-xs-12 col-md-6" v-model="data.web_site" label="官方網站" outlined dense />
+            <div class="col-12" @click="showTagSelect(hotelBenefitTagType)">
+              <q-field
+                class="col cursor-pointer"
+                label="酒店禮遇標籤"
+                :hide-bottom-space="false"
+                :hide-hint="false"
+                :stack-label="isStackLabel(data.hotelBenefitTags)"
+                outlined
+                dense
+              >
+                <template v-slot:control>
+                  <q-chip
+                    v-for="(tag, index) of data.hotelBenefitTags"
+                    :key="index"
+                    :label="tag.name"
+                    color="green-7"
+                    text-color="grey-1"
+                    size="sm"
+                  ></q-chip>
+                </template>
+              </q-field>
             </div>
+            <div class="col-12" @click="showTagSelect(hotelPlanTagType)">
+              <q-field
+                class="col cursor-pointer"
+                label="酒店方案標籤"
+                :hide-bottom-space="false"
+                :hide-hint="false"
+                :stack-label="isStackLabel(data.hotelPlanTags)"
+                outlined
+                dense
+              >
+                <template v-slot:control>
+                  <q-chip
+                    v-for="(tag, index) of data.hotelPlanTags"
+                    :key="index"
+                    :label="tag.name"
+                    color="green-7"
+                    text-color="grey-1"
+                    size="sm"
+                  ></q-chip>
+                </template>
+              </q-field>
+            </div>
+            <q-input type="textarea" label="酒店介紹" v-model="lang.desc" rows="8" class="col-12" outlined dense />
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="text-bold text-grey-9">酒店圖片</div>
+        <div class="flex q-gutter-md items-center">
+          <div class="text-grey-7">最多可選 {{ maxPicAmount }} 張圖片</div>
+          <q-btn label="選擇圖片" color="primary" @click="openMedia" outline></q-btn>
+        </div>
+        <div class="row q-col-gutter-xs q-mt-md">
+          <div v-for="(v, key) in chooseMedia" :key="key" class="image-wrap col-xs-3 col-sm-2 col-lg-1" :class="{ 'pick': v.isCover }">
+            <q-img
+              class="cursor-pointer"
+              :class="{ 'cover': v.isCover }"
+              :src="releaseUrl(v.src)"
+              :ratio="1"
+              fit="cover"
+              spinner-color="white"
+              loading="lazy"
+              @click="handleCoverSelect(key)">
+              <div v-if="v.isCover" class="absolute-bottom text-subtitle2 text-center">
+                封面
+              </div>
+            </q-img>
           </div>
         </div>
       </div>
       <q-separator class="q-mt-lg q-mb-xs" />
-      <div class="row q-col-gutter-sm">
-        <q-input class="col-xs-12 col-md-6" v-model="data.phone" label="聯絡電話" outlined dense />
-        <q-input class="col-xs-12 col-md-6" v-model="data.fax" label="傳真" outlined dense />
-      </div>
-      <div class="row q-col-gutter-sm">
-        <q-input class="col-xs-12 col-md-6" v-model="data.email" label="客服信箱" outlined dense />
-        <q-input class="col-xs-12 col-md-6" v-model="data.web_site" label="官方網站" outlined dense />
-      </div>
-      <div class="row q-col-gutter-sm" @click="showTagSelect(hotelBenefitTagType)">
-        <q-field
-          class="col cursor-pointer"
-          label="酒店禮遇標籤"
-          :hide-bottom-space="false"
-          :hide-hint="false"
-          :stack-label="isStackLabel(data.hotelBenefitTags)"
-          outlined
-          dense
-        >
-          <template v-slot:control>
-            <q-chip
-              v-for="(tag, index) of data.hotelBenefitTags"
-              :key="index"
-              :label="tag.name"
-              color="green-7"
-              text-color="grey-1"
-              size="sm"
-            ></q-chip>
-          </template>
-        </q-field>
-      </div>
-      <div class="row q-col-gutter-sm" @click="showTagSelect(hotelPlanTagType)">
-        <q-field
-          class="col cursor-pointer"
-          label="酒店方案標籤"
-          :hide-bottom-space="false"
-          :hide-hint="false"
-          :stack-label="isStackLabel(data.hotelPlanTags)"
-          outlined
-          dense
-        >
-          <template v-slot:control>
-            <q-chip
-              v-for="(tag, index) of data.hotelPlanTags"
-              :key="index"
-              :label="tag.name"
-              color="green-7"
-              text-color="grey-1"
-              size="sm"
-            ></q-chip>
-          </template>
-        </q-field>
-      </div>
-      <div class="row q-col-gutter-sm">
-        <q-input type="textarea" label="酒店介紹" v-model="lang.desc" rows="8" class="col" outlined dense />
-      </div>
       <div class="flex justify-end">
         <q-btn label="儲存" type="submit" color="primary" />
       </div>

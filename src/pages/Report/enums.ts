@@ -772,3 +772,50 @@ export const consumptionAllChartOptions = {
     }
   },
 }
+
+export const rewardSendChartOptions = {
+  chart: {
+    type: 'pie',
+    height: 350
+  },
+  labels: ['已發放', '未發放'],
+  colors: ['#4db6ac', '#e57373'],
+  tooltip: {
+    y: {
+      formatter: function (y:number) {
+        return getNumberFormat(y)
+      }
+    }
+  }
+}
+
+export const rewardUsedChartOptions = {
+  chart: {
+    type: 'pie',
+    height: 350
+  },
+  labels: ['已使用', '未使用', '已過期'],
+  colors: ['#4ed0e1', '#ffd550', '#a18880'],
+  tooltip: {
+    y: {
+      formatter: function (y:number) {
+        return getNumberFormat(y)
+      }
+    }
+  }
+}
+
+export const rewardColumns: QTableProps['columns'] = [
+  {
+    name: 'year',
+    label: '到期日',
+    field: 'year',
+    align: 'left'
+  },
+  {
+    name: 'amount',
+    label: '點數',
+    field: (row: any) => getNumberFormat(row.amount),
+    align: 'left'
+  }
+]

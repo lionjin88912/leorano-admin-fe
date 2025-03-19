@@ -275,6 +275,26 @@
           </div>
         </div>
       </InfoRow>
+      <InfoRow title="點數資訊">
+        <div class="info-field">
+          <div class="info-field-label">預計發送時間</div>
+          <div class="info-field-text">
+            {{ isCancelled ? '-' : getDateString(model.Rewards.estimate_send_time, 'YYYY-MM-DD') }}
+          </div>
+        </div>
+        <div class="info-field">
+          <div class="info-field-label">實際發送時間</div>
+          <div class="info-field-text">
+            {{ isCancelled ? '-' : getDateString(model.Rewards.real_send_time, 'YYYY-MM-DD') }}
+          </div>
+        </div>
+        <div class="info-field">
+          <div class="info-field-label">Rewards 點數</div>
+          <div class="info-field-text">
+            {{ isCancelled ? 0 : getNumberFormat(model.Rewards.amount) }}
+          </div>
+        </div>
+      </InfoRow>  
     </div>
     <CancelOrderDialog ref="cancelOrderRef" @confirm="onCancelConfirm"></CancelOrderDialog>
     <UserDialog ref="userDialogRef" @confirm="onUpdateUserConfirm" />
