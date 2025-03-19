@@ -161,6 +161,33 @@ const addColumns: tableColumn = [
   },
 ]
 
+const pointColumns: tableColumn = [
+  {
+    name: 'date',
+    label: '日期',
+    field: 'date',
+    align: 'left',
+  },
+  {
+    name: 'detail',
+    label: '項目',
+    field: 'detail',
+    align: 'left',
+  },
+  {
+    name: 'amount',
+    label: '點數',
+    field: 'amount',
+    align: 'left',
+  },
+  {
+    name: 'expire',
+    label: '期限',
+    field: 'expire',
+    align: 'left',
+  },
+]
+
 /**
  * 新增狀態
  */
@@ -310,4 +337,4 @@ export const TitleOptions = ['Mr', 'Mrs', 'Miss', 'Mx']
  */
 export const SexualOptions = ['Male', 'Female', 'Unspecified', 'Undisclosed']
 
-export { columns, tabArr, addColumns, addStatus, editTab, benefitColumns, langColumns }
+export { columns, tabArr, addColumns, pointColumns, addStatus, editTab, benefitColumns, langColumns }

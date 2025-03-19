@@ -55,7 +55,7 @@ const onSubmit = async () => {
     console.error('login error:', err)
     return
   }
-  router.push('/hotels')
+  router.push('/')
 }
 </script>
 
