@@ -133,6 +133,25 @@ const routes: RouteRecordRaw[] = [
         },
         children: [
           {
+            path: 'booking',
+            name: 'OrderList',
+            meta: {
+              root: { title: '訂單管理' },
+              title: '訂單列表',
+            },
+            component: () => import('src/pages/orders/index.vue'),
+          },
+          {
+            path: 'booking/:orderNumber',
+            name: 'OrderDetail',
+            meta: {
+              root: { title: '訂單管理' },
+              parent: { title: '訂單列表', path: '/orders/booking' },
+              title: '訂單明細',
+            },
+            component: () => import('src/pages/orders/DetailParent.vue'),
+          },
+          {
             path: 'hotel',
             name: 'HotelOrderList',
             meta: {

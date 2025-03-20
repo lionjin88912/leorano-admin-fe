@@ -3,7 +3,7 @@
     <q-input v-model="keyword" placeholder="會員姓名、Email、電話" :debounce="500" :disable="disable" clearable dense outlined />
     <q-table v-if="keyword" class="data-table q-mt-sm" :columns="userColumns" :rows="options" :loading="loading" :rows-per-page-options="pagination.perPage" v-model:pagination="pagination" row-key="id" no-data-label="查無會員資料" v-model:selected="selected" selection="single" @request="onRequest" dense />
     <div class="row q-gutter-sm q-mt-none">
-      <q-input v-for="column in userColumns" :key="column.name" v-model="memberInfo[column.field]" :label="column.label" :rules="rules.member" class="col" dense outlined readonly hide-bottom-space />
+      <q-input v-for="column in userColumns" :key="column.name" v-model="model[column.field]" :label="column.label" :rules="column.name == 'id' ? rules.member :[]" class="col" dense outlined readonly hide-bottom-space />
     </div>
   </div>
 </template>
@@ -16,12 +16,6 @@ import { isEmpty, messages } from 'src/utils/validators';
 import to from 'await-to-js';
 
 const props = defineProps({
-  modelValue: {
-    type: Number
-  },
-  orderMember: {
-    type: Object
-  },
   required: {
     type: Boolean,
     default: false
@@ -31,11 +25,6 @@ const props = defineProps({
     default: false
   }
 });
-
-const memberInfo = ref(props.orderMember);
-watch(() => props.orderMember, val => {
-  memberInfo.value = val;
-})
 
 const rules = computed(() => {
   return {
@@ -82,12 +71,11 @@ const onRequest = (props) => {
   searchMember()
 }
 
-const emit = defineEmits(['update:modelValue']);
+const model = defineModel();
 const selected = ref([]);
 watch(selected, (newVal, oldVal) => {
   if (newVal !== oldVal) {
-    memberInfo.value = newVal[0];
-    emit('update:modelValue', newVal[0].id);
+    model.value = newVal[0];
   }
 });
 </script>
