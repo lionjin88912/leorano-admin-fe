@@ -7,14 +7,11 @@
           <q-space></q-space>
           <q-btn icon="close" v-close-popup rounded flat dense @click="$emit('cancel')"></q-btn>
         </q-card-section>
-        <q-card-section>
+        <q-card-section class="q-gutter-y-sm">
           <div class="message q-pb-md">{{ state.message }}</div>
-          <div>
-            <div class="input-label">取消原因</div>
-            <q-input :rules="rules.confirmText" type="textarea" placeholder="最多 100 字元。" :rows="5" :max-rows="10"
-              :maxlength="100" v-model="state.confirmText" :outlined="outlined" hide-hint hide-bottom-space autofocus
-              lazy-rules />
-          </div>
+          <q-input v-if="state.isConfirmCode" type="text" label="取消編號" v-model="state.confirmCode" :outlined="outlined" dense />
+          <InputCurrencyPrice v-if="state.isCancelPrice" v-model="state.cancelPrice" label="退款金額" />
+          <q-input type="textarea" v-model="state.confirmText" label="取消原因" :outlined="outlined" :rules="rules.confirmText" :rows="5" :max-rows="10" maxlength="100" counter dense />
         </q-card-section>
         <q-card-actions align="right">
           <q-btn class="dialog-button" type="reset" color="primary" label="取消" v-close-popup flat />
@@ -27,6 +24,7 @@
 <script setup>
 import { ref, reactive, computed } from "vue";
 import { messages, isEmpty } from "src/utils/validators";
+import InputCurrencyPrice from 'src/components/InputCurrencyPrice.vue';
 
 const emit = defineEmits(["confirm", "cancel"]);
 
@@ -52,10 +50,12 @@ const outlined = computed(() => {
   return state.multiple ? true : false;
 });
 
-const show = ({ title, message, required, data = {} }) => {
+const show = ({ title, message, required, isConfirmCode, isCancelPrice, data = {} }) => {
   visible.value = true;
   state.title = title;
   state.message = message;
+  state.isConfirmCode = isConfirmCode;
+  state.isCancelPrice = isCancelPrice;
   state.required = required;
   state.data = data;
 };
@@ -64,7 +64,9 @@ const doSubmit = async () => {
   visible.value = false;
   emit("confirm", {
     ...state.data,
-    confirmText: state.confirmText
+    confirmCode: state.confirmCode,
+    cancelPrice: state.cancelPrice,
+    confirmText: state.confirmText,
   });
 };
 

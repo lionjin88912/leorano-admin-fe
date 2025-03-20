@@ -62,6 +62,7 @@ const menus: Menu[] = [
     children: [
       { label: '酒店訂單', to: '/orders/hotel' },
       { label: '客製訂單', to: '/orders/customized' },
+      { label: '訂單列表', to: '/orders/booking' },
       { label: '會籍訂單', to: '/orders/member' },
     ],
   },
