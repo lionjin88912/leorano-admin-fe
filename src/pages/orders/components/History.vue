@@ -45,7 +45,9 @@ const getTodo = async () => {
   todo.value = res.data;
 }
 const updateTodo = async () => {
-  const [err, res] = await to(updateOrderTodo(state.order_number, todo.value));
+  const [err, res] = await to(updateOrderTodo(state.order_number, {
+    todo: todo.value
+  }));
 }
 defineExpose({ show });
 </script>

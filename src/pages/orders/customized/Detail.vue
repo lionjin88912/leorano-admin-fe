@@ -62,22 +62,24 @@
                   <div :class="`text-${scope.opt.color}`">{{ scope.opt.label }}</div>
                 </template>
               </q-select>
-              <q-input v-model="model.start_date" label="使用日期" mask="####-##-##" class="col-4" :disable="isClose" dense outlined>
+              <q-field class="col-4 cursor-pointer" label="使用日期" :stack-label="duration.from ? true : false" outlined dense>
                 <template #default>
-                  <DatePicker :date="model.start_date" :format="'YYYY-MM-DDTHH:mm:ss[Z]'" @updated="(val) => model.start_date = val" />
+                  <DatePicker :date="duration" :range="true" @updated="(val) => {duration.from = val.from; duration.to = val.to}">
+                  </DatePicker>
                 </template>
                 <template v-slot:control>
-                  <div>{{ getDateString(model.start_date, 'YYYY-MM-DD') }}</div>
+                  {{ duration.from }}
                 </template>
-              </q-input>
-              <q-input v-model="model.end_date" label="結束日期" mask="####-##-##" class="col-4" :disable="isClose" dense outlined>
+              </q-field>
+              <q-field class="col-4 cursor-pointer" label="結束日期" :stack-label="duration.from ? true : false" outlined dense>
                 <template #default>
-                  <DatePicker :date="model.end_date" :format="'YYYY-MM-DDTHH:mm:ss[Z]'" @updated="(val) => model.end_date = val" />
+                  <DatePicker :date="duration" :range="true" @updated="(val) => {duration.from = val.from; duration.to = val.to}">
+                  </DatePicker>
                 </template>
                 <template v-slot:control>
-                  <div>{{ getDateString(model.end_date, 'YYYY-MM-DD') }}</div>
+                  {{ duration.to }}
                 </template>
-              </q-input>
+              </q-field>
             </div>
           </div>
         </InfoRow>
@@ -471,7 +473,8 @@ onMounted(async () => {
 	if (!isNaN(orderId)) {
 		let order: any = await getData();
 		if (order) {
-      model.value = order;
+			model.value = order;
+			setDuration();
 			isNewOrder.value = false;
 		}
 	}
@@ -492,6 +495,13 @@ const getData = async () => {
 const booking_way = computed(() => {
   return orderBookingWayOptions.find((d) => d.value === 'offline');
 });
+
+/* 使用區間 Start */
+const duration = reactive({ from: '', to: '' });
+const setDuration = () => {
+  duration.from = getDateString(model.value.start_date, 'YYYY-MM-DD');
+  duration.to = getDateString(model.value.end_date, 'YYYY-MM-DD');
+}
 
 /* 取消 Start */
 const cancelOrderRef = ref();
@@ -524,6 +534,7 @@ const onCancelConfirm = async (data: any) => {
   let order = await getData();
   if (order) {
     model.value = order;
+    setDuration();
   }
 }
 /* 取消 End */
@@ -549,6 +560,7 @@ const onCloseConfirm = async () => {
   let order = await getData();
   if (order) {
     model.value = order;
+    setDuration();
   }
 }
 /* 結案 End */
@@ -687,18 +699,18 @@ const addOrder = async () => {
       booking_confirm_code: model.value.booking_confirm_code,
       content: model.value.content,
       currency: model.value.currency,
-      end_date: model.value.end_date,
+      end_date: duration.to,
       final_profit: model.value.final_profit,
       finance: model.value.finance,
       member_id: model.value.member.id,
       price: model.value.price,
-      start_date: model.value.start_date,
+      start_date: duration.from,
       title: model.value.title,
       type: model.value.type,
       usd_price: model.value.usd_price,
       voucher_number: model.value.voucher
     }));
-    router.push({ name: "CustomizedOrderDetail", params: { orderNumber: res.model.id } });
+    router.push({ name: "CustomizedOrderDetail", params: { orderNumber: res.data.order_id } });
   } else {
     window.scrollTo({
       top: 0,
@@ -716,13 +728,13 @@ const saveOrder = async () => {
       booking_confirm_code: model.value.booking_confirm_code,
       content: model.value.content,
       currency: model.value.currency,
-      end_date: model.value.end_date,
+      end_date: duration.to,
       final_profit: model.value.final_profit,
       finance: model.value.finance,
       member_id: model.value.member.id,
       price: model.value.price,
       schedule_status: model.value.schedule_status,
-      start_date: model.value.start_date,
+      start_date: duration.from,
       status: model.value.status,
       title: model.value.title,
       type: model.value.type,
