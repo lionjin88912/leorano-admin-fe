@@ -123,6 +123,9 @@ const getData = async () => {
     return;
   }
   model.value = res.data;
+  if (model.value.todo == null) {
+    model.value.todo = [];
+  }
   $q.loading.hide();
 }
 

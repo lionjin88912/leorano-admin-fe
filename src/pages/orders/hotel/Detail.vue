@@ -303,7 +303,7 @@ const getData = async () => {
 
 const getUser = (person: any) => {
   return {
-    id: person.id,
+    id: person.user_id,
     name: `${person.first_name} ${person.last_name}`,
     email: person.email,
     phone: person.phone

@@ -46,7 +46,7 @@
         </div>
       </div>
     </div>
-    <q-table :rows="rows" :columns="orderColumns" row-key="order_number" class="order-list data-table" @request="loadData" :loading="state.loading" v-model:pagination="state.pagination" :rows-per-page-options="state.pagination.perPages" no-data-label='無酒店訂單資料' binary-state-sort flat bordered>
+    <q-table :rows="rows" :columns="orderColumns" row-key="order_number" class="order-list data-table" @request="loadData" :loading="state.loading" v-model:pagination="state.pagination" :rows-per-page-options="state.pagination.perPages" no-data-label='無訂單資料' binary-state-sort flat bordered>
       <template v-slot:header="props">
         <q-tr :props="props">
           <q-th />
@@ -186,9 +186,9 @@ const rows = ref([]);
 const textTypeOptions = [
   { label: "全部", value: "all" },
   { label: "訂單編號", value: "order_number" },
-  { label: "酒店名稱", value: "hotel" },
-  { label: "酒店確認編號", value: "booking_confirm_code" },
-  { label: "酒店取消編號", value: "cancel_confirm_code" },
+  { label: "訂單名稱", value: "hotel" },
+  { label: "確認編號", value: "booking_confirm_code" },
+  { label: "取消編號", value: "cancel_confirm_code" },
   { label: "訂購人", value: "user_name" },
   { label: "訂購人Email", value: "user_email" },
 ]
