@@ -5,7 +5,7 @@ interface ColumnStruct {
   label: string
   field?: string | ((row: { updated_at: string }) => string) | any
   align: 'center' | 'left' | 'right',
-  wpx: number
+  wpx?: number
 }
 type TableColumn = ColumnStruct[]
 
@@ -120,6 +120,77 @@ const customizedColumns: TableColumn = [
   }
 ]
 
+export const paymentColumns: TableColumn = [
+  {
+    name: 'payment_number',
+    label: '支單號',
+    field: 'payment_number',
+    align: 'left'
+  },
+  {
+    name: 'payment_item',
+    label: '支出項目',
+    field: 'payment_item',
+    align: 'left'
+  },
+  {
+    name: 'payment_amount',
+    label: '支出金額',
+    field: (row: any) => getCurrencyPriceFormat(row.payment_amount),
+    align: 'left'
+  },
+  {
+    name: 'created_at',
+    label: '建立日期',
+    field: (row: any) => getDateString(row.created_at, 'YYYY-MM-DD'),
+    align: 'left'
+  },
+  {
+    name: 'print',
+    label: '列印',
+    field: 'print',
+    align: 'center'
+  },
+  {
+    name: 'paid',
+    label: '付款狀態',
+    align: 'center'
+  }
+]
+
+export const receiptColumns: TableColumn = [
+  {
+    name: 'receipt_number',
+    label: '收據編號',
+    field: 'receipt_number',
+    align: 'left'
+  },
+  {
+    name: 'order_name',
+    label: '訂單名稱',
+    field: 'order_name',
+    align: 'left'
+  },
+  {
+    name: 'list',
+    label: '明細',
+    field: 'list',
+    align: 'left'
+  },
+  {
+    name: 'amount',
+    label: '總計',
+    field: (row: any) => getCurrencyPriceFormat(row.amount),
+    align: 'left'
+  },
+  {
+    name: 'created_at',
+    label: '建立日期',
+    field: (row: any) => getDateString(row.created_at, 'YYYY-MM-DD'),
+    align: 'left'
+  }
+]
+
 interface FieldStruct {
   name: string,
   type: 'text' | 'select' | 'date',
@@ -140,6 +211,12 @@ const hotelOrderStatusOptions = [
 const hotelOrderProfitOptions = [
   { label: '全部', value: null },
   { label: '僅實際利潤', value: 'true' },
+]
+
+export const paidFilterStatusOptions = [
+  { label: '全部', value: null },
+  { label: '未付款', value: false },
+  { label: '已付款', value: true }
 ]
 
 const hotelFilters: FieldStruct[] = [
@@ -209,3 +286,42 @@ export const pages: { [key: string]: PageStruct } = {
     detailLinkColumn: 'id',
   }
 }
+
+export const paymentPrintColumns: TableColumn = [
+  {
+    name: 'detail',
+    label: '詳細說明',
+    field: 'detail',
+    align: 'left'
+  },
+  {
+    name: 'qty',
+    label: '數量',
+    field: 'qty',
+    align: 'center'
+  },
+  {
+    name: 'price',
+    label: '單價',
+    field: 'price',
+    align: 'right'
+  },
+  {
+    name: 'tax',
+    label: '稅',
+    field: 'tax',
+    align: 'center'
+  },
+  {
+    name: 'rate',
+    label: '匯率',
+    field: 'rate',
+    align: 'center'
+  },
+  {
+    name: 'total',
+    label: 'NTD金額',
+    field: 'total',
+    align: 'right'
+  }
+]

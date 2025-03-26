@@ -49,7 +49,18 @@
         </InfoRow>
       </template>
       <template #aside>
-        <RecordList :orderNumber="model.order_number" type="parent" />
+        <q-card class="bg-grey-2" flat bordered>
+          <q-card-section>
+            <div class="text-subtitle1 text-bold">收據</div>
+            <div class="flex items-center q-mt-xs">
+              <q-badge label="產生收據" class="q-py-xs cursor-pointer q-mr-sm" />
+              <div>202500001</div>
+            </div>
+          </q-card-section>
+        </q-card>
+        <div class="q-mt-md">
+          <RecordList :orderNumber="model.order_number" type="parent" />
+        </div>
       </template>
     </DetailLayout>
   </div>

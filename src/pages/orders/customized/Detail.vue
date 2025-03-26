@@ -190,95 +190,122 @@
       </q-form>
     </template>
     <template #aside>
-      <div class="col-4">
-        <div v-if="!isClose" class="q-mb-md">
-          <q-btn label="取消訂單" color="warning" @click="doCancel" unelevated />
-          <q-btn v-if="!isNewOrder" label="結案" color="teal" class="q-ml-sm" @click="doClose" unelevated />
-        </div>
-        <q-card class="bg-grey-2" flat bordered>
-          <q-card-section>
-            <div class="text-subtitle1 text-bold">憑證</div>
-            <div class="flex items-center q-mt-xs">
-              <q-badge label="發送" class="q-py-xs cursor-pointer q-mr-sm" @click="sendVoucher" />
-              <div v-if="model.voucher_send" class="text-grey-7">於 {{ model.voucher_send }} 發送憑證</div>
-              <div v-else class="text-grey-6">未發送</div>
+      <div v-if="!isClose" class="q-mb-md">
+        <q-btn label="取消訂單" color="warning" @click="doCancel" unelevated />
+        <q-btn v-if="!isNewOrder" label="結案" color="teal" class="q-ml-sm" @click="doClose" unelevated />
+      </div>
+      <q-card class="bg-grey-2" flat bordered>
+        <q-card-section>
+          <div class="text-subtitle1 text-bold">支單</div>
+        </q-card-section>
+        <q-separator />
+        <q-card-section>
+          <div class="flex justify-between items-center q-my-sm">
+            <div>
+              <span class="text-bold text-grey-9 q-mr-sm">2025-01-10 訂金</span>
+              <span class="text-grey-7"> USD 100</span>
             </div>
-          </q-card-section>
-          <q-separator />
-          <q-card-section>
-            <div class="flex">
-              <div class="text-bold text-grey-9 q-mr-sm">訂單名稱</div>
-              <div class="text-grey-7">{{ model.title }}</div>
+            <router-link to="/accounting/payment/202500001" class="text-primary">202500001</router-link>
+          </div>
+          <div class="flex justify-between items-center q-my-sm">
+            <div>
+              <span class="text-bold text-grey-9 q-mr-sm">2025-01-12 頭款</span>
+              <span class="text-grey-7"> USD 100</span>
             </div>
-            <div class="flex q-mt-sm">
-              <div class="text-bold text-grey-9 q-mr-sm">訂單編號</div>
-              <div class="text-grey-7">{{ model.order_number }}</div>
+            <router-link to="/accounting/payment/202500002" class="text-primary">202500002</router-link>
+          </div>
+          <div class="flex justify-between items-center q-my-sm">
+            <div>
+              <span class="text-bold text-grey-9 q-mr-sm">尾款</span>
+              <span class="text-grey-7"> USD 100</span>
             </div>
-            <div class="flex q-mt-sm">
-              <div class="text-bold text-grey-9 q-mr-sm">訂單金額</div>
-              <div class="text-grey-7">{{ model.currency }} {{ getNumberFormat(model.price) }}</div>
-            </div>
-            <div v-for="(question, index) in model.content" :key="index" class="flex no-wrap q-mt-sm">
-              <div class="text-bold text-grey-9 q-mr-sm">{{ question.column }}</div>
-              <div class="text-grey-7">{{ question.value }}</div>
-            </div>
-          </q-card-section>
-        </q-card>
-        <q-card class="q-mt-md" flat bordered>
-          <q-card-section class="bg-grey-2">
-            <div class="flex items-center justify-between">
-              <div class="text-subtitle1 text-bold">Le Oràno Rewards 歷程</div>
-              <q-btn label="新增 Reward" text-color="primary" @click="addReward" outline />
-            </div>
-          </q-card-section>
+            <q-badge label="產生支單" class="q-py-xs cursor-pointer q-ml-sm" />
+          </div>
+        </q-card-section>
+      </q-card>
+      <q-card class="bg-grey-2 q-mt-md" flat bordered>
+        <q-card-section>
+          <div class="text-subtitle1 text-bold">憑證</div>
+          <div class="flex items-center q-mt-xs">
+            <q-badge label="發送" class="q-py-xs cursor-pointer q-mr-sm" @click="sendVoucher" />
+            <div v-if="model.voucher_send" class="text-grey-7">於 {{ model.voucher_send }} 發送憑證</div>
+            <div v-else class="text-grey-6">未發送</div>
+          </div>
+        </q-card-section>
+        <q-separator />
+        <q-card-section>
+          <div class="flex">
+            <div class="text-bold text-grey-9 q-mr-sm">訂單名稱</div>
+            <div class="text-grey-7">{{ model.title }}</div>
+          </div>
+          <div class="flex q-mt-sm">
+            <div class="text-bold text-grey-9 q-mr-sm">訂單編號</div>
+            <div class="text-grey-7">{{ model.order_number }}</div>
+          </div>
+          <div class="flex q-mt-sm">
+            <div class="text-bold text-grey-9 q-mr-sm">訂單金額</div>
+            <div class="text-grey-7">{{ model.currency }} {{ getNumberFormat(model.price) }}</div>
+          </div>
+          <div v-for="(question, index) in model.content" :key="index" class="flex no-wrap q-mt-sm">
+            <div class="text-bold text-grey-9 q-mr-sm">{{ question.column }}</div>
+            <div class="text-grey-7">{{ question.value }}</div>
+          </div>
+        </q-card-section>
+      </q-card>
+      <q-card class="q-mt-md" flat bordered>
+        <q-card-section class="bg-grey-2">
+          <div class="flex items-center justify-between">
+            <div class="text-subtitle1 text-bold">Le Oràno Rewards 歷程</div>
+            <q-btn label="新增 Reward" text-color="primary" @click="addReward" outline />
+          </div>
+        </q-card-section>
+        <q-list separator>
+          <q-item v-for="reward in model.rewards" :key="reward.id" class="items-start q-py-md" :disable="reward.operator != '' && reward.apply_time == ''">
+            <q-item-section>
+              <q-item-label class="text-bold text-grey-9">{{ reward.reason }}</q-item-label>
+              <div v-if="reward.button_enable" class="q-mt-sm">
+                <q-badge label="發送" class="q-py-xs cursor-pointer" @click="doSendRewards(reward)" />
+                <q-badge label="刪除" color="negative" class="q-py-xs cursor-pointer q-ml-sm" @click="doDeleteRewards(reward)" />
+              </div>
+              <div v-else class="text-grey-7 q-mt-sm">
+                {{ reward.operator }}
+                <span v-if="reward.apply_time">於 {{ getDateString(reward.apply_time) }} 發送</span>
+              </div>
+            </q-item-section>
+            <q-item-section side top>
+              <q-item-label caption>{{ getDateString(reward.created_at) }}</q-item-label>
+              <q-item-label class="text-h5 text-bold">{{ reward.amount }}</q-item-label>
+            </q-item-section>
+          </q-item>
+        </q-list>
+      </q-card>
+      <q-card flat bordered class="q-mt-md">
+        <q-card-section class="bg-grey-2">
+          <div class="flex items-center justify-between">
+            <div class="text-subtitle1 text-bold">Travel Credits 歷程</div>
+            <q-btn label="新增 Credit" text-color="primary" @click="addCredit" outline />
+          </div>
+        </q-card-section>
           <q-list separator>
-            <q-item v-for="reward in model.rewards" :key="reward.id" class="items-start q-py-md" :disable="reward.operator != '' && reward.apply_time == ''">
+            <q-item v-for="credit in model.credits" :key="credit.id" class="items-start q-py-md" :disable="credit.operator != '' && credit.apply_time == ''">
               <q-item-section>
-                <q-item-label class="text-bold text-grey-9">{{ reward.reason }}</q-item-label>
-                <div v-if="reward.button_enable" class="q-mt-sm">
-                  <q-badge label="發送" class="q-py-xs cursor-pointer" @click="doSendRewards(reward)" />
-                  <q-badge label="刪除" color="negative" class="q-py-xs cursor-pointer q-ml-sm" @click="doDeleteRewards(reward)" />
+                <q-item-label class="text-bold text-grey-9">{{ credit.reason }}</q-item-label>
+                <div v-if="credit.button_enable" class="q-mt-sm">
+                  <q-badge label="使用" class="q-py-xs cursor-pointer" @click="doSendCredits(credit)" />
+                  <q-badge label="刪除" color="negative" class="q-py-xs cursor-pointer q-ml-sm" @click="doDeleteCredits(credit)" />
                 </div>
                 <div v-else class="text-grey-7 q-mt-sm">
-                  {{ reward.operator }}
-                  <span v-if="reward.apply_time">於 {{ getDateString(reward.apply_time) }} 發送</span>
+                  {{ credit.operator }}
+                  <span v-if="credit.apply_time">於 {{ getDateString(credit.apply_time) }} 發送</span>
                 </div>
               </q-item-section>
               <q-item-section side top>
-                <q-item-label caption>{{ getDateString(reward.created_at) }}</q-item-label>
-                <q-item-label class="text-h5 text-bold">{{ reward.amount }}</q-item-label>
+                <q-item-label caption>{{ getDateString(credit.created_at) }}</q-item-label>
+                <q-item-label class="text-h5 text-bold">{{ credit.amount }}</q-item-label>
               </q-item-section>
             </q-item>
           </q-list>
-        </q-card>
-        <q-card flat bordered class="q-mt-md">
-          <q-card-section class="bg-grey-2">
-            <div class="flex items-center justify-between">
-              <div class="text-subtitle1 text-bold">Travel Credits 歷程</div>
-              <q-btn label="新增 Credit" text-color="primary" @click="addCredit" outline />
-            </div>
-          </q-card-section>
-            <q-list separator>
-              <q-item v-for="credit in model.credits" :key="credit.id" class="items-start q-py-md" :disable="credit.operator != '' && credit.apply_time == ''">
-                <q-item-section>
-                  <q-item-label class="text-bold text-grey-9">{{ credit.reason }}</q-item-label>
-                  <div v-if="credit.button_enable" class="q-mt-sm">
-                    <q-badge label="使用" class="q-py-xs cursor-pointer" @click="doSendCredits(credit)" />
-                    <q-badge label="刪除" color="negative" class="q-py-xs cursor-pointer q-ml-sm" @click="doDeleteCredits(credit)" />
-                  </div>
-                  <div v-else class="text-grey-7 q-mt-sm">
-                    {{ credit.operator }}
-                    <span v-if="credit.apply_time">於 {{ getDateString(credit.apply_time) }} 發送</span>
-                  </div>
-                </q-item-section>
-                <q-item-section side top>
-                  <q-item-label caption>{{ getDateString(credit.created_at) }}</q-item-label>
-                  <q-item-label class="text-h5 text-bold">{{ credit.amount }}</q-item-label>
-                </q-item-section>
-              </q-item>
-            </q-list>
-        </q-card>
-      </div>
+      </q-card>
     </template>
   </DetailLayout>
   <CancelOrderDialog ref="cancelOrderRef" @confirm="onCancelConfirm"></CancelOrderDialog>
@@ -704,7 +731,9 @@ const addOrder = async () => {
       finance: model.value.finance,
       member_id: model.value.member.id,
       price: model.value.price,
+      schedule_status: 'pending',
       start_date: duration.from,
+      status: 'success',
       title: model.value.title,
       type: model.value.type,
       usd_price: model.value.usd_price,
