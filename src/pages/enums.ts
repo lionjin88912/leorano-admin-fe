@@ -41,7 +41,6 @@ const menus: Menu[] = [
     children: [
       { label: '會員列表', to: '/members/list' },
       { label: '待審核列表', to: '/members/apply' },
-      { label: '未完成付款', to: '/members/incomplete-payment' },
     ],
   },
   {

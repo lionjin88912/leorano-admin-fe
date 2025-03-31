@@ -265,7 +265,8 @@ export const reportTypeOptions = [
 
 export const statisticsTypeOptions = [
   {label: '近五週', value: 'last5Week'},
-  {label: '指定年份', value: 'year'}
+  {label: '指定年份', value: 'year'},
+  {label: '指定區間', value: 'duration'},
 ]
 
 export const statisticsLast5WeekDefaultData = [
