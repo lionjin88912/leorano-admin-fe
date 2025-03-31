@@ -28,7 +28,7 @@
         </template>
       </q-field>
       <q-space />
-			<q-btn-toggle v-model="reportType" toggle-text-color="primary" toggle-color="white" color="grey-2" text-color="grey-7" :options="reportTypeOptions" class="report-toggle" unelevated>
+			<q-btn-toggle v-model="reportType" toggle-text-color="primary" toggle-color="white" color="grey-2" text-color="grey-7" :options="reportTypeOptions" class="report-toggle" :disable="reportTime == 'duration'" unelevated>
 				<template v-slot:table>
 					<q-icon size="1.5em" name="table_chart" />
 				</template>
@@ -329,11 +329,32 @@ const doExcelExport = async () => {
   }
 
   $q.loading.show({ message: "導出Excel資料" });
-  if (reportTime.value == 'year') {
+  if (reportTime.value == 'last5Week') {
+    await getYearPromoMembershipData()
+    // duration from 為今年第一天，to 設為當前日期
+    duration.value = {
+      from: `${new Date().getFullYear()}-01-01`,
+      to: getDateString(new Date(), 'YYYY-MM-DD')
+    } 
+    await getDurationPromoMembershipData()
+  } else if (reportTime.value == 'year') {
     await getLast5WeekPromoMembershipData()
     last5WeekChartOptions.value.xaxis.categories = last5WeekColumns.value.slice(2).map(col => col.label)
+    // duration from 為指定年份第一天，to 為指定年份最後一天
+    duration.value = {
+      from: `${selectedYear.value}-01-01`,
+      to: `${selectedYear.value}-12-31`
+    }
+    // 如果選擇的年份是今年，則 to 設為當前日期
+    if (selectedYear.value == new Date().getFullYear()) {
+      duration.value.to = getDateString(new Date(), 'YYYY-MM-DD')
+    }
+    await getDurationPromoMembershipData()
   } else {
+    selectedYear.value = duration.value.from.split('-')[0]
     await getYearPromoMembershipData()
+    await getLast5WeekPromoMembershipData()
+    last5WeekChartOptions.value.xaxis.categories = last5WeekColumns.value.slice(2).map(col => col.label)
   }
   $q.loading.hide();
 
@@ -358,7 +379,6 @@ const doExcelExport = async () => {
     XLSX.utils.decode_range("A2:A3"),
     XLSX.utils.decode_range("A4:A5")
   ];
-
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, '近五週兌換報表');
 
@@ -391,8 +411,27 @@ const doExcelExport = async () => {
     XLSX.utils.decode_range("A2:A3"),
     XLSX.utils.decode_range("A4:A5")
   ];
-
   XLSX.utils.book_append_sheet(wb, ws, `${selectedYear.value} 年兌換報表`);
+
+  // 整理資料（指定區間）
+  headers = durationColumns.value.map(c => c.label);
+  excelDatas = durationDatas.value.map(d => {
+    return [
+      d.group,
+      d.label,
+      d.duration ? getNumberFormat(d.duration) : ''
+    ]
+  });
+  excelDatas = [headers, ...excelDatas];
+  ws = XLSX.utils.aoa_to_sheet(excelDatas);
+  ws['!cols'] = headers.map(d => { return { wpx: 130 } });
+  ws['!rows'] = excelDatas.map(d => { return { hpx: 20 } });
+  ws["!merges"] = [
+    XLSX.utils.decode_range("A2:A3"),
+    XLSX.utils.decode_range("A4:A5")
+  ];
+  XLSX.utils.book_append_sheet(wb, ws, `${duration.value.from} - ${duration.value.to} 兌換報表`);
+
   const filename = '兌換報表.xlsx';
   XLSX.writeFileXLSX(wb, filename);
 }
