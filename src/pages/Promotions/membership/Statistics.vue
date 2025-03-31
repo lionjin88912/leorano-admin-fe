@@ -16,6 +16,17 @@
           <div>{{ selectedYear }}</div>
         </template>
       </q-field>
+      <q-field v-if="reportTime == 'duration'" class="cursor-pointer filter-date" label="累計區間" :stack-label="duration ? true : false" outlined dense>
+        <template #default>
+          <DatePicker :date="duration" :range="true" @updated="(val) => { changeDuration(val); }">
+          </DatePicker>
+        </template>
+        <template v-slot:control>
+          <div v-if="duration && duration.from">
+            {{ duration.from }} - {{ duration.to }}
+          </div>
+        </template>
+      </q-field>
       <q-space />
 			<q-btn-toggle v-model="reportType" toggle-text-color="primary" toggle-color="white" color="grey-2" text-color="grey-7" :options="reportTypeOptions" class="report-toggle" unelevated>
 				<template v-slot:table>
@@ -27,30 +38,32 @@
 			</q-btn-toggle>
       <q-btn label="導出 Excel" color="primary" @click="doExcelExport" unelevated></q-btn>
     </div>
-		<q-table v-if="!loading && reportType == 'table'" :rows="datas" :columns="columns" class="report-table data-table" :pagination="pagination" flat bordered hide-pagination>
-			<template v-slot:header-cell-group="props">
-				<q-th class="row-group cell-sticky text-left">{{ props.col.label }}</q-th>
-			</template>
-			<template v-slot:header-cell-label>
-				<q-th v-if="reportTime == 'year'" class="row-label cell-sticky text-left">{{ selectedYear }}</q-th>
-				<q-th v-else class="row-label cell-sticky text-left"></q-th>
-			</template>
-      <template v-slot:body-cell-group="props">
-				<q-td v-if="props.row.group" rowspan="2" class="row-group cell-sticky">
-					<span>{{ props.row.group }}</span>
-				</q-td>
-      </template>
-			<template v-slot:body-cell-label="props">
-				<q-td class="row-label cell-sticky">
-					<span>{{ props.row.label }}</span>	
-				</q-td>
-			</template>
-			<template v-slot:body-cell-year="props">
-				<q-td class="text-right last-cell-sticky">
-					<span>{{ getNumberFormat(props.row.year) }}</span>
-				</q-td>
-			</template>
-    </q-table>
+    <div class="row">
+      <q-table v-if="!loading && reportType == 'table'" :rows="datas" :columns="columns" class="report-table data-table" :class="{'col-6': reportTime == 'duration', 'col-12':  reportTime != 'duration'}" :pagination="pagination" flat bordered hide-pagination>
+        <template v-slot:header-cell-group="props">
+          <q-th class="row-group cell-sticky text-left">{{ props.col.label }}</q-th>
+        </template>
+        <template v-slot:header-cell-label>
+          <q-th v-if="reportTime == 'year'" class="row-label cell-sticky text-left">{{ selectedYear }}</q-th>
+          <q-th v-else class="row-label cell-sticky text-left"></q-th>
+        </template>
+        <template v-slot:body-cell-group="props">
+          <q-td v-if="props.row.group" rowspan="2" class="row-group cell-sticky">
+            <span>{{ props.row.group }}</span>
+          </q-td>
+        </template>
+        <template v-slot:body-cell-label="props">
+          <q-td class="row-label cell-sticky">
+            <span>{{ props.row.label }}</span>	
+          </q-td>
+        </template>
+        <template v-slot:body-cell-year="props">
+          <q-td class="text-right last-cell-sticky">
+            <span>{{ getNumberFormat(props.row.year) }}</span>
+          </q-td>
+        </template>
+      </q-table>
+    </div>
     <div v-if="!loading && reportType == 'chart'" class="q-pa-md">
       <apexchart ref="chartRef" height="480" :options="chartOptions" :series="series" />
     </div>
@@ -61,12 +74,13 @@
 import { useQuasar, LocalStorage } from 'quasar'
 import { ref, watch, computed, onMounted } from 'vue'
 import { router } from 'src/router'
-import { getPromoMembership, getPromoMembershipByMonth, getPromoMembershipLastWeek } from 'src/api'
+import { getPromoMembership, getPromoMembershipByMonth, getPromoMembershipLastWeek, getPromoMembershipByDuration } from 'src/api'
 import { statisticsLast5WeekColumns, statisticsYearColumns, reportTypeOptions, statisticsTypeOptions, statisticsLast5WeekDefaultData, statisticsYearDefaultData, statisticsLast5WeekChartOptions, statisticsYearChartOptions } from '../enums'
 import { getDateString, getDateStringNoTz, getNumberFormat } from 'src/utils/helpers'
 import apexchart from "vue3-apexcharts"
 import BreadCrumbs from 'src/components/BreadCrumbs.vue'
 import YearPicker from 'components/YearPicker.vue'
+import DatePicker from 'src/components/DatePicker.vue';
 import XLSX from 'xlsx-js-style'
 import to from 'await-to-js'
 
@@ -97,16 +111,18 @@ const path = computed(() => {
 /* 取得 breadcrumb End */
 
 /* 報表時間區間、類型 Start */
-const reportTime = ref(['last5Week', 'year'].includes(router.currentRoute.value.params.reportTime)
+const reportTime = ref(['last5Week', 'year', 'duration'].includes(router.currentRoute.value.params.reportTime)
   ? router.currentRoute.value.params.reportTime
   : (LocalStorage.getItem('reportTime') || 'last5Week'))
 watch(reportTime, newVal => {
   LocalStorage.set('reportTime', newVal);
   router.push({ params: { reportTime: newVal } })
 })
-const reportType = ref(['table', 'chart'].includes(router.currentRoute.value.params.reportType)
-  ? router.currentRoute.value.params.reportType
-  : (LocalStorage.getItem('report') || 'table'))
+const reportType = ref(reportTime.value == 'duration'
+  ? 'table' 
+  : (['table', 'chart'].includes(router.currentRoute.value.params.reportType)
+    ? router.currentRoute.value.params.reportType
+    : (LocalStorage.getItem('report') || 'table')))
 watch(reportType, newVal => {
   LocalStorage.set('report', newVal);
   router.push({ params: { reportType: newVal }, query: router.currentRoute.value.query })
@@ -122,6 +138,21 @@ const changeSelectYear = (val) => {
 }
 /* 報表年份 End */
 
+/* 報表指定區間 Start */
+const duration = ref(router.currentRoute.value.query.start_date && router.currentRoute.value.query.end_date 
+  ? {
+    from: router.currentRoute.value.query.start_date,
+    to: router.currentRoute.value.query.end_date
+  } 
+  : (reportTime.value == 'duration'
+    ? {
+      from: getDateString(new Date(new Date().getTime() - (4 * 7 * 24 * 60 * 60 * 1000)), 'YYYY-MM-DD'),
+      to: getDateString(new Date(), 'YYYY-MM-DD')
+    }
+    : null))
+const changeDuration = (val) => {
+  router.push({ query: { start_date: val.from, end_date: val.to } })
+}
 const chartRef = ref()
 const loading = ref(true)
 onMounted(async () => {
@@ -131,8 +162,10 @@ onMounted(async () => {
   if (reportTime.value == 'last5Week') {
     await getLast5WeekPromoMembershipData()
     last5WeekChartOptions.value.xaxis.categories = last5WeekColumns.value.slice(2).map(col => col.label)
-  } else {
+  } else if (reportTime.value == 'year') {
     await getYearPromoMembershipData()
+  } else {
+    await getDurationPromoMembershipData()
   }
   loading.value = false
   $q.loading.hide();
@@ -179,6 +212,26 @@ const getMonthPromoMembershipData = async (m) => {
   yearDatas.value[3][`month${m}`] = res.data.register.cumulative
   yearDatas.value[4][`month${m}`] = res.data.rate * 100
 }
+const getDurationPromoMembershipData = async () => {
+  const [err, res] = await to(getPromoMembershipByDuration(router.currentRoute.value.params.promoMembershipId, duration.value.from, duration.value.to));
+
+  durationColumns.value.push({
+    name: 'duration',
+    label: `${duration.value.from} - ${duration.value.to}`,
+    align: 'right',
+    field: 'duration'
+  })
+  if (err) {
+    console.error(err);
+    return;
+  }
+
+  durationDatas.value[0].duration = res.data.exchange.quantity
+  durationDatas.value[1].duration = res.data.exchange.cumulative
+  durationDatas.value[2].duration = res.data.register.quantity
+  durationDatas.value[3].duration = res.data.register.cumulative
+  durationDatas.value[4].duration = res.data.rate * 100
+}
 /* 取得報表資料 End */
 
 /* 表格資料 Start */
@@ -188,18 +241,24 @@ const pagination = {
 const columns = computed(() => {
 	if (reportTime.value == 'last5Week') {
 		return last5WeekColumns.value
-	}
-	return statisticsYearColumns
+	} else if (reportTime.value == 'year') {
+    return statisticsYearColumns
+  }
+  return durationColumns.value
 })
 const datas = computed(() => {
 	if (reportTime.value == 'last5Week') {
 		return last5WeekDatas.value
-	}
-	return yearDatas.value
+	} else if (reportTime.value == 'year') {
+    return yearDatas.value
+  }
+	return durationDatas.value
 })
 const last5WeekColumns = ref(JSON.parse(JSON.stringify(statisticsLast5WeekColumns)))
-const last5WeekDatas = ref(statisticsLast5WeekDefaultData);
+const last5WeekDatas = ref(JSON.parse(JSON.stringify(statisticsLast5WeekDefaultData)));
 const yearDatas = ref(JSON.parse(JSON.stringify(statisticsYearDefaultData)));
+const durationColumns = ref(JSON.parse(JSON.stringify(statisticsLast5WeekColumns)))
+const durationDatas = ref(JSON.parse(JSON.stringify(statisticsLast5WeekDefaultData)));
 /* 表格資料 End */
 
 /* 圖表資料 Start */
@@ -343,6 +402,9 @@ const doExcelExport = async () => {
 <style lang="scss" scoped>
 .report-toggle {
 	border: 1px solid $grey-5;
+}
+.filter-date {
+  min-width: 200px;
 }
 .report-table {
 	.row-group {

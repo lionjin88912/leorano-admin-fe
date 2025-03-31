@@ -183,6 +183,8 @@ export const getPromoMembershipByMonth = (id, year, month) =>
   baseService.get(`/promo/membership/statistics/${id}`, { params: { year, month } })
 export const getPromoMembershipLastWeek = (id) =>
   baseService.get(`/promo/membership/statistics/${id}/lastWeek`)
+export const getPromoMembershipByDuration = (id, start, end) =>
+  baseService.get(`/promo/membership/statistics/${id}/range?start_date=${start}&end_date=${end}`)
 // 會籍資料清單
 export const getMembershipList = (params) => baseService.get('/membership/list', { params })
 // 推播管理

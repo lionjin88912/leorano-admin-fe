@@ -104,3 +104,7 @@ export const getTimeZoneList = () => {
   }
   return tzInfoList
 }
+
+export const getUserNameFormat = (firstName, lastName) => {
+  return `${firstName ? firstName.replace(/\s/g, '') : ''} ${lastName}`.toUpperCase()
+}

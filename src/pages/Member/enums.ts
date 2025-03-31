@@ -45,12 +45,9 @@ const columns: tableColumn = [
     align: 'left',
   },
   {
-    name: 'expired_at',
-    label: '到期日',
-    field: (row: any) =>
-      row.MembershipRecords && row.MembershipRecords.length > 0
-        ? helpers.getDateString(row.MembershipRecords[0].expired_at, 'YYYY-MM-DD')
-        : '',
+    name: 'created_at',
+    label: '加入/到期日',
+    field: 'created_at',
     align: 'left',
     sortable: true,
   },
@@ -65,7 +62,6 @@ const columns: tableColumn = [
     label: '年收入',
     field: 'income',
     align: 'left',
-    sortable: true,
   },
   {
     name: 'invite_user',
