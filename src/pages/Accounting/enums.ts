@@ -1,4 +1,4 @@
-import { getDateString, getDateStringNoTz, getCurrencyPriceFormat } from 'src/utils/helpers'
+import { getDateString, getDateStringNoTz, getCurrencyPriceFormat, getUserNameFormat } from 'src/utils/helpers'
 
 interface ColumnStruct {
   name: string
@@ -12,7 +12,7 @@ type TableColumn = ColumnStruct[]
 const hotelColumns: TableColumn = [
   {
     name: 'order_number',
-    label: '訂單編號',
+    label: '訂單編號/確認編號',
     field: 'order_number',
     align: 'left',
     wpx: 120
@@ -40,17 +40,10 @@ const hotelColumns: TableColumn = [
   },
   {
     name: 'check_in',
-    label: '預定入住日',
+    label: '入住/退房日',
     field: (row: any) => getDateStringNoTz(row.check_in, 'YYYY-MM-DD'),
     align: 'left',
     wpx: 80
-  },
-  {
-    name: 'check_out',
-    label: '預定退房日',
-    field: (row: any) => getDateStringNoTz(row.check_out, 'YYYY-MM-DD'),
-    align: 'center',
-    wpx: 100
   },
   {
     name: 'room_night',
@@ -58,6 +51,13 @@ const hotelColumns: TableColumn = [
     field: 'room_night',
     align: 'left',
     wpx: 100
+  },
+  {
+    name: 'traveler_firstname',
+    label: '入住人',
+    field: (row: any) => getUserNameFormat(row.traveler_firstname, row.traveler_lastname),
+    align: 'left',
+    wpx: 180
   },
   {
     name: 'price',
@@ -211,6 +211,7 @@ const hotelOrderStatusOptions = [
 const hotelOrderProfitOptions = [
   { label: '全部', value: null },
   { label: '僅實際利潤', value: 'true' },
+  { label: '無實際利潤', value: 'false' },
 ]
 
 export const paidFilterStatusOptions = [

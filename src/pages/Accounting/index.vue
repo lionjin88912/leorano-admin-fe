@@ -27,25 +27,48 @@
     </div>
     <TableComponent ref="tableRef" :tableName="`accounting_${pageType}`" :propsFilter='queryFilter' :columns="pages[pageType].columns" :hideVisableColumnsSetting="false" :handleCallApi="getAccountingList">
       <template v-slot:body-cell-order_number="props">
-        <q-td class="link" @click="goDetail(props.row)">
-          {{ props.row.order_number }}
+        <q-td>
+          <div class="text-primary cursor-pointer" @click="goDetail(props.row)">
+            {{ props.row.order_number }}
+          </div>
+          <div v-if="pageType == 'hotel'" class="text-teal">
+            <q-icon name="check" size="1.2em" color="teal" class="q-mr-xs" />
+            <span v-for="(data, index) of (props.row.booking_confirm_code || [])" :key="index">
+              {{ data }}
+            </span>
+          </div>
         </q-td>
       </template>
+      <template v-slot:body-cell-check_in="props">
+        <q-td :props="props">
+          <div>{{ getDateStringNoTz(props.row.check_in, 'YYYY-MM-DD') }}</div>
+          <div>{{ getDateStringNoTz(props.row.check_out, 'YYYY-MM-DD') }}</div>
+        </q-td>
+      </template>
+      <template v-if="pageType == 'hotel'" v-slot:body-cell-final_profit="props">
+        <td class="cursor-pointer" @click="doEditProfit(props.row)">
+          <div class="text-primary">
+            {{ getCurrencyPriceFormat(props.row.final_profit) }}
+          </div>
+        </td>
+      </template>
     </TableComponent>
+    <ProfitDialog ref="editDialog" type="hotel" @updated="doSearch"></ProfitDialog>
   </div>
 </template>
 
 <script setup>
+import { useQuasar, SessionStorage } from 'quasar';
 import { ref, reactive, computed, watch, onBeforeMount } from 'vue'
 import { router } from 'src/router'
-import { useQuasar, SessionStorage } from 'quasar';
+import { getAccountingList } from 'src/api'
+import { pages } from './enums'
+import { getDateString, getDateStringNoTz, getNumberFormat, getCurrencyPriceFormat } from 'src/utils/helpers';
 import BreadCrumbs from 'src/components/BreadCrumbs.vue'
 import DatePicker from 'src/components/DatePicker.vue'
 import TableComponent from 'src/components/TableComponent.vue'
-import { getAccountingList } from 'src/api'
-import { pages } from './enums'
+import ProfitDialog from '../orders/components/ProfitDialog.vue'
 import XLSX from 'xlsx-js-style'
-import { getDateString, getDateStringNoTz, getNumberFormat } from 'src/utils/helpers';
 import to from 'await-to-js';
 
 const pageType = router.currentRoute.value.params.type
@@ -122,6 +145,16 @@ const goDetail = (row) => {
       orderNumber: row[pages[pageType].detailLinkColumn] 
     }
   });
+}
+
+const editDialog = ref();
+function doEditProfit (item) {
+  editDialog.value.show({
+    data: item
+  });
+}
+const doSearch = () => {
+  router.go(0)
 }
 
 /* 導出 Excel Start */
