@@ -72,8 +72,8 @@ const menus: Menu[] = [
     children: [
       { label: '酒店訂單對帳', to: '/accounting/order/hotel' },
       { label: '客製訂單對帳', to: '/accounting/order/customized' },
-      { label: '支單', to: '/accounting/payment' },
-      { label: '收據', to: '/accounting/receipt' }
+      // { label: '支單', to: '/accounting/payment' },
+      // { label: '收據', to: '/accounting/receipt' }
     ],
   },
   {

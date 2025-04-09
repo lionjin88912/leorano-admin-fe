@@ -2,7 +2,7 @@
   <div>
     <BreadCrumbs></BreadCrumbs>
     <div class='flex q-gutter-md q-my-md items-center'>
-      <q-input v-model='filter.name' dense style='width: 220px' :debounce="500" outlined placeholder='Search'>
+      <q-input v-model='filter.name' dense style='width: 220px' :debounce="3000" outlined placeholder='Search'>
         <template v-slot:append>
           <q-icon class='cursor-pointer' name='search' />
         </template>
