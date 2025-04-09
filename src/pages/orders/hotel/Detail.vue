@@ -155,7 +155,7 @@
             <div class="flex justify-end text-grey-7 text-bold">
               USD ${{ getNumberFormat(parseFloat(model.book_code.plan.total_price.slice(3))*parseFloat(model.Profit.rate)) }}
             </div>
-            <div class="flex justify-end q-mt-sm">
+            <div v-if="0" class="flex justify-end q-mt-sm">
               <!-- <q-badge label="產生支單" class="q-py-xs cursor-pointer q-ml-sm" /> -->
               <router-link to="/accounting/payment/202500003" class="text-primary">支單：202500003</router-link>
             </div>

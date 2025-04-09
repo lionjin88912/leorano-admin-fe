@@ -49,7 +49,7 @@
         </InfoRow>
       </template>
       <template #aside>
-        <q-card class="bg-grey-2" flat bordered>
+        <q-card v-if="0" class="bg-grey-2" flat bordered>
           <q-card-section>
             <div class="text-subtitle1 text-bold">收據</div>
             <div class="flex items-center q-mt-xs">
@@ -58,7 +58,7 @@
             </div>
           </q-card-section>
         </q-card>
-        <div class="q-mt-md">
+        <div>
           <RecordList :orderNumber="model.order_number" type="parent" />
         </div>
       </template>

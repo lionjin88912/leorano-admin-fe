@@ -196,35 +196,6 @@
       </div>
       <q-card class="bg-grey-2" flat bordered>
         <q-card-section>
-          <div class="text-subtitle1 text-bold">支單</div>
-        </q-card-section>
-        <q-separator />
-        <q-card-section>
-          <div class="flex justify-between items-center q-my-sm">
-            <div>
-              <span class="text-bold text-grey-9 q-mr-sm">2025-01-10 訂金</span>
-              <span class="text-grey-7"> USD 100</span>
-            </div>
-            <router-link to="/accounting/payment/202500001" class="text-primary">202500001</router-link>
-          </div>
-          <div class="flex justify-between items-center q-my-sm">
-            <div>
-              <span class="text-bold text-grey-9 q-mr-sm">2025-01-12 頭款</span>
-              <span class="text-grey-7"> USD 100</span>
-            </div>
-            <router-link to="/accounting/payment/202500002" class="text-primary">202500002</router-link>
-          </div>
-          <div class="flex justify-between items-center q-my-sm">
-            <div>
-              <span class="text-bold text-grey-9 q-mr-sm">尾款</span>
-              <span class="text-grey-7"> USD 100</span>
-            </div>
-            <q-badge label="產生支單" class="q-py-xs cursor-pointer q-ml-sm" />
-          </div>
-        </q-card-section>
-      </q-card>
-      <q-card class="bg-grey-2 q-mt-md" flat bordered>
-        <q-card-section>
           <div class="text-subtitle1 text-bold">憑證</div>
           <div class="flex items-center q-mt-xs">
             <q-badge label="發送" class="q-py-xs cursor-pointer q-mr-sm" @click="sendVoucher" />
@@ -249,6 +220,21 @@
           <div v-for="(question, index) in model.content" :key="index" class="flex no-wrap q-mt-sm">
             <div class="text-bold text-grey-9 q-mr-sm">{{ question.column }}</div>
             <div class="text-grey-7">{{ question.value }}</div>
+          </div>
+        </q-card-section>
+      </q-card>
+      <q-card v-if="0" class="q-mt-md" flat bordered>
+        <q-card-section class="bg-grey-2">
+          <div class="text-subtitle1 text-bold">支單</div>
+        </q-card-section>
+        <q-card-section>
+          <div v-for="payment in payments" :key="payment.index" class="flex justify-between items-center q-py-xs">
+            <div class="q-mt-xs">
+              <span class="text-bold text-grey-9 q-mr-sm">{{ payment.title }}</span>
+              <span class="text-grey-7"> USD {{ financeUSD[payment.index] }}</span>
+            </div>
+            <router-link v-if="financeUSD[payment.index] == 300" :to="`/accounting/payment/${202500001}`" class="text-primary">202500001</router-link>
+            <q-badge v-else label="產生支單" class="q-py-xs cursor-pointer q-ml-sm" />
           </div>
         </q-card-section>
       </q-card>
@@ -707,6 +693,15 @@ const financeSum = computed(() => {
   }, 0);
 });
 /* 訂單收入支出表格 End */
+
+/* 支單列表 Start */
+const payments = computed(() => {
+  return model.value.finance.map((d, index) => ({
+    index,
+    ...d
+  })).filter((d) => d.type === 'expense');
+});
+/* 支單列表 End */
 
 /* 新增/編輯訂單 Start */
 const form = ref();
