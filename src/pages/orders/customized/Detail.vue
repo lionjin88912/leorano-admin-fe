@@ -87,7 +87,7 @@
           <div class="q-mt-md q-mb-lg">
             <div class="text-bold q-mt-md q-mb-sm">實際利潤</div>
             <div class="row q-col-gutter-sm">
-              <InputCurrencyPrice v-model="model.final_profit" label="利潤" class="col-4" :disable="isClose" />
+              <InputCurrencyPrice v-model="model.final_profit" label="利潤" class="col-4" :rules="rules.profit" :disable="isClose" />
             </div>
           </div>
         </InfoRow>
@@ -109,7 +109,7 @@
               </template>
             </q-select>
             <q-input v-model="finance.title" class="col" :rules="rules.required" :disable="isClose" dense outlined />
-            <InputCurrencyPrice v-model:currency="finance.currency" v-model:price="finance.amount" class="item-price" @update:currency="changeCurrency(finance)" :disable="isClose" />
+            <InputCurrencyPrice v-model:currency="finance.currency" v-model:price="finance.amount" class="item-price" @update:currency="changeCurrency(finance)" :rules="rules.finance_amount" :disable="isClose" />
             <q-input v-model="finance.exchange_rate" class="item-rate" :rules="rules.exchange_rate" :disable="isClose" dense outlined />
             <q-input v-model="financeUSD[index]" class="item-text" :disable="isClose" dense outlined readonly />
             <div v-if="!isClose" class="item-delete text-center">
@@ -432,6 +432,12 @@ const rules = computed(() => {
   return {
     required: [
       val => !isEmpty(val) || messages.requiredInput()
+    ],
+    profit: [
+      val => isNumberDigit(val, null, 2) || messages.invalidDecimal(2)
+    ],
+    finance_amount: [
+      val => isNumberDigit(val, null, 2) || messages.invalidDecimal(2)
     ],
     exchange_rate: [
       val => !isEmpty(val) || messages.requiredInput(),

@@ -2,7 +2,7 @@
   <div class="flex no-wrap">
     <q-input v-if="currencyReadonly || readonly" v-model="currency" :disable="!currencyReadonly && disable" class="currency" dense outlined readonly />
     <q-select v-else v-model="currency" :options="group_options" @filter="onFilter" :disable="!currencyReadonly && disable" class="currency" input-debounce="500" use-input hide-selected fill-input dense outlined />
-    <q-input v-model.number="price" :label="label" class="price full-width" :readonly="readonly" :disable="disable" dense outlined />
+    <q-input v-model.number="price" :label="label" class="price full-width" :rules="rules" :readonly="readonly" :disable="disable" dense outlined />
   </div>
 </template>
 
@@ -24,6 +24,10 @@ const props = defineProps({
   readonly: {
     type: Boolean,
     default: false
+  },
+  rules: {
+    type: Array,
+    default: () => []
   }
 })
 
