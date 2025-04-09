@@ -63,7 +63,7 @@
             </div>
             <div class="text-bold q-mt-md q-mb-sm">實際利潤</div>
             <div class="row q-col-gutter-sm">
-              <InputCurrencyPrice v-model="model.final_profit" label="利潤" class="col-4" />
+              <InputCurrencyPrice v-model="model.final_profit" label="利潤" class="col-4" :rules="rules.profit" />
             </div>
           </div>
         </InfoRow>
@@ -249,8 +249,7 @@ let router = useRouter();
 const rules = computed(() => {
   return {
     profit: [
-      val => !isNumberEmpty(val) || messages.requiredInput(),
-      val => isNumberDigit(val, null, 1) || messages.invalidDecimal(1)
+      val => isNumberDigit(val, null, 2) || messages.invalidDecimal(2)
     ],
   }
 })
