@@ -41,7 +41,6 @@ const menus: Menu[] = [
     children: [
       { label: '會員列表', to: '/members/list' },
       { label: '待審核列表', to: '/members/apply' },
-      { label: '未完成付款', to: '/members/incomplete-payment' },
     ],
   },
   {
@@ -62,6 +61,7 @@ const menus: Menu[] = [
     children: [
       { label: '酒店訂單', to: '/orders/hotel' },
       { label: '客製訂單', to: '/orders/customized' },
+      { label: '訂單列表', to: '/orders/booking' },
       { label: '會籍訂單', to: '/orders/member' },
     ],
   },
@@ -71,7 +71,9 @@ const menus: Menu[] = [
     to: 'accounting',
     children: [
       { label: '酒店訂單對帳', to: '/accounting/order/hotel' },
-      { label: '客製訂單對帳', to: '/accounting/order/customized' }
+      { label: '客製訂單對帳', to: '/accounting/order/customized' },
+      // { label: '支單', to: '/accounting/payment' },
+      // { label: '收據', to: '/accounting/receipt' }
     ],
   },
   {

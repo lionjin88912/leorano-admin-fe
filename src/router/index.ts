@@ -59,9 +59,20 @@ export default route(function (/* { store, ssrContext } */) {
     if (to.matched.some((record) => record.meta.requiresAuth)) {
       // 判斷是否已經登入
       if (!isLoggedIn()) {
+        if (to.path !== '/login') {
+          LocalStorage.set('redirectPath', to.fullPath)
+        }
         next('/login') // 如果未登入，則導向登入頁面
         return
       }
+    }
+    if (to.path !== '/login' && from.path == '/login' && LocalStorage.has('redirectPath')) {
+      const redirectPath = LocalStorage.getItem('redirectPath')
+      LocalStorage.remove('redirectPath')
+      if (typeof redirectPath === 'string') {
+        router.push(redirectPath)
+      }
+      return
     }
     next()
   })

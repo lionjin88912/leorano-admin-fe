@@ -133,6 +133,25 @@ const routes: RouteRecordRaw[] = [
         },
         children: [
           {
+            path: 'booking',
+            name: 'OrderList',
+            meta: {
+              root: { title: '訂單管理' },
+              title: '訂單列表',
+            },
+            component: () => import('src/pages/orders/index.vue'),
+          },
+          {
+            path: 'booking/:orderNumber',
+            name: 'OrderDetail',
+            meta: {
+              root: { title: '訂單管理' },
+              parent: { title: '訂單列表', path: '/orders/booking' },
+              title: '訂單明細',
+            },
+            component: () => import('src/pages/orders/DetailParent.vue'),
+          },
+          {
             path: 'hotel',
             name: 'HotelOrderList',
             meta: {
@@ -232,6 +251,33 @@ const routes: RouteRecordRaw[] = [
                 next();
             },
             component: () => import('src/pages/Accounting/index.vue'),
+          },
+          {
+            path: 'payment',
+            name: 'PaymentList',
+            meta: {
+              root: { title: '訂單對帳管理' },
+              title: '支單列表',
+            },
+            component: () => import('src/pages/Accounting/payment.vue'),
+          },
+          {
+            path: 'payment/:paymentNumber',
+            name: 'PaymentDetail',
+            meta: {
+              root: { title: '訂單對帳管理' },
+              parent: { title: '支單列表', path: '/accounting/payment' },
+            },
+            component: () => import('src/pages/Accounting/paymentDetail.vue'),
+          },
+          {
+            path: 'receipt',
+            name: 'ReceiptList',
+            meta: {
+              root: { title: '訂單對帳管理' },
+              title: '收據列表',
+            },
+            component: () => import('src/pages/Accounting/receipt.vue'),
           },
         ],
       },
@@ -394,6 +440,24 @@ const routes: RouteRecordRaw[] = [
         component: () => import('pages/Currency/index.vue'),
       },
     ],
+  },
+  {
+    path: '/print',
+    redirect: { name: 'PrintPayment' },
+    meta: {
+      requiresAuth: true, // 這個路由需要登入權限
+    },
+    children: [
+      {
+        path: '/payment/:paymentNumber',
+        name: 'PrintPayment',
+        meta: {
+          root: { title: '訂單對帳管理' },
+          parent: { title: '支單列表', path: '/accounting/payment' },
+        },
+        component: () => import('src/pages/Accounting/paymentPrint.vue'),
+      }
+    ]
   },
   {
     path: '/login',
