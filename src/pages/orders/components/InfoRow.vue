@@ -1,6 +1,9 @@
 <template>
   <div class="info">
-    <div v-if="title" class="info-title">{{ title }}</div>
+    <div v-if="title" class="info-title flex items-center">
+      <span>{{ title }}</span>
+      <slot name="caption"></slot>
+    </div>
     <div v-if="title" class="info-separator"></div>
     <div class="info-content">
       <slot name="default"></slot>

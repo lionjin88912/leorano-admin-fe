@@ -103,9 +103,18 @@ export const UpdateAdmin = (id, data) => baseService.put(`/account/${id}`, data)
 // 訂單管理-歷史紀錄
 export const getOrderHistory = (id) => baseService.get(`/order/op_record/${id}`)
 export const createOrderHistory = (id, data) => baseService.post(`/order/op_record/${id}`, data)
+// 訂單管理
+export const getOrderList = (data) => baseService.get('/order/list', { params: data })
+export const changeOrderParent = (id, data) => baseService.put(`/order/change_parent/${id}`, data)
+export const getOrderTodo = (id) => baseService.get(`/order/todo/${id}`)
+export const updateOrderTodo = (id, data) => baseService.put(`/order/todo/${id}`, data)
+export const getOrderParent = (id) => baseService.get(`/order/parent/${id}`)
+export const updateOrderParent = (id, data) => baseService.put(`/order/parent/${id}`, data)
+export const getSubOrderList = (data) => baseService.get(`/order/sub`, { params: data })
 // 訂單管理-酒店訂單
 export const getHotelOrderList = (data) => baseService.get('/order/bookings', { params: data })
 export const getHotelOrder = (orderNumber) => baseService.get(`/order/bookings/${orderNumber}`)
+export const updateHotelOrder = (orderNumber, data) => baseService.put(`/order/bookings/${orderNumber}`, data)
 export const cancelHotelOrder = (orderNumber, data) =>
   baseService.delete(`/order/bookings/${orderNumber}/cancel`, { data })
 export const updateHotelOrderUser = (id, data) => baseService.put(`/order/hotel/changeUser/${id}`, data)
@@ -174,6 +183,8 @@ export const getPromoMembershipByMonth = (id, year, month) =>
   baseService.get(`/promo/membership/statistics/${id}`, { params: { year, month } })
 export const getPromoMembershipLastWeek = (id) =>
   baseService.get(`/promo/membership/statistics/${id}/lastWeek`)
+export const getPromoMembershipByDuration = (id, start, end) =>
+  baseService.get(`/promo/membership/statistics/${id}/range?start_date=${start}&end_date=${end}`)
 // 會籍資料清單
 export const getMembershipList = (params) => baseService.get('/membership/list', { params })
 // 推播管理
