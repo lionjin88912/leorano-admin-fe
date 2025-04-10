@@ -1,13 +1,99 @@
-import { getDateString, getDateStringNoTz, getCurrencyPriceFormat, getUserNameFormat } from 'src/utils/helpers'
+import { getDateString, getDateStringNoTz, getNumberFormat, getCurrencyPriceFormat, getUserNameFormat } from 'src/utils/helpers'
 
 interface ColumnStruct {
   name: string
   label: string
+  classes?: string
   field?: string | ((row: { updated_at: string }) => string) | any
   align: 'center' | 'left' | 'right',
   wpx?: number
+  sortable?: boolean
 }
 type TableColumn = ColumnStruct[]
+
+export const orderColumns: TableColumn = [
+  {
+    name: 'order_number',
+    label: '訂單編號',
+    classes: 'col',
+    field: 'order_number',
+    align: 'left',
+    sortable: true,
+  },
+  {
+    name: 'revenue',
+    label: '收入',
+    classes: 'td-price',
+    field: 'revenue',
+    align: 'right',
+  },
+  {
+    name: 'expense',
+    label: '支出',
+    classes: 'td-price',
+    field: 'expense',
+    align: 'right',
+  },
+  {
+    name: 'profit',
+    label: '毛利',
+    classes: 'td-price',
+    field: 'profit',
+    align: 'right',
+  },
+  {
+    name: 'profit_rate',
+    label: '毛利%',
+    classes: 'td-price',
+    field: 'profit_rate',
+    align: 'right',
+  }
+]
+
+export const subOrderColumns: TableColumn = [
+  {
+    name: 'booking_way',
+    label: '預訂方式',
+    classes: 'td-type text-center',
+    align: 'left',
+  },
+  {
+    name: 'order_number',
+    label: '訂單編號',
+    classes: 'col',
+    align: 'left',
+  },
+  {
+    name: 'type',
+    label: '訂單類型',
+    classes: 'td-type',
+    align: 'left',
+  },
+  {
+    name: 'revenue',
+    label: '收入',
+    classes: 'td-price text-right',
+    align: 'right',
+  },
+  {
+    name: 'expense',
+    label: '支出',
+    classes: 'td-price text-right',
+    align: 'right',
+  },
+  {
+    name: 'profit',
+    label: '毛利',
+    classes: 'td-price text-right',
+    align: 'right',
+  },
+  {
+    name: 'profit_rate',
+    label: '毛利%',
+    classes: 'td-price text-right',
+    align: 'right',
+  }
+]
 
 const hotelColumns: TableColumn = [
   {
@@ -193,11 +279,21 @@ export const receiptColumns: TableColumn = [
 
 interface FieldStruct {
   name: string,
-  type: 'text' | 'select' | 'date',
+  type: 'text' | 'select' | 'date' | 'hotelGroup',
   label?: string,
   icon?: string,
   options?: { label: string, value: string | null }[]
 }
+
+export const orderBookingWayOptions = [
+  { label: 'App', value: 'online', color: 'primary' },
+  { label: '線下', value: 'offline', color: 'green' },
+]
+
+export const orderTypeOptions = [
+  { label: '酒店', value: 'hotel', color: 'purple-6' },
+  { label: '票卷', value: 'ticket', color: 'orange-6' },
+]
 
 const hotelOrderStatusOptions = [
   { label: '所有訂單狀態', value: null },
@@ -220,6 +316,17 @@ export const paidFilterStatusOptions = [
   { label: '已付款', value: true }
 ]
 
+export const paymentTitleTypeOptions = [
+  { label: '成本支單', value: 'cost' },
+  { label: '費用支單', value: 'expense' }
+]
+
+export const paymentTypeOptions = [
+  { label: '酒店', value: 'hotel' },
+  { label: '票卷', value: 'ticket' },
+  { label: '其他', value: 'other' }
+]
+
 const hotelFilters: FieldStruct[] = [
   {
     name: 'created_at',
@@ -234,6 +341,7 @@ const hotelFilters: FieldStruct[] = [
   {
     name: 'order_status',
     type: 'select',
+    label: '訂單狀態',
     options: hotelOrderStatusOptions,
   },
   {
@@ -243,8 +351,13 @@ const hotelFilters: FieldStruct[] = [
     icon: 'search'
   },
   {
+    name: 'group_id',
+    type: 'hotelGroup'
+  },
+  {
     name: 'only_earn',
     type: 'select',
+    label: '利潤狀態',
     options: hotelOrderProfitOptions,
   },
 ]
@@ -290,6 +403,24 @@ export const pages: { [key: string]: PageStruct } = {
 
 export const paymentPrintColumns: TableColumn = [
   {
+    name: 'index',
+    label: 'No',
+    field: 'index',
+    align: 'center'
+  },
+  {
+    name: 'order_number',
+    label: '訂單',
+    field: 'order_number',
+    align: 'left'
+  },
+  {
+    name: 'type',
+    label: '類別',
+    field: (row: any) => paymentTypeOptions.find((d) => d.value === row.type)?.label,
+    align: 'left'
+  },
+  {
     name: 'detail',
     label: '詳細說明',
     field: 'detail',
@@ -304,7 +435,7 @@ export const paymentPrintColumns: TableColumn = [
   {
     name: 'price',
     label: '單價',
-    field: 'price',
+    field: (row: any) => getNumberFormat(row.price),
     align: 'right'
   },
   {
@@ -316,13 +447,13 @@ export const paymentPrintColumns: TableColumn = [
   {
     name: 'rate',
     label: '匯率',
-    field: 'rate',
+    field: 'exchange_rate',
     align: 'center'
   },
   {
     name: 'total',
-    label: 'NTD金額',
-    field: 'total',
+    label: '金額 USD',
+    field: (row: any) => getNumberFormat(row.price * row.exchange_rate),
     align: 'right'
   }
 ]
