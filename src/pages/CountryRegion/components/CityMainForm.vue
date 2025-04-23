@@ -112,7 +112,8 @@ const mapOptions = {
 }
 
 const getGeo = async () => {
-  const address = `${model.value.country} ${model.value.name || ''}`.trim();
+  const country = props.countryOptions.find(d => d.value === model.value.country_id)?.label;
+  const address = `${country} ${model.value.name || ''}`.trim();
 
   if (!address) {
     console.warn('stop get map position: no address or no geo data');
