@@ -69,7 +69,7 @@ const getOptions = async (val) => {
   let newArr = res.data.map((item) => {
     return {
       id: item.id,
-      name: item.name,
+      name: `${item.name}（${item.hotel_chain}）`,
       hotel_group_name: item.hotel_group_name,
       hotel_chain: item.hotel_chain
     }
