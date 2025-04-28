@@ -1,7 +1,7 @@
 <template>
-  <div>
-    <BreadCrumbs />
-    <DetailLayout v-if="model" :tabs="tabs">
+  <div v-if="model">
+    <BreadCrumbs :parent-path="`/orders/booking/${model.parent}`" :parent-title="model.parent" :page-title="model.order_number" />
+    <DetailLayout :tabs="tabs">
       <template #buttons>
         <div class="flex q-gutter-sm">
           <q-space />
@@ -51,7 +51,7 @@
               <div class="text-bold">預估利潤</div>
               <div class="text-grey-7">
                 {{ model.Profit.usd_price }} = 
-                  {{ model.book_code.plan.base_price.slice(0, 3) }}{{ getNumberFormat(model.book_code.plan.base_price.slice(3)) }}
+                  {{ model.book_code.plan.total_price.slice(0, 3) }}{{ getNumberFormat(getOrderPrice()) }}
                   x {{ model.Profit.rate }} 
                   x {{ model.Profit.percent }}%
               </div>
@@ -319,7 +319,7 @@ const booking_way = computed(() => {
 
 // 訂單狀態
 const orderStatus = computed(() => {
-  let status = hotelOrderStatusOptions.find((d) => d.value === model.value.status);
+  let status = hotelOrderStatusOptions.find((d) => d.value === model.value.status.toLowerCase());
   return status ? status : { label: '未知狀態', color: 'negative'}
 })
 
@@ -372,6 +372,15 @@ const getPriceText = (priceStr: string) => {
     price: priceStr.slice(3)
   }
 };
+
+// 訂單金額
+const getOrderPrice = () => {
+  return model.value.book_code.plan.daily_rate.reduce(
+    (totalPrice: number, d: any) => {
+      return totalPrice += Number(d.local_price.slice(3))
+    }, 0
+  )
+}
 
 // 稅金與費用
 const getTaxAndFee = () => {
