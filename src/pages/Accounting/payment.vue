@@ -1,11 +1,12 @@
 <template>
   <div>
     <BreadCrumbs />
-    <div class="filter flex items-center q-col-gutter-x-sm q-my-md">
-      <q-input v-model="filter.paymentNumber" label="支單號" outlined dense />
-      <q-field class="cursor-pointer" label="建立日期"
+    <div class="filter flex q-gutter-x-sm q-my-md">
+      <q-input v-model="filter.number" label="支單號" :debounce="1000" outlined dense />
+      <q-input v-model="filter.payer" label="支付對象" :debounce="1000" outlined dense />
+      <q-input v-model="filter.keyword" label="項目名稱" :debounce="1000" outlined dense />
+      <q-field class="cursor-pointer" label="立帳日期"
         :stack-label="filter.createdAt ? true : false" outlined dense>
-
         <template #default>
           <DatePicker :date="filter.createdAt" :range="true" @updated="(val) => filter.createdAt = val">
           </DatePicker>
@@ -13,22 +14,30 @@
 
         <template v-slot:control>
           <div v-if="filter.createdAt && filter.createdAt.from">
-            {{ filter.createdAt.from }} - {{ filter.createdAt.to }}
+            {{ getDateString(filter.createdAt.from, 'YYYY-MM-DD') }} - {{ getDateString(filter.createdAt.to, 'YYYY-MM-DD') }}
           </div>
         </template>
       </q-field>
-      <q-select v-model="filter.status" label="審核狀態" :options="paidFilterStatusOptions" emit-value map-options outlined dense />
+      <q-select v-model="filter.paid" label="付款狀態" :options="paidFilterStatusOptions" emit-value map-options outlined dense />
+      <q-space />
+      <router-link to="/accounting/payment/add">
+        <q-btn label="新增支單" color="primary" unelevated/>
+      </router-link>
     </div>
-    <q-table :rows="datas" :columns="paymentColumns" class="data-table q-mt-md" flat bordered>
+    <TableComponent :columns="paymentColumns" :propsFilter='propsFilter' :pagination="pagination"  class="data-table q-mt-md" :handleCallApi="getPaymentList" :routePagination="true" flat bordered>
       <template v-slot:body-cell-payment_number="props">
         <q-td :props="props">
           <router-link :to="`payment/${props.row.payment_number}`">{{ props.row.payment_number }}</router-link>
         </q-td>
       </template>
-      <template v-slot:body-cell-payment_item="props">
+      <template v-slot:body-cell-parent="props">
         <q-td :props="props">
-          <router-link v-if="props.row.order_booking_way == 'customized'" :to="`/orders/${props.row.order_booking_way}/${props.row.order_id}`">{{ props.row.payment_item }}</router-link>
-          <router-link v-if="props.row.order_booking_way == 'hotel'" :to="`/orders/${props.row.order_booking_way}/${props.row.order_number}`">{{ props.row.payment_item }}</router-link>
+          <router-link :to="{ name: 'AccountingBookingDetail', params: { orderNumber: props.row.parent } }" class="text-primary cursor-pointer ellipsis">{{ props.row.parent }}</router-link>
+        </q-td>
+      </template>
+      <template v-slot:body-cell-order_number="props">
+        <q-td :props="props">
+          <router-link :to="{ name: 'OrderDetail', params: { orderNumber: props.row.order_number, tab: 'finance' } }">{{ props.row.order_number }}</router-link>
         </q-td>
       </template>
       <template v-slot:body-cell-print="props">
@@ -38,59 +47,57 @@
       </template>
       <template v-slot:body-cell-paid="props">
         <q-td :props="props">
-          <div v-if="props.row.paid">
+          <div v-if="props.row.is_paid">
             已付款
             <div class="text-caption text-grey-6">
-              {{ props.row.paid }}
+              {{ getDateString(props.row.paid_at) }}
             </div>
           </div>
-          <q-toggle v-else v-model="props.row.paid" :false-value="null" label="未付款" color="primary" />
+          <q-toggle v-else v-model="props.row.is_paid" label="未付款" color="primary" />
         </q-td>
       </template>
-    </q-table>
+    </TableComponent>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import { router } from 'src/router'
 import { paymentColumns, paidFilterStatusOptions } from './enums'
+import { getPaymentList } from 'src/api'
+import { getDateString } from 'src/utils/helpers'
 import BreadCrumbs from 'src/components/BreadCrumbs.vue'
 import DatePicker from 'src/components/DatePicker.vue'
+import TableComponent from 'src/components/TableComponent.vue'
 
 // 加上篩選欄位：支單號碼 input, 日期區間, 是否審核 select
 const filter = reactive({
-  paymentNumber: router.currentRoute.value.query.number || null,
+  number: router.currentRoute.value.query.number || null,
+  payer: router.currentRoute.value.query.payer || null,
+  keyword: router.currentRoute.value.query.keyword || null,
   createdAt: router.currentRoute.value.query.start_date && router.currentRoute.value.query.end_date 
     ? {
       from: router.currentRoute.value.query.start_date,
       to: router.currentRoute.value.query.end_date
     } : null,
-  status: router.currentRoute.value.query.status || null
+  paid: router.currentRoute.value.query.paid ? router.currentRoute.value.query.paid === 'true' : null
+})
+const pagination = reactive({
+  sortBy: router.currentRoute.value.query.sort ?? 'payment_number',
+  descending: router.currentRoute.value.query.order ? router.currentRoute.value.query.order === 'desc' : true,
+  page: router.currentRoute.value.query.page ? parseInt(router.currentRoute.value.query.page) : 1,
+  rowsPerPage: router.currentRoute.value.query.limit ? parseInt(router.currentRoute.value.query.limit) : 10,
 })
 
-const datas = ref([
-  {
-    payment_number: '202500001',
-    payment_item: '2025-01-10 訂金',
-    payment_amount: 'USD 100.00',
-    order_id: 33,
-    order_number: 'C24120902353741',
-    order_booking_way: 'customized',
-    created_at: '2025-01-10 10:00:00',
-    paid: '2025-02-01 09:00:00'
-  },
-  {
-    payment_number: '202500002',
-    payment_item: '2025-01-10 頭款',
-    payment_amount: 'USD 100.00',
-    order_id: 33,
-    order_number: 'C24120902353741',
-    order_booking_way: 'customized',
-    created_at: '2025-01-12 10:00:00',
-    paid: null
+const propsFilter = computed(() => {
+  const params = Object.assign({}, filter);
+  if (params.createdAt) {
+    params.start_date = `${ getDateString(params.createdAt.from, 'YYYY-MM-DD')} 00:00:00`;
+    params.end_date = `${ getDateString(params.createdAt.to, 'YYYY-MM-DD')} 23:59:59`;
+    delete params.createdAt;
   }
-])
+  return params
+})
 
 const printPayment = (paymentNumber) => {
   const route = router.resolve({ 

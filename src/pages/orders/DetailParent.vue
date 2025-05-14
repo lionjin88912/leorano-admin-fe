@@ -150,7 +150,7 @@ const selectedSubOrder = computed(() => model.value.subs.map((d: SubOrder) => d.
 const goDetail = (order: SubOrder, type: string) => {
   switch (type) {
     case 'parent':
-      router.push({ name: 'OrderDetail', params: { orderNumber: order.order_number } });
+      router.push({ name: 'OrderDetail', params: { orderNumber: order.order_number, tab: 'main' } });
       break;
     case 'online':
       router.push({ name: 'HotelOrderDetail', params: { orderNumber: order.order_number } });

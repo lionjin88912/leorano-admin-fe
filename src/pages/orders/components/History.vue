@@ -1,5 +1,5 @@
 <template>
-  <q-dialog class="common-dialog" v-model="isShow">
+  <q-dialog v-model="isShow">
     <q-card class="dialog-inner">
       <q-card-section class="row items-start">
         <div class="col-6">
@@ -11,7 +11,7 @@
             <TodoList v-model="todo" />
           </div>
         </div>
-        <div class="col-6 q-pl-xl">
+        <div class="col-6 q-pl-lg">
           <RecordList :orderNumber="state.order_number" :type="state.type" />
         </div>
       </q-card-section>

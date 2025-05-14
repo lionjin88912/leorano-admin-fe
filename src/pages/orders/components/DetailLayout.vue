@@ -1,6 +1,6 @@
 <template>
   <div class="row q-col-gutter-lg q-mt-none">
-    <div :class="{'col-8': !isFullWidth, 'col-12': isFullWidth}">
+    <div :class="{'col-12 col-sm-8': !isFullWidth, 'col-12': isFullWidth}">
       <q-card flat bordered>
         <q-card-section>
           <div class="tab-scroll bg-white flex justify-between items-center q-py-sm q-mb-md">
@@ -16,7 +16,7 @@
       </q-card>
       <q-scroll-observer @scroll="onScroll" :debounce="300" />
     </div>
-    <div v-if="!isFullWidth" class="col-4">
+    <div v-if="!isFullWidth" class="col-12 col-sm-4">
       <slot name="aside" />
     </div>
   </div>

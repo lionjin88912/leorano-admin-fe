@@ -1,6 +1,6 @@
 <template>
   <div v-if="model">
-    <BreadCrumbs :parent-path="`/orders/booking/${model.parent}`" :parent-title="model.parent" :page-title="model.order_number" />
+    <BreadCrumbs :parent-path="`/orders/booking/${model.parent}/main`" :parent-title="model.parent" :page-title="model.order_number" />
     <DetailLayout :tabs="tabs">
       <template #buttons>
         <div class="flex q-gutter-sm">
@@ -21,8 +21,8 @@
               <div class="text-bold">取消資訊</div>
               <div class="q-mt-sm">
                 <div class="row q-col-gutter-sm">
-                  <q-input v-model="cancelInfo.order_cancel_code" label="取消編號" class="col-4" dense outlined readonly />
-                  <q-input v-model="model.cancelled_at" label="取消時間" mask="####-##-##" class="col-4" dense outlined readonly />
+                  <q-input v-model="cancelInfo.order_cancel_code" label="取消編號" class="col-6 col-sm-4" dense outlined readonly />
+                  <q-input v-model="model.cancelled_at" label="取消時間" mask="####-##-##" class="col-6 col-sm-4" dense outlined readonly />
                   <q-input v-model="cancelInfo.order_cancel_reason" label="取消原因" class="col-12" dense outlined readonly />
                 </div>
               </div>
@@ -31,17 +31,17 @@
           <div class="q-mt-md q-mb-lg">
             <div class="row q-col-gutter-x-sm q-col-gutter-y-md">
               <q-input v-model="model.hotel.name" label="訂單名稱" class="col-12" dense outlined readonly />
-              <q-input v-model="model.created_at" label="訂單日期" mask="####-##-##" class="col-4" dense outlined readonly />
-              <q-input v-model="model.order_number" label="訂單編號" class="col-4" dense outlined readonly />
-              <q-input v-model="orderStatus.label" label="訂單狀態" class="col-4" :input-class="`text-${orderStatus.color}`" dense outlined readonly />
-              <q-input v-model="orderType.label" label="訂單類型" class="col-4" dense outlined readonly />
-              <q-input v-model="bookingConfirmCode" label="確認編號" class="col-4" dense outlined readonly />
+              <q-input v-model="model.created_at" label="訂單日期" mask="####-##-##" class="col-6 col-sm-4" dense outlined readonly />
+              <q-input v-model="model.order_number" label="訂單編號" class="col-6 col-sm-4" dense outlined readonly />
+              <q-input v-model="orderStatus.label" label="訂單狀態" class="col-6 col-sm-4" :input-class="`text-${orderStatus.color}`" dense outlined readonly />
+              <q-input v-model="orderType.label" label="訂單類型" class="col-6 col-sm-4" dense outlined readonly />
+              <q-input v-model="bookingConfirmCode" label="確認編號" class="col-6 col-sm-4" dense outlined readonly />
             </div>
             <div class="text-bold q-mt-md q-mb-sm">旅客行程</div>
             <div class="row q-col-gutter-sm">
-              <q-input v-model="scheduleStatus.label" label="狀態" class="col-4" :input-class="`text-${scheduleStatus.color}`" dense outlined readonly />
-              <q-input v-model="model.check_in" label="使用日期" mask="####-##-##" class="col-4" dense outlined readonly />
-              <q-input v-model="model.check_out" label="結束日期" mask="####-##-##" class="col-4" dense outlined readonly />
+              <q-input v-model="scheduleStatus.label" label="狀態" class="col-6 col-sm-4" :input-class="`text-${scheduleStatus.color}`" dense outlined readonly />
+              <q-input v-model="model.check_in" label="使用日期" mask="####-##-##" class="col-6 col-sm-4" dense outlined readonly />
+              <q-input v-model="model.check_out" label="結束日期" mask="####-##-##" class="col-6 col-sm-4" dense outlined readonly />
             </div>
           </div>
         </InfoRow>
@@ -57,13 +57,13 @@
               </div>
             </div>
             <div class="row q-col-gutter-sm">
-              <q-input v-model.number="model.Profit.percent" label="利潤百分比" class="col-4" @update:model-value="changeProfitPercent" dense outlined />
-              <q-input v-model="model.Profit.rate" label="匯率" class="col-4" dense outlined readonly />
-              <InputCurrencyPrice v-model="model.Profit.usd_price" label="利潤" class="col-4" readonly />
+              <q-input v-model.number="model.Profit.percent" label="利潤百分比" class="col-6 col-sm-4" @update:model-value="changeProfitPercent" dense outlined />
+              <q-input v-model="model.Profit.rate" label="匯率" class="col-6 col-sm-4" dense outlined readonly />
+              <InputCurrencyPrice v-model="model.Profit.usd_price" label="利潤" class="col-6 col-sm-4" readonly />
             </div>
             <div class="text-bold q-mt-md q-mb-sm">實際利潤</div>
             <div class="row q-col-gutter-sm">
-              <InputCurrencyPrice v-model="model.final_profit" label="利潤" class="col-4" :rules="rules.profit" />
+              <InputCurrencyPrice v-model="model.final_profit" label="利潤" class="col-6 col-sm-4" :rules="rules.profit" />
             </div>
           </div>
         </InfoRow>
@@ -155,10 +155,6 @@
             <div class="flex justify-end text-grey-7 text-bold">
               USD ${{ getNumberFormat(parseFloat(model.book_code.plan.total_price.slice(3))*parseFloat(model.Profit.rate)) }}
             </div>
-            <div v-if="0" class="flex justify-end q-mt-sm">
-              <!-- <q-badge label="產生支單" class="q-py-xs cursor-pointer q-ml-sm" /> -->
-              <router-link to="/accounting/payment/202500003" class="text-primary">支單：202500003</router-link>
-            </div>
           </q-card-section>
         </q-card>
         <q-card v-if="model.Rewards.amount" class="q-mt-md" flat bordered>
@@ -232,6 +228,8 @@ import { isNumberEmpty, isNumberDigit, messages } from 'src/utils/validators';
 import BreadCrumbs from 'src/components/BreadCrumbs.vue';
 import DetailLayout from 'src/pages/orders/components/DetailLayout.vue';
 import InfoRow from '../components/InfoRow.vue';
+import FinanceList from '../components/FinanceList.vue';
+import PaymentCard from '../components/PaymentCard.vue';
 import UserSelector from '../components/UserSelector.vue';
 import CancelOrderDialog from '../components/CancelOrderDialog.vue';
 import InputCurrencyPrice from 'src/components/InputCurrencyPrice.vue';
@@ -256,7 +254,7 @@ const rules = computed(() => {
 
 /* tab, section Start */
 const mainSectionRef = ref(null)
-const profitSectionRef = ref(null)
+const financeSectionRef = ref(null)
 const memberSectionRef = ref(null)
 const travelerSectionRef = ref(null)
 const tabs = ref([
@@ -268,7 +266,7 @@ const tabs = ref([
   {
     name: 'profit',
     label: '利潤',
-    ref: profitSectionRef
+    ref: financeSectionRef
   },
   {
     name: 'member',
@@ -300,6 +298,56 @@ const getData = async () => {
     return;
   }
   model.value = res.data;
+  model.value.finance = [
+    {
+      "id": 1,
+      "type": "revenue",
+      "cate": "other",
+      "title": "客人付款",
+      "amount": 10800,
+      "is_paid": false,
+      "currency": "TWD",
+      "updated_at": "2025-04-10 16:41:56",
+      "exchange_rate": 0.03,
+      "payment_number": ""
+    },
+    {
+      "id": 2,
+      "type": "expense",
+      "cate": "other",
+      "title": "已付款",
+      "amount": 300,
+      "is_paid": true,
+      "currency": "USD",
+      "updated_at": "2025-04-10 16:42:37",
+      "exchange_rate": 1,
+      "payment_number": "2504180002"
+    },
+    {
+      "id": 3,
+      "type": "expense",
+      "cate": "other",
+      "title": "已產生支單，未付款",
+      "amount": 1000.22,
+      "is_paid": false,
+      "currency": "USD",
+      "updated_at": "2025-04-18 10:23:20",
+      "exchange_rate": 1,
+      "payment_number": "2504180003"
+    },
+    {
+      "id": 4,
+      "type": "expense",
+      "cate": "other",
+      "title": "未產生支單",
+      "amount": "",
+      "is_paid": false,
+      "currency": "USD",
+      "updated_at": "2025-04-18 12:04:38",
+      "exchange_rate": 1,
+      "payment_number": ""
+    }
+  ]
   user.value = getUser(model.value.user);
   passenger.value = getUser(model.value.passenger_user);
 }

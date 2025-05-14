@@ -15,82 +15,107 @@ export const orderColumns: TableColumn = [
   {
     name: 'order_number',
     label: '訂單編號',
-    classes: 'col',
     field: 'order_number',
     align: 'left',
     sortable: true,
   },
   {
     name: 'revenue',
-    label: '收入',
-    classes: 'td-price',
-    field: 'revenue',
+    label: '應收',
+    field: (row: any) => getNumberFormat(row.revenue),
+    align: 'right',
+  },
+  {
+    name: 'received',
+    label: '實收',
+    field: (row: any) => getNumberFormat(row.received),
+    align: 'right',
+  },
+  {
+    name: 'missing',
+    label: '尚欠',
+    field: (row: any) => getNumberFormat(row.missing),
     align: 'right',
   },
   {
     name: 'expense',
-    label: '支出',
-    classes: 'td-price',
-    field: 'expense',
+    label: '應付',
+    field: (row: any) => getNumberFormat(row.expense),
+    align: 'right',
+  },
+  {
+    name: 'paid',
+    label: '實付',
+    field: (row: any) => getNumberFormat(row.paid),
     align: 'right',
   },
   {
     name: 'profit',
     label: '毛利',
-    classes: 'td-price',
-    field: 'profit',
+    field: (row: any) => getNumberFormat(row.profit),
     align: 'right',
   },
   {
     name: 'profit_rate',
     label: '毛利%',
-    classes: 'td-price',
-    field: 'profit_rate',
+    field: (row: any) => `${getNumberFormat(row.profit_rate)} %`,
     align: 'right',
   }
 ]
 
-export const subOrderColumns: TableColumn = [
-  {
-    name: 'booking_way',
-    label: '預訂方式',
-    classes: 'td-type text-center',
-    align: 'left',
-  },
-  {
-    name: 'order_number',
-    label: '訂單編號',
-    classes: 'col',
-    align: 'left',
-  },
+export const financeColumns: TableColumn = [
   {
     name: 'type',
-    label: '訂單類型',
-    classes: 'td-type',
+    label: '項目',
+    field: 'type',
     align: 'left',
   },
   {
-    name: 'revenue',
-    label: '收入',
-    classes: 'td-price text-right',
+    name: 'finance_number',
+    label: '支出單號/收款序號',
+    field: 'finance_number',
+    align: 'left',
+  },
+  {
+    name: 'cate',
+    label: '類別',
+    field: 'cate',
+    align: 'left',
+  },
+  {
+    name: 'title',
+    label: '名稱',
+    field: (row: any) => `${row.order_name} ${row.title}`,
+    align: 'left',
+  },
+  {
+    name: 'currency',
+    label: '幣別',
+    field: 'currency',
+    align: 'left',
+  },
+  {
+    name: 'amount',
+    label: '金額',
+    field: (row: any) => getNumberFormat(row.amount),
     align: 'right',
   },
   {
-    name: 'expense',
-    label: '支出',
-    classes: 'td-price text-right',
+    name: 'exchange_rate',
+    label: '匯率',
+    field: 'exchange_rate',
     align: 'right',
   },
   {
-    name: 'profit',
-    label: '毛利',
-    classes: 'td-price text-right',
+    name: 'usd_amount',
+    label: '金額 USD',
+    field: (row: any) => getNumberFormat(row.amount * row.exchange_rate),
     align: 'right',
   },
   {
-    name: 'profit_rate',
-    label: '毛利%',
-    classes: 'td-price text-right',
+    name: 'post_amount',
+    label: '入帳金額 USD',
+    field: (row: any) => getNumberFormat(row.post_amount * row.exchange_rate),
     align: 'right',
   }
 ]
@@ -211,24 +236,43 @@ export const paymentColumns: TableColumn = [
     name: 'payment_number',
     label: '支單號',
     field: 'payment_number',
+    align: 'left',
+    sortable: true
+  },
+  {
+    name: 'parent',
+    label: '訂單編號',
+    field: 'parent',
     align: 'left'
   },
   {
-    name: 'payment_item',
-    label: '支出項目',
-    field: 'payment_item',
+    name: 'order_number',
+    label: '收支明細',
+    field: 'order_number',
     align: 'left'
   },
   {
-    name: 'payment_amount',
-    label: '支出金額',
-    field: (row: any) => getCurrencyPriceFormat(row.payment_amount),
+    name: 'payment_title',
+    label: '支出名稱',
+    field: 'payment_title',
     align: 'left'
   },
   {
     name: 'created_at',
-    label: '建立日期',
+    label: '立帳日',
     field: (row: any) => getDateString(row.created_at, 'YYYY-MM-DD'),
+    align: 'left'
+  },
+  {
+    name: 'expense_amount',
+    label: '應付金額',
+    field: (row: any) => getCurrencyPriceFormat(row.expense_amount),
+    align: 'left'
+  },
+  {
+    name: 'paid_amount',
+    label: '實付金額',
+    field: (row: any) => getCurrencyPriceFormat(row.paid_amount),
     align: 'left'
   },
   {
@@ -309,6 +353,34 @@ const hotelOrderProfitOptions = [
   { label: '僅實際利潤', value: 'true' },
   { label: '無實際利潤', value: 'false' },
 ]
+
+export const financeOptions = [
+  { label: '收入', value: 'revenue', color: 'teal' },
+  { label: '支出', value: 'expense', color: 'negative' },
+]
+
+export const financeStateOptions = [
+  { label: '應收', value: 'revenue', color: 'teal' },
+  { label: '應付', value: 'expense', color: 'negative' },
+  { label: '已收', value: 'received', color: 'teal' },
+  { label: '已付', value: 'paid', color: 'negative' },
+]
+
+export const financeCateOptions = {
+  revenue: [
+    { label: '匯款手續費', value: 'remittance_fee' },
+    { label: '佣金收入', value: 'commission_income' },
+    { label: '訂單收入', value: 'order_income' },
+    { label: '其他', value: 'other' }
+  ],
+  expense: [
+    { label: '票券成本', value: 'ticket_cost' },
+    { label: '酒店成本', value: 'hotel_cost' },
+    { label: '刷卡手續費', value: 'credit_card_fee' },
+    { label: '匯款手續費', value: 'remittance_fee' },
+    { label: '其他', value: 'other' }
+  ]
+}
 
 export const paidFilterStatusOptions = [
   { label: '全部', value: null },
@@ -410,7 +482,7 @@ export const paymentPrintColumns: TableColumn = [
   },
   {
     name: 'order_number',
-    label: '訂單',
+    label: '訂單編號',
     field: 'order_number',
     align: 'left'
   },
@@ -430,30 +502,24 @@ export const paymentPrintColumns: TableColumn = [
     name: 'qty',
     label: '數量',
     field: 'qty',
-    align: 'center'
-  },
-  {
-    name: 'price',
-    label: '單價',
-    field: (row: any) => getNumberFormat(row.price),
     align: 'right'
   },
   {
-    name: 'tax',
-    label: '稅',
-    field: 'tax',
-    align: 'center'
+    name: 'amount',
+    label: '單價',
+    field: (row: any) => getNumberFormat(row.amount),
+    align: 'right'
   },
   {
     name: 'rate',
     label: '匯率',
-    field: 'exchange_rate',
-    align: 'center'
+    field: (row: any) => `${row.currency} ${row.exchange_rate}`,
+    align: 'right'
   },
   {
     name: 'total',
-    label: '金額 USD',
-    field: (row: any) => getNumberFormat(row.price * row.exchange_rate),
+    label: 'USD 金額',
+    field: (row: any) => getNumberFormat(row.amount * row.exchange_rate),
     align: 'right'
   }
 ]

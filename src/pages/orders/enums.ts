@@ -24,7 +24,6 @@ export const orderColumns: TableColumn = [
     label: '訂單名稱',
     field: 'name',
     align: 'left',
-    sortable: true,
   },
   {
     name: 'start_date',
@@ -32,6 +31,7 @@ export const orderColumns: TableColumn = [
     label: '開始時間',
     field: (row: any) => getDateString(row.start_date, 'YYYY-MM-DD'),
     align: 'left',
+    sortable: true,
   },
   {
     name: 'end_date',
@@ -482,10 +482,26 @@ export const customizedInvoiceOptions = [
   { label: '已寄送', value: true }
 ]
 
-export const customizedOrderFinanceOptions = [
+export const financeOptions = [
   { label: '收入', value: 'revenue', color: 'teal' },
   { label: '支出', value: 'expense', color: 'negative' },
 ]
+
+export const financeCateOptions = {
+  revenue: [
+    { label: '匯款手續費', value: 'remittance_fee' },
+    { label: '佣金收入', value: 'commission_income' },
+    { label: '訂單收入', value: 'order_income' },
+    { label: '其他', value: 'other' }
+  ],
+  expense: [
+    { label: '票券成本', value: 'ticket_cost' },
+    { label: '酒店成本', value: 'hotel_cost' },
+    { label: '刷卡手續費', value: 'credit_card_fee' },
+    { label: '匯款手續費', value: 'remittance_fee' },
+    { label: '其他', value: 'other' }
+  ]
+}
 
 export const customizedFinancelColumns: TableColumn = [
   {
