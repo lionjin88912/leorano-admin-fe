@@ -142,13 +142,13 @@ const routes: RouteRecordRaw[] = [
             component: () => import('src/pages/orders/index.vue'),
           },
           {
-            path: 'booking/:orderNumber',
+            path: 'booking/:orderNumber/:tab',
             name: 'OrderDetail',
             meta: {
               root: { title: '訂單管理' },
               parent: { title: '訂單列表', path: '/orders/booking' },
             },
-            component: () => import('src/pages/orders/DetailParent.vue'),
+            component: () => import('src/pages/orders/parent/Detail.vue'),
           },
           {
             path: 'hotel',
@@ -234,6 +234,24 @@ const routes: RouteRecordRaw[] = [
           permissionCode: 'accounting',
         },
         children: [
+          {
+            path: 'booking',
+            name: 'AccountingBooking',
+            meta: {
+              root: { title: '訂單對帳管理' },
+              title: '訂單對帳',
+            },
+            component: () => import('src/pages/Accounting/orderParent.vue'),
+          },
+          {
+            path: 'booking/:orderNumber',
+            name: 'AccountingBookingDetail',
+            meta: {
+              root: { title: '訂單對帳管理' },
+              parent: { title: '訂單對帳', path: '/accounting/booking' },
+            },
+            component: () => import('src/pages/Accounting/orderParentDetail.vue'),
+          },
           {
             path: 'order/:type',
             name: 'AccountingOrderList',

@@ -21,7 +21,7 @@
     <q-table :rows="datas" :columns="receiptColumns" class="data-table q-mt-md" flat bordered>
       <template v-slot:body-cell-order_name="props">
         <q-td :props="props">
-          <router-link :to="`/orders/booking/${props.row.order_number}`">{{ props.row.order_name }}</router-link>
+          <router-link :to="`/orders/booking/${props.row.order_number}/main`">{{ props.row.order_name }}</router-link>
         </q-td>
       </template>
       <template v-slot:body-cell-list="props">

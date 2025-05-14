@@ -46,6 +46,7 @@ interface SubOrder {
   type: string;
   booking_way: string;
   name: string;
+  status: string;
 }
 
 const options = ref<SubOrder[]>([])

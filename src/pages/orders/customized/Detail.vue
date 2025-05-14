@@ -23,9 +23,9 @@
               <div class="text-bold">取消資訊</div>
               <div class="q-mt-sm">
                 <div class="row q-col-gutter-sm">
-                  <q-input v-model="model.deleted_at" label="取消時間" mask="####-##-##" class="col-4" :disable="isClose" dense outlined readonly />
-                  <q-input v-model="model.cancel_confirm_code" label="取消編號" class="col-4" :disable="isClose" dense outlined />
-                  <InputCurrencyPrice v-model="model.cancel_price" label="退款金額" class="col-4" :disable="isClose" />
+                  <q-input v-model="model.deleted_at" label="取消時間" mask="####-##-##" class="col-6 col-sm-4" :disable="isClose" dense outlined readonly />
+                  <q-input v-model="model.cancel_confirm_code" label="取消編號" class="col-6 col-sm-4" :disable="isClose" dense outlined />
+                  <InputCurrencyPrice v-model="model.cancel_price" label="退款金額" class="col-6 col-sm-4" :disable="isClose" />
                   <q-input type="textarea" v-model="model.cancel_reason" label="取消原因" class="col-12" :disable="isClose" dense outlined autogrow />
                 </div>
               </div>
@@ -40,29 +40,29 @@
                   </div>
                 </template>
               </q-input>
-              <q-input v-if="!isNewOrder" v-model="model.created_at" label="訂單日期" mask="####-##-##" class="col-4" dense outlined readonly />
-              <q-input v-if="!isNewOrder" v-model="model.order_number" label="訂單編號" class="col-4" dense outlined readonly />
-              <q-select v-if="!isNewOrder" v-model="model.status" :options="orderStatusOptions" label="訂單狀態" class="col-4" :disable="isClose" emit-value map-options dense outlined>
+              <q-input v-if="!isNewOrder" v-model="model.created_at" label="訂單日期" mask="####-##-##" class="col-6 col-sm-4" dense outlined readonly />
+              <q-input v-if="!isNewOrder" v-model="model.order_number" label="訂單編號" class="col-6 col-sm-4" dense outlined readonly />
+              <q-select v-if="!isNewOrder" v-model="model.status" :options="orderStatusOptions" label="訂單狀態" class="col-6 col-sm-4" :disable="isClose" emit-value map-options dense outlined>
                 <template v-slot:selected-item="scope">
                   <div :class="`text-${scope.opt.color}`">{{ scope.opt.label }}</div>
                 </template>
               </q-select>
-              <q-select v-model="model.type" :options="orderTypeOptions" label="訂單類型" class="col-4" @update:model-value="changeOrderType" :disable="isClose" emit-value map-options dense outlined />
-              <q-input v-model="model.booking_confirm_code" label="確認編號" class="col-4" :disable="isClose" dense outlined />
+              <q-select v-model="model.type" :options="orderTypeOptions" label="訂單類型" class="col-6 col-sm-4" @update:model-value="changeOrderType" :disable="isClose" emit-value map-options dense outlined />
+              <q-input v-model="model.booking_confirm_code" label="確認編號" class="col-6 col-sm-4" :disable="isClose" dense outlined />
             </div>
             <div class="text-bold q-mt-md q-mb-sm">訂單金額</div>
             <div class="row q-col-gutter-sm">
-              <InputCurrencyPrice v-model:currency="model.currency" v-model:price="model.price" label="原幣" class="col-4" :disable="isClose" />
-              <InputCurrencyPrice v-model:price="model.usd_price" label="美金" class="col-4" :disable="isClose" currencyReadonly />
+              <InputCurrencyPrice v-model:currency="model.currency" v-model:price="model.price" label="原幣" class="col-6 col-sm-4" :disable="isClose" />
+              <InputCurrencyPrice v-model:price="model.usd_price" label="美金" class="col-6 col-sm-4" :disable="isClose" currencyReadonly />
             </div>
             <div class="text-bold q-mt-md q-mb-sm">旅客行程</div>
             <div class="row q-col-gutter-sm">
-              <q-select v-if="!isNewOrder" v-model="model.schedule_status" :options="orderScheduleStatusOptions" label="狀態" class="col-4" :disable="isClose" emit-value map-options dense outlined>
+              <q-select v-if="!isNewOrder" v-model="model.schedule_status" :options="orderScheduleStatusOptions" label="狀態" class="col-6 col-sm-4" :disable="isClose" emit-value map-options dense outlined>
                 <template v-slot:selected-item="scope">
                   <div :class="`text-${scope.opt.color}`">{{ scope.opt.label }}</div>
                 </template>
               </q-select>
-              <q-field class="col-4 cursor-pointer" label="使用日期" :stack-label="duration.from ? true : false" outlined dense>
+              <q-field class="col-6 col-sm-4 cursor-pointer" label="使用日期" :stack-label="duration.from ? true : false" outlined dense>
                 <template #default>
                   <DatePicker :date="duration" :range="true" @updated="(val) => {duration.from = val.from; duration.to = val.to}">
                   </DatePicker>
@@ -71,7 +71,7 @@
                   {{ duration.from }}
                 </template>
               </q-field>
-              <q-field class="col-4 cursor-pointer" label="結束日期" :stack-label="duration.from ? true : false" outlined dense>
+              <q-field class="col-6 col-sm-4 cursor-pointer" label="結束日期" :stack-label="duration.from ? true : false" outlined dense>
                 <template #default>
                   <DatePicker :date="duration" :range="true" @updated="(val) => {duration.from = val.from; duration.to = val.to}">
                   </DatePicker>
@@ -92,39 +92,7 @@
           </div>
         </InfoRow>
         <InfoRow ref="financeSectionRef" title="收入/支出" class="scroll-margin">
-          <div class="finance-list text-bold flex q-col-gutter-sm q-mb-sm q-mt-none">
-            <div class="item-badge">項目</div>
-            <div class="col">名稱 <span class="text-negative">*</span></div>
-            <div class="item-price">金額</div>
-            <div class="item-rate">匯率 <span class="text-negative">*</span></div>
-            <div class="item-text">金額 USD</div>
-            <div v-if="!isClose" class="item-delete text-center">刪除</div>
-          </div>
-          <div v-for="(finance, index) in model.finance" :key="index" class="finance-list flex items-start no-wrap q-col-gutter-x-sm q-mb-sm">
-            <q-select v-model="finance.type" :options="customizedOrderFinanceOptions" class="item-badge" :disable="isClose" emit-value map-options dense outlined>
-              <template v-slot:selected-item="scope">
-                <q-badge :color="scope.opt.color" class="q-mr-xs" outline>
-                  {{ scope.opt.label }}
-                </q-badge>
-              </template>
-            </q-select>
-            <q-input v-model="finance.title" class="col" :rules="rules.required" :disable="isClose" dense outlined />
-            <InputCurrencyPrice v-model:currency="finance.currency" v-model:price="finance.amount" class="item-price" @update:currency="changeCurrency(finance)" :rules="rules.finance_amount" :disable="isClose" />
-            <q-input v-model="finance.exchange_rate" class="item-rate" :rules="rules.exchange_rate" :disable="isClose" dense outlined />
-            <q-input v-model="financeUSD[index]" class="item-text" :disable="isClose" dense outlined readonly />
-            <div v-if="!isClose" class="item-delete text-center">
-              <q-btn icon="delete" color="negative" class="full-height" @click="deleteFinance(index)" flat />
-            </div>
-          </div>
-          <q-separator />
-          <div class="finance-list text-bold flex items-center q-col-gutter-x-sm q-mt-sm">
-            <div class="col text-right">小計</div>
-            <div class="item-text text-h6 text-right">{{ getNumberFormat(financeSum) }}</div>
-            <div v-if="!isClose" class="item-delete"></div>
-          </div>
-          <div v-if="!isClose" class="q-my-md row justify-center">
-            <q-btn label="新增收入/支出" color="primary" @click="addFinance" outline />
-          </div>
+          <FinanceList v-model="model.finance" :disable="isClose" />
         </InfoRow>
         <InfoRow ref="memberSectionRef" title="訂購人" class="scroll-margin">
           <template v-slot:caption>
@@ -223,21 +191,6 @@
           </div>
         </q-card-section>
       </q-card>
-      <q-card v-if="0" class="q-mt-md" flat bordered>
-        <q-card-section class="bg-grey-2">
-          <div class="text-subtitle1 text-bold">支單</div>
-        </q-card-section>
-        <q-card-section>
-          <div v-for="payment in payments" :key="payment.index" class="flex justify-between items-center q-py-xs">
-            <div class="q-mt-xs">
-              <span class="text-bold text-grey-9 q-mr-sm">{{ payment.title }}</span>
-              <span class="text-grey-7"> USD {{ financeUSD[payment.index] }}</span>
-            </div>
-            <router-link v-if="financeUSD[payment.index] == 300" :to="`/accounting/payment/${202500001}`" class="text-primary">202500001</router-link>
-            <q-badge v-else label="產生支單" class="q-py-xs cursor-pointer q-ml-sm" />
-          </div>
-        </q-card-section>
-      </q-card>
       <q-card class="q-mt-md" flat bordered>
         <q-card-section class="bg-grey-2">
           <div class="flex items-center justify-between">
@@ -309,7 +262,7 @@
 import { useQuasar } from 'quasar';
 import { ref, reactive, watch, onMounted, computed, toValue } from 'vue'
 import { router } from 'src/router';
-import { orderStatusOptions, orderBookingWayOptions, orderTypeOptions, orderScheduleStatusOptions, defaultQuestions, customizedOrderFinanceOptions} from '../enums';
+import { orderStatusOptions, orderBookingWayOptions, orderTypeOptions, orderScheduleStatusOptions, defaultQuestions, financeOptions} from '../enums';
 import { getCustomizedOrder, createCustomizedOrder, updateCustomizedOrder, deleteCustomizedOrder, closeCustomizedOrder, RequestUploadAttachedFile, RequestFile, createCustomizedReward, sendCustomizedReward, deleteCustomizedReward, createCustomizedCredit, sendCustomizedCredit, deleteCustomizedCredit, getCustomizedOrderVoucher } from 'src/api';
 import { getDateString, getNumberFormat, GetLocalTime } from 'src/utils/helpers';
 import { isEmpty, isNumberDigit, messages } from 'src/utils/validators';
@@ -327,7 +280,8 @@ import uploader from 'components/uploader.vue';
 import Alert from 'src/components/dialog/Alert.vue'
 import Confirm from 'src/components/dialog/Confirm.vue'
 import CancelOrderDialog from '../components/CancelOrderDialog.vue';
-import FinanceDialog from '../components/FinanceDialog.vue';
+import FinanceList from '../components/FinanceList.vue';
+import PaymentCard from '../components/PaymentCard.vue';
 import AddRewardDialog from '../components/AddRewardDialog.vue';
 import AddCreditDialog from '../components/AddCreditDialog.vue';
 import axios from 'axios'
@@ -439,16 +393,6 @@ const rules = computed(() => {
   return {
     required: [
       val => !isEmpty(val) || messages.requiredInput()
-    ],
-    profit: [
-      val => isNumberDigit(val, null, 2) || messages.invalidDecimal(2)
-    ],
-    finance_amount: [
-      val => isNumberDigit(val, null, 2) || messages.invalidDecimal(2)
-    ],
-    exchange_rate: [
-      val => !isEmpty(val) || messages.requiredInput(),
-      val => isNumberDigit(val, 4, 2) || `${messages.invalidInteger(4)}，${messages.invalidDecimal(2)}`
     ]
   }
 });
@@ -502,7 +446,7 @@ onMounted(async () => {
 			model.value = order;
 			setDuration();
 			isNewOrder.value = false;
-			meta.parentPath = `/orders/booking/${model.value.parent}`;
+			meta.parentPath = `/orders/booking/${model.value.parent}/main`;
 			meta.parentTitle = model.value.parent;
 		}
 	}
@@ -672,52 +616,6 @@ const deleteQuestion = (index: number) => {
 }
 /* 編輯訂單問題欄位 End */
 
-/* 編輯訂單收入支出 Start */
-const metaStore = useMetaStore();
-const addFinance = async () => {
-  model.value.finance.push({
-    type: 'revenue',
-    title: '',
-    currency: 'TWD',
-    amount: '',
-    exchange_rate: _.round(await metaStore.getExchangeRate('TWD', 'USD'), 2),
-    updated_at: GetLocalTime(new Date()),
-	});
-}
-const changeCurrency = async (finance: finance) => {
-  finance.exchange_rate = _.round(await metaStore.getExchangeRate(finance.currency, 'USD'), 2);
-}
-function deleteFinance (index: number) {
-  model.value.finance.splice(index, 1);
-}
-/* 編輯訂單收入支出 End */
-
-/* 訂單收入支出表格 Start */
-const financeUSD = computed(() => {
-  return model.value.finance.map((d) => {
-    return Number(d.amount) * Number(d.exchange_rate);
-  });
-});
-const financeSum = computed(() => {
-  return model.value.finance.reduce((acc, cur) => {
-    if (cur.type === 'revenue') {
-      return acc + Number(cur.amount) * Number(cur.exchange_rate);
-    } else {
-      return acc - Number(cur.amount) * Number(cur.exchange_rate);
-    }
-  }, 0);
-});
-/* 訂單收入支出表格 End */
-
-/* 支單列表 Start */
-const payments = computed(() => {
-  return model.value.finance.map((d, index) => ({
-    index,
-    ...d
-  })).filter((d) => d.type === 'expense');
-});
-/* 支單列表 End */
-
 /* 新增/編輯訂單 Start */
 const form = ref();
 const validate = async () => {
@@ -759,9 +657,9 @@ const addOrder = async () => {
 	$q.loading.hide();
 }
 const saveOrder = async () => {
-	$q.loading.show();
 	let valid = await validate();
 	if (valid) {
+	  $q.loading.show();
 		const [err, res]: [any, any] = await to(updateCustomizedOrder(orderId, {
       attached: model.value.attached,
       booking_confirm_code: model.value.booking_confirm_code,
@@ -780,13 +678,17 @@ const saveOrder = async () => {
       usd_price: model.value.usd_price,
       voucher_number: model.value.voucher
     }));
-	} else {
-		window.scrollTo({
-			top: 0,
-			behavior: 'smooth'
-		});
+	  $q.loading.hide();
+    if (err) {
+      console.error('save order error:', err);
+      return;
+    }
+    let order = await getData();
+    if (order) {
+      model.value = order;
+      setDuration();
+    }
 	}
-	$q.loading.hide();
 }
 /* 新增/編輯訂單 End */
 
@@ -944,23 +846,6 @@ const onDeleteCreditConfirm = async (data:object) => {
 /* Credits End */
 </script>
 <style lang="scss" scoped>
-.finance-list {
-  .item-badge {
-    width: 100px;
-  }
-  .item-price {
-    width: 180px;
-  }
-  .item-rate {
-    width: 100px;
-  }
-  .item-text {
-    width: 90px;
-  }
-  .item-delete {
-    width: 60px;
-  }
-}
 .point-list {
   .point-add-info {
     font-size: 0.8rem;
