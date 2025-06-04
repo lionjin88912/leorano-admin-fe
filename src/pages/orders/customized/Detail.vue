@@ -1,6 +1,6 @@
 <template>
   <div>
-	<BreadCrumbs :page-title="isNewOrder ? '新增客製訂單' : '訂製單詳情'"></BreadCrumbs>
+	<BreadCrumbs :parent-path="meta.parentPath" :parent-title="meta.parentTitle" :page-title="isNewOrder ? '新增客製訂單' : model.order_number" />
   <DetailLayout :tabs="tabs" :isFullWidth="isNewOrder">
     <template #buttons>
       <div v-if="!isClose" class="flex q-gutter-sm">
@@ -381,6 +381,7 @@ interface Order {
   id: number|null;
   member: { email: string; id: number; name: string; title: string };
   order_number: string;
+  parent: string;
 	price: string|number;
   rewards: Array<point>;
   start_date: string;
@@ -416,6 +417,7 @@ const model = ref<Order>({
     title: ''
   },
   order_number: '',
+  parent: '',
 	price: 0,
   rewards: [],
   start_date: '',
@@ -427,6 +429,11 @@ const model = ref<Order>({
   voucher: '',
   voucher_send: '',
 });
+
+const meta = reactive({
+  parentPath: '',
+  parentTitle: '',
+})
 
 const rules = computed(() => {
   return {
@@ -495,6 +502,8 @@ onMounted(async () => {
 			model.value = order;
 			setDuration();
 			isNewOrder.value = false;
+			meta.parentPath = `/orders/booking/${model.value.parent}`;
+			meta.parentTitle = model.value.parent;
 		}
 	}
 });

@@ -1,7 +1,7 @@
 <template>
-  <div>
-    <BreadCrumbs />
-    <DetailLayout v-if="model" :tabs="tabs">
+  <div v-if="model">
+    <BreadCrumbs :parent-path="`/orders/booking/${model.parent}`" :parent-title="model.parent" :page-title="model.order_number" />
+    <DetailLayout :tabs="tabs">
       <template #buttons>
         <div class="flex q-gutter-sm">
           <q-space />
@@ -51,7 +51,7 @@
               <div class="text-bold">預估利潤</div>
               <div class="text-grey-7">
                 {{ model.Profit.usd_price }} = 
-                  {{ model.book_code.plan.base_price.slice(0, 3) }}{{ getNumberFormat(model.book_code.plan.base_price.slice(3)) }}
+                  {{ model.book_code.plan.total_price.slice(0, 3) }}{{ getNumberFormat(getOrderPrice()) }}
                   x {{ model.Profit.rate }} 
                   x {{ model.Profit.percent }}%
               </div>
@@ -106,6 +106,42 @@
               <div class="teaser-label">入住人</div>
               <div class="text-grey-7">{{ model.traveler_firstname }} {{ model.traveler_lastname }}</div>
             </div>
+            <div class="flex no-wrap q-mt-sm">
+              <div class="teaser-label">人數</div>
+              <div class="text-grey-7">{{ `${model.book_code.criteria.num_of_adults} 大人` }} {{ `${model.book_code.criteria.children.length} 小孩` }}</div>
+            </div>
+            <details class="order-detail q-mt-sm">
+              <summary class="text-primary">
+                其他資訊
+                <q-icon name="keyboard_arrow_down" size="1.5em" class="toggle-icon" />
+              </summary>
+              <ul class="detail-list q-mt-xs">
+                <li class="flex no-wrap q-mt-sm">
+                  <div class="detail-label">床型</div>
+                  <div class="text-grey-7">{{ model.book_code.plan.bed || 'N/A' }}</div>
+                </li>
+                <li class="flex no-wrap q-mt-sm">
+                  <div class="detail-label">景觀</div>
+                  <div class="text-grey-7">{{ model.book_code.plan.view || 'N/A' }}</div>
+                </li>
+                <li class="flex no-wrap q-mt-sm">
+                  <div class="detail-label">早餐</div>
+                  <div class="text-grey-7">
+                    <q-icon :name="hasBreakfast ? 'check' : 'close'" :color="hasBreakfast ? 'positive' : 'negative'" size="18px" />
+                  </div>
+                </li>
+                <li class="flex no-wrap q-mt-sm">
+                  <div class="detail-label">吸菸房</div>
+                  <div class="text-grey-7">
+                    <q-icon :name="isSmokingRoom ? 'check' : 'close'" :color="isSmokingRoom ? 'positive' : 'negative'" size="18px" />
+                  </div>
+                </li>
+                <li class="flex no-wrap q-mt-sm">
+                  <div class="detail-label">房間大小</div>
+                  <div class="text-grey-7">{{ model.book_code.plan.size || 'N/A' }}</div>
+                </li>
+              </ul>
+            </details>
             <details class="order-detail q-mt-sm">
               <summary class="text-primary">
                 旅客特殊需求
@@ -319,7 +355,7 @@ const booking_way = computed(() => {
 
 // 訂單狀態
 const orderStatus = computed(() => {
-  let status = hotelOrderStatusOptions.find((d) => d.value === model.value.status);
+  let status = hotelOrderStatusOptions.find((d) => d.value === model.value.status.toLowerCase());
   return status ? status : { label: '未知狀態', color: 'negative'}
 })
 
@@ -372,6 +408,15 @@ const getPriceText = (priceStr: string) => {
     price: priceStr.slice(3)
   }
 };
+
+// 訂單金額
+const getOrderPrice = () => {
+  return model.value.book_code.plan.daily_rate.reduce(
+    (totalPrice: number, d: any) => {
+      return totalPrice += Number(d.local_price.slice(3))
+    }, 0
+  )
+}
 
 // 稅金與費用
 const getTaxAndFee = () => {

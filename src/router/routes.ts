@@ -147,7 +147,6 @@ const routes: RouteRecordRaw[] = [
             meta: {
               root: { title: '訂單管理' },
               parent: { title: '訂單列表', path: '/orders/booking' },
-              title: '訂單明細',
             },
             component: () => import('src/pages/orders/DetailParent.vue'),
           },
@@ -161,12 +160,11 @@ const routes: RouteRecordRaw[] = [
             component: () => import('src/pages/orders/hotel/index.vue'),
           },
           {
-            path: 'hotel/:orderNumber',
+            path: 'booking/hotel/:orderNumber',
             name: 'HotelOrderDetail',
             meta: {
               root: { title: '訂單管理' },
               parent: { title: '酒店訂單列表', path: '/orders/hotel' },
-              title: '酒店訂單明細',
             },
             component: () => import('src/pages/orders/hotel/Detail.vue'),
           },
@@ -200,12 +198,10 @@ const routes: RouteRecordRaw[] = [
             component: () => import('src/pages/orders/customized/index.vue'),
           },
           {
-            path: 'customized/:orderNumber',
+            path: 'booking/customized/:orderNumber',
             name: 'CustomizedOrderDetail',
             meta: {
               root: { title: '訂單管理' },
-              parent: { title: '客製訂單列表', path: '/orders/customized' },
-              title: '客製訂單明細',
             },
             component: () => import('src/pages/orders/customized/Detail.vue'),
           },

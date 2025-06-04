@@ -3,7 +3,7 @@
     <q-input v-model="keyword" placeholder="會員姓名、Email、電話" :debounce="500" :disable="disable" clearable dense outlined />
     <q-table v-if="keyword" class="data-table q-mt-sm" :columns="userColumns" :rows="options" :loading="loading" :rows-per-page-options="pagination.perPage" v-model:pagination="pagination" row-key="id" no-data-label="查無會員資料" v-model:selected="selected" selection="single" @request="onRequest" dense />
     <div class="row q-gutter-sm q-mt-none">
-      <q-input v-for="column in userColumns" :key="column.name" v-model="model[column.field]" :label="column.label" :rules="column.name == 'id' ? rules.member :[]" class="col" dense outlined readonly hide-bottom-space />
+      <q-input v-for="column in userColumns" :key="column.name" v-model="model[column.field]" :label="column.label" :rules="column.name == 'id' ? rules.member :[]" class="col-12 col-sm-3" dense outlined readonly hide-bottom-space />
     </div>
   </div>
 </template>

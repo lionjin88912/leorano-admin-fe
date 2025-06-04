@@ -4,7 +4,7 @@
     <section class="flex row justify-between">
       <q-form class="row q-mb-lg">
         <q-input v-model='filter.name' dense class='q-mx-md q-my-sm' :debounce="500" style='width: 240px' outlined
-          placeholder='Search'>
+          placeholder='品牌名稱'>
           <template v-slot:append>
             <q-icon class='cursor-pointer' name='search' />
           </template>

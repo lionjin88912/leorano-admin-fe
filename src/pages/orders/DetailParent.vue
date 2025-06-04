@@ -1,7 +1,7 @@
 <template>
-  <div>
-    <BreadCrumbs />
-    <DetailLayout v-if="model" :tabs="tabs">
+  <div v-if="model">
+    <BreadCrumbs :page-title="model.order_number" />
+    <DetailLayout :tabs="tabs">
       <template #buttons>
         <div class="flex q-gutter-sm">
           <q-space />
@@ -32,6 +32,11 @@
               <template v-slot:body-cell-order_number="props">
                 <q-td :props="props" class="link" @click="goDetail(props.row, props.row.booking_way)">
                   {{ props.row.order_number }}
+                </q-td>
+              </template>
+              <template v-slot:body-cell-status="props">
+                <q-td :props="props">
+                  <div :class="`text-${hotelOrderStatusOptions.find((d) => d.value === props.row.status.toLowerCase())?.color}`">{{ hotelOrderStatusOptions.find((d) => d.value === props.row.status.toLowerCase())?.label }}</div>
                 </q-td>
               </template>
               <template v-slot:body-cell-undo="props">
@@ -71,7 +76,7 @@ import { useQuasar } from 'quasar';
 import { ref, computed, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import { router } from 'src/router'
-import { subOrderSimpleColumns, orderTypeOptions } from './enums'
+import { subOrderSimpleColumns, orderTypeOptions, hotelOrderStatusOptions } from './enums'
 import { getOrderParent, updateOrderParent } from 'src/api'
 import BreadCrumbs from 'src/components/BreadCrumbs.vue';
 import DetailLayout from 'src/pages/orders/components/DetailLayout.vue';
