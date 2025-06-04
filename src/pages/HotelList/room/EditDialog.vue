@@ -110,6 +110,14 @@ const reloadModel = async (id) => {
   state.model.bedType = res.data.tags.find(d => d.tag_type_id === 3);
   state.model.views = res.data.tags.filter(d => d.tag_type_id === 10);
   state.model.amenities = res.data.tags.filter(d => d.tag_type_id === 2);
+
+  if (!state.model.langs || state.model.langs.length === 0) {
+    // 如果沒有語系資料，則新增一個主語系的空資料
+    state.model.langs = [
+      { lang: 'zh-TW', name: '', summary: '', desc: '' },
+      { lang: 'zh-CN', name: '', summary: '', desc: '' }
+    ];
+  }
 }
 
 const createEmptyModel = () => {
