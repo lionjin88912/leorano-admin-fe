@@ -28,16 +28,22 @@ export const orderColumns: TableColumn = [
   },
   {
     name: 'start_date',
-    classes: 'td-date',
+    classes: 'td-code',
     label: '開始時間',
     field: (row: any) => getDateString(row.start_date, 'YYYY-MM-DD'),
     align: 'left',
   },
   {
     name: 'end_date',
-    classes: 'td-status',
+    classes: 'td-date',
     label: '結束時間',
     field: (row: any) => getDateString(row.end_date, 'YYYY-MM-DD'),
+    align: 'left',
+  },
+  {
+    name: 'status',
+    classes: 'td-status',
+    label: '訂單狀態',
     align: 'left',
   },
   {
@@ -125,6 +131,11 @@ export const subOrderSimpleColumns: TableColumn = [
     classes: 'full-width',
     label: '訂單名稱',
     field: 'name',
+    align: 'left',
+  },
+  {
+    name: 'status',
+    label: '訂單狀態',
     align: 'left',
   },
   {
@@ -432,17 +443,17 @@ export const memberColumns: TableColumn = [
 export const orderStatusOptions = [
   { label: '預訂成功', value: 'success', color: 'teal' },
   { label: '預訂失敗', value: 'failed', color: 'negative' },
-  { label: '已取消', value: 'cancelled', color: 'negative' },
+  { label: '已取消', value: 'cancelled', color: 'grey-6' },
   { label: '取消失敗', value: 'cancel_failed', color: 'negative' },
 ]
 
 export const hotelOrderStatusOptions = [
   { label: '全部', value: null },
-  { label: '預訂中', value: 'processing', color: 'negative' },
-  { label: '預訂成功', value: 'success', color: 'teal' },
-  { label: '預訂失敗', value: 'failed', color: 'negative' },
-  { label: '已取消', value: 'cancelled', color: 'negative' },
-  { label: '取消失敗', value: 'cancel_failed', color: 'negative' },
+  { label: '預訂中', value: 'processing', color: 'negative', bg: 'red-1' },
+  { label: '預訂成功', value: 'success', color: 'teal', bg: 'teal-1' },
+  { label: '預訂失敗', value: 'failed', color: 'negative', bg: 'red-1' },
+  { label: '已取消', value: 'cancelled', color: 'grey-6', bg: 'grey-2' },
+  { label: '取消失敗', value: 'cancel_failed', color: 'negative', bg: 'red-1' },
 ]
 
 export const orderBookingWayOptions = [

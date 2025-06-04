@@ -62,10 +62,18 @@
           </q-td>
           <q-td v-for="col in props.cols" :key="col.name" :props="props" >
             <div v-if="col.name === 'record'">
-              <q-btn icon="o_fact_check" color="primary" class="q-px-sm" @click="showHistory(props.row.order_number)" flat />
+              <q-btn icon="o_fact_check" :color="props.row.todo_count && props.row.todo_count.done != props.row.todo_count.total ? 'negative': 'teal'" class="q-px-sm" @click="showHistory(props.row.order_number)" flat>
+                <q-badge v-if="props.row.todo_count && props.row.todo_count.total > 0" :label="`${ props.row.todo_count.done }/${ props.row.todo_count.total }`" :color="props.row.todo_count.done != props.row.todo_count.total ? 'negative': 'teal'" class="q-ml-sm" rounded />
+              </q-btn>
             </div>
             <div v-else-if="col.name === 'name'" class="text-primary cursor-pointer ellipsis" @click="goDetail(props.row, 'parent')">
               {{ col.value }}
+            </div>
+            <div v-else-if="col.name === 'status'">
+              <div v-for="(count, status) in props.row.status" :key="status" class="flex items-center q-gutter-x-xs" :class="`text-${hotelOrderStatusOptions.find((d) => d.value === status.toLowerCase())?.color}`">
+                {{ hotelOrderStatusOptions.find((d) => d.value === status.toLowerCase())?.label }}
+                <q-badge :label="count" :color="status ? hotelOrderStatusOptions.find((d) => d.value === status.toLowerCase())?.bg : 'blue-1'" :text-color="status ? hotelOrderStatusOptions.find((d) => d.value === status.toLowerCase())?.color : 'primary'" class="text-bold" />
+              </div>
             </div>
             <div v-else>
               {{ col.value }}
@@ -124,7 +132,7 @@
                     </div>
                   </div>
                   <div class="td-status">
-                    <div>{{ orderStatusOptions.find((d) => d.value === element.status)?.label }}</div>
+                    <div :class="`text-${hotelOrderStatusOptions.find((d) => d.value === element.status.toLowerCase())?.color}`">{{ hotelOrderStatusOptions.find((d) => d.value === element.status.toLowerCase())?.label }}</div>
                     <div v-if="element.status === 'cancelled'" class="text-caption text-grey-6">
                       {{ getDateString(element.cancelled_at, 'YYYY-MM-DD HH:mm') }}
                     </div>
@@ -154,7 +162,7 @@ import { useQuasar, SessionStorage } from 'quasar';
 import { ref, reactive, watch, computed } from 'vue'
 import { router } from 'src/router'
 import { getOrderList, changeOrderParent } from 'src/api'
-import { orderColumns, subOrderColumns, orderBookingWayOptions, orderTypeOptions, orderStatusOptions } from './enums';
+import { orderColumns, subOrderColumns, orderBookingWayOptions, orderTypeOptions, orderStatusOptions, hotelOrderStatusOptions } from './enums';
 import DatePicker from 'src/components/DatePicker.vue'
 import BreadCrumbs from 'src/components/BreadCrumbs.vue';
 import History from './components/History.vue';
@@ -269,7 +277,9 @@ const loadData = async ({ pagination }) => {
     return;
   }
   state.pagination.rowsNumber = res.paging.total_rows;
+  res.data.map(d => d.status = {});
   rows.value = res.data;
+  await setParentStatus();
 }
 
 const loadExportData = async (datas, page) => {
@@ -343,7 +353,7 @@ const doExcelExport = async () => {
       d.voucher,
       getDateStringNoTz(d.start_date, 'YYYY-MM-DD'),
       getDateStringNoTz(d.end_date, 'YYYY-MM-DD'),
-      orderStatusOptions.find(s => s.value === d.status)?.label,
+      hotelOrderStatusOptions.find(s => s.value === d.status.toLowerCase())?.label,
       `${d.user.first_name} ${d.user.last_name}`,
       d.user.email
     ]
@@ -395,6 +405,20 @@ const goDetail = (order, type) => {
       router.push({ name: 'CustomizedOrderDetail', params: { orderNumber: order.id } });
       break;
   }
+}
+
+const setParentStatus = () => {
+  rows.value.forEach(row => {
+    if (row.subs && row.subs.length > 0) {
+      row.subs.forEach(sub => {
+        if (row.status[sub.status]) {
+          row.status[sub.status]++;
+        } else {
+          row.status[sub.status] = 1;
+        }
+      });
+    }
+  });
 }
 
 const goHotelSearch = () => {
@@ -517,6 +541,9 @@ doSearch();
   .td-icon {
     width: 70px;
   }
+  .td-code {
+    width: 150px;
+  }
   .td-date {
     width: 110px;
   }
@@ -537,9 +564,6 @@ doSearch();
   }
   .td-number {
     width: 175px;
-  }
-  .td-code {
-    width: 150px;
   }
   .td-user {
     width: 230px;

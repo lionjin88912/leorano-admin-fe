@@ -4,12 +4,12 @@
     <div class="row q-my-md items-end">
       <div v-if="filter" class="col row q-gutter-sm">
         <div v-for="item in pages[pageType].filters" :key="item.name" class="col-2">
-          <q-input v-if="item.type == 'text'" :placeholder="item.label" v-model="filter[item.name]" :debounce="500" outlined dense>
+          <q-input v-if="item.type == 'text'" :label="item.label" v-model="filter[item.name]" :debounce="500" outlined dense>
             <template v-slot:append>
               <q-icon class='cursor-pointer' :name="item.icon" />
             </template>
           </q-input>
-          <q-select v-if="item.type == 'select'" v-model="filter[item.name]" :options="item.options" outlined dense />
+          <q-select v-if="item.type == 'select'" v-model="filter[item.name]" :options="item.options" :label="item.label" outlined dense />
           <q-field v-if="item.type == 'date'" :label="item.label" class="cursor-pointer" :stack-label="filter[item.name] ? true : false" outlined dense>
             <template #default>
               <DatePicker :date="filter[item.name]" :range="true" @updated="(val) => filter[item.name] = val" />
@@ -20,6 +20,7 @@
               </div>
             </template>
           </q-field>
+          <selectGroup v-if="item.type == 'hotelGroup'" @handleCallBack='setSelectFilter' :default='{ id: filter[item.name] }' />
         </div>
       </div>
       <q-space />
@@ -66,6 +67,7 @@ import { pages } from './enums'
 import { getDateString, getDateStringNoTz, getNumberFormat, getCurrencyPriceFormat } from 'src/utils/helpers';
 import BreadCrumbs from 'src/components/BreadCrumbs.vue'
 import DatePicker from 'src/components/DatePicker.vue'
+import selectGroup from 'components/selectGroup.vue'
 import TableComponent from 'src/components/TableComponent.vue'
 import ProfitDialog from '../orders/components/ProfitDialog.vue'
 import XLSX from 'xlsx-js-style'
@@ -99,6 +101,11 @@ const restoreSearchFilter = () => {
   }
 }
 
+const setSelectFilter = (model) => {
+  if (!model) return;
+  filter.value[model.col] = model.val
+}
+
 watch(filter, (newVal) => {
   saveSearchFilter(newVal);
 }, { deep: true })
@@ -121,6 +128,11 @@ const getFilterParams = () => {
         if (filter.value[item.name]) {
           params[`${item.name}_start`] = filter.value[item.name].from;
           params[`${item.name}_end`] = filter.value[item.name].to;
+        }
+        break;
+      case 'hotelGroup':
+        if (filter.value[item.name]) {
+          params[item.name] = filter.value[item.name];
         }
         break;
       default:
