@@ -69,22 +69,23 @@
         </InfoRow>
         <InfoRow ref="memberSectionRef" title="訂購人" class="scroll-margin">
           <div class="q-mt-md q-mb-lg">
-            <UserSelector v-model="user" :required="true" />
+            <UserSelector v-model="user" label="訂購人" :required="true" />
           </div>
         </InfoRow>
         <InfoRow ref="travelerSectionRef" title="出行人" class="scroll-margin">
           <div class="q-mt-md q-mb-lg">
-            <UserSelector v-model="passenger" :required="true" />
+            <UserSelector v-model="passenger" label="出行人" :required="false" />
           </div>
         </InfoRow>
       </template>
       <template #aside>
         <q-btn v-if="isCancellable" color="warning" label="取消訂單" class="q-mb-md" @click="onCancelOrder" unelevated></q-btn>
         <q-card class="bg-grey-2" flat bordered>
-          <q-card-section class="order-teaser">
+          <q-card-section class="relative-position order-teaser">
+            <q-btn icon="content_copy" size="sm" class="absolute copy-btn q-pa-sm bg-grey-4 text-grey-8 " @click="copyOrderInfo" unelevated />
             <div class="flex no-wrap">
               <div class="teaser-label">酒店</div>
-              <div class="text-grey-7">{{ model.hotel.name }}</div>
+              <div class="text-grey-7 q-pr-lg">{{ model.hotel.name }}</div>
             </div>
             <div class="flex no-wrap q-mt-sm">
               <div class="teaser-label">方案</div>
@@ -110,38 +111,6 @@
               <div class="teaser-label">人數</div>
               <div class="text-grey-7">{{ `${model.book_code.criteria.num_of_adults} 大人` }} {{ `${model.book_code.criteria.children.length} 小孩` }}</div>
             </div>
-            <details class="order-detail q-mt-sm">
-              <summary class="text-primary">
-                其他資訊
-                <q-icon name="keyboard_arrow_down" size="1.5em" class="toggle-icon" />
-              </summary>
-              <ul class="detail-list q-mt-xs">
-                <li class="flex no-wrap q-mt-sm">
-                  <div class="detail-label">床型</div>
-                  <div class="text-grey-7">{{ model.book_code.plan.bed || 'N/A' }}</div>
-                </li>
-                <li class="flex no-wrap q-mt-sm">
-                  <div class="detail-label">景觀</div>
-                  <div class="text-grey-7">{{ model.book_code.plan.view || 'N/A' }}</div>
-                </li>
-                <li class="flex no-wrap q-mt-sm">
-                  <div class="detail-label">早餐</div>
-                  <div class="text-grey-7">
-                    <q-icon :name="hasBreakfast ? 'check' : 'close'" :color="hasBreakfast ? 'positive' : 'negative'" size="18px" />
-                  </div>
-                </li>
-                <li class="flex no-wrap q-mt-sm">
-                  <div class="detail-label">吸菸房</div>
-                  <div class="text-grey-7">
-                    <q-icon :name="isSmokingRoom ? 'check' : 'close'" :color="isSmokingRoom ? 'positive' : 'negative'" size="18px" />
-                  </div>
-                </li>
-                <li class="flex no-wrap q-mt-sm">
-                  <div class="detail-label">房間大小</div>
-                  <div class="text-grey-7">{{ model.book_code.plan.size || 'N/A' }}</div>
-                </li>
-              </ul>
-            </details>
             <details class="order-detail q-mt-sm">
               <summary class="text-primary">
                 旅客特殊需求
@@ -387,6 +356,36 @@ const changeProfitPercent = (val: string) => {
   model.value.Profit.usd_price = `USD${(parseFloat(model.value.book_code.plan.base_price.slice(3)) * parseFloat(model.value.Profit.rate) * parseFloat(val) / 100).toFixed(2)}`;
 }
 
+// 複製訂單資訊
+const copyOrderInfo = () => {
+  const orderInfo = `酒店： ${model.value.hotel.name}
+    方案： ${model.value.book_code.plan.name}
+    房型： ${model.value.book_code.plan.room_display_name || 'N/A'}
+    入住日： ${getDateStringNoTz(model.value.check_in, 'YYYY-MM-DD')}
+    退房日： ${getDateStringNoTz(model.value.check_out, 'YYYY-MM-DD')}
+    入住人： ${model.value.traveler_firstname} ${model.value.traveler_lastname}
+    人數： ${model.value.book_code.criteria.num_of_adults} 大人 ${model.value.book_code.criteria.children.length} 小孩`
+    .split('\n')
+    .map(line => line.trim())
+    .join('\n');
+  navigator.clipboard.writeText(orderInfo).then(() => {
+    $q.notify({
+      position: 'top-right',
+      type: 'positive',
+      color: 'teal',
+      message: '已複製'
+    });
+  }).catch(err => {
+    console.error('Failed to copy order info:', err);
+    $q.notify({
+      position: 'top-right',
+      type: 'negative',
+      color: 'negative',
+      message: '複製失敗'
+    });
+  });
+}
+
 // 付款方式描述
 const payDescp = computed(() => {
   switch (_.lowerCase(model.value.book_code.guarantee)) {
@@ -510,6 +509,10 @@ const onCancelConfirm = async (data: any) => {
     text-align: right;
     font-weight: bold;
     margin-right: 8px;
+  }
+  .copy-btn {
+    top: 5px;
+    right: 5px;
   }
 }
 .order-detail {
