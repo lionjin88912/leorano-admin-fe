@@ -315,14 +315,8 @@ export const customizedColumns: TableColumn = [
 export const userColumns: TableColumn = [
   {
     name: 'id',
-    label: '會員編號',
+    label: '編號',
     field: 'id',
-    align: 'left',
-  },
-  {
-    name: 'title',
-    label: '稱謂',
-    field: 'title',
     align: 'left',
   },
   {

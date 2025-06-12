@@ -111,12 +111,19 @@ const reloadModel = async (id) => {
   state.model.views = res.data.tags.filter(d => d.tag_type_id === 10);
   state.model.amenities = res.data.tags.filter(d => d.tag_type_id === 2);
 
-  if (!state.model.langs || state.model.langs.length === 0) {
-    // 如果沒有語系資料，則新增一個主語系的空資料
-    state.model.langs = [
-      { lang: 'zh-TW', name: '', summary: '', desc: '' },
-      { lang: 'zh-CN', name: '', summary: '', desc: '' }
-    ];
+  // 迴圈檢查並補充缺少的語系
+  const requiredLangs = ['zh-TW', 'zh-CN'];
+  for (const lang of requiredLangs) {
+    const existingLang = state.model.langs.find(d => d.lang === lang);
+    if (!existingLang) {
+      // 如果不存在該語系，則新增
+      state.model.langs.push({ 
+        lang: lang, 
+        name: '', 
+        summary: '', 
+        desc: '' 
+      });
+    }
   }
 }
 
@@ -183,18 +190,23 @@ const doLangSubmit = async () => {
     console.warn("表單驗證未通過");
     return;
   }
-  const locale = state.currentLocale.value;
-  const data = langForm.value.getModel();
-  // console.log("langSubmit:", data);
+  
   $q.loading.show();
 
-  const [err, res] = await to(UpdateHotelRoomLang(state.model.id, locale, data));
-  $q.loading.hide();
-
-  if (err) {
-    console.log('Update Lang error:', err);
-    return;
+  // 遍歷所有語系資料並更新
+  for (const langData of state.model.langs) {
+    if (langData.lang) {
+      const [err, res] = await to(UpdateHotelRoomLang(state.model.id, langData.lang, langData));
+      
+      if (err) {
+        console.log(`Update Lang error for ${langData.lang}:`, err);
+        $q.loading.hide();
+        return;
+      }
+    }
   }
+  
+  $q.loading.hide();
   reloadModel(state.model.id);
   emit('updated');
 }

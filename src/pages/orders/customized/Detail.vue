@@ -131,7 +131,7 @@
             <span class="text-negative q-ml-xs">*</span>
           </template>
           <div class="q-my-md">
-            <UserSelector v-model="model.member" :required="true" :disable="isClose" />
+            <UserSelector v-model="model.member" label="訂購人" :required="true" :disable="isClose" />
           </div>
         </InfoRow>
         <InfoRow ref="attachedSectionRef" title="附件" class="scroll-margin">
