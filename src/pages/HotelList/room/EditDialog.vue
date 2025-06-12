@@ -183,18 +183,23 @@ const doLangSubmit = async () => {
     console.warn("表單驗證未通過");
     return;
   }
-  const locale = state.currentLocale.value;
-  const data = langForm.value.getModel();
-  // console.log("langSubmit:", data);
+  
   $q.loading.show();
 
-  const [err, res] = await to(UpdateHotelRoomLang(state.model.id, locale, data));
-  $q.loading.hide();
-
-  if (err) {
-    console.log('Update Lang error:', err);
-    return;
+  // 遍歷所有語系資料並更新
+  for (const langData of state.model.langs) {
+    if (langData.lang) {
+      const [err, res] = await to(UpdateHotelRoomLang(state.model.id, langData.lang, langData));
+      
+      if (err) {
+        console.log(`Update Lang error for ${langData.lang}:`, err);
+        $q.loading.hide();
+        return;
+      }
+    }
   }
+  
+  $q.loading.hide();
   reloadModel(state.model.id);
   emit('updated');
 }

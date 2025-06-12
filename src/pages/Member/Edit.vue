@@ -106,7 +106,7 @@
                 <div class="info-field-label text-left">社群</div>
               </div>
               <div class="info-field q-gutter-md">
-                <q-input type="text" v-model="ig" label='instagram' prefix="@" dense outlined />
+                <q-input type="text" v-model="ig.user_account" label='instagram' prefix="@" dense outlined />
                 <q-input v-model="data.linkedin" label='linkedin' dense outlined />
               </div>
             </div>
@@ -201,7 +201,10 @@ const data: any = ref({
   note: null
 });
 const confirmRef = ref()
-const ig = ref("")
+const ig = reactive({
+  user_id: '',
+  user_account: ''
+});
 const fileInputRef: any = ref(null);
 const files: any = ref([])
 const loyalties: any = ref([]);
@@ -253,7 +256,9 @@ const getData = async () => {
   data.value.linkedin = profile.linkedin || '';
   data.value.company = profile.company || '';
   if (data.value.instagram) {
-    ig.value = JSON.parse(data.value.instagram).user_account;
+    const instagram = JSON.parse(data.value.instagram);
+    ig.user_id = instagram.user_id || '';
+    ig.user_account = instagram.user_account || '';
   }
   rewards.amount = res.data.rewards.amount;
   rewards.logs = res.data.rewards.logs;
@@ -328,6 +333,11 @@ const onConfirm = () => {
 const handleSubmit = async () => {
   $q.loading.show();
   data.value.income = +data.value.income;
+  // 回填 ig 資料
+  data.value.instagram = JSON.stringify({
+    user_id: ig.user_id,
+    user_account: ig.user_account
+  });
   const reqData = {
     loyalties: loyalties.value.filter((d: any) => d.value != ""),
     user: data.value
