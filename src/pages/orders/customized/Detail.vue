@@ -131,7 +131,7 @@
             <span class="text-negative q-ml-xs">*</span>
           </template>
           <div class="q-my-md">
-            <UserSelector v-model="model.member" label="訂購人" :required="true" :disable="isClose" />
+            <UserSelector ref="userSelectorRef" v-model="model.member" label="訂購人" :required="true" :disable="isClose" />
           </div>
         </InfoRow>
         <InfoRow ref="attachedSectionRef" title="附件" class="scroll-margin">
@@ -720,8 +720,10 @@ const payments = computed(() => {
 
 /* 新增/編輯訂單 Start */
 const form = ref();
+const userSelectorRef = ref();
 const validate = async () => {
-  return await form.value.validate();
+  await form.value.validate();
+  return  await userSelectorRef.value.validate();
 }
 
 const cancelEdit = () => {

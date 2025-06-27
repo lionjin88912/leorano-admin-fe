@@ -1,13 +1,18 @@
 <template>
   <div class="flex justify-between items-start q-gutter-x-lg">
-    <p>
-      編號：
-      <router-link :to="{ name: 'EditMember', params: { id: model.id } }" target="_blank">
-        {{ model.id && model.id || '' }}
-      </router-link><br />
-      姓名：{{ model.id && model.name || '' }}<br />
-      信箱：{{ model.id && model.email || '' }}<br />
-    </p>
+    <div>
+      <p>
+        編號：
+        <router-link :to="{ name: 'EditMember', params: { id: model.id } }" target="_blank">
+          {{ model.id && model.id || '' }}
+        </router-link><br />
+        姓名：{{ model.id && model.name || '' }}<br />
+        信箱：{{ model.id && model.email || '' }}<br />
+      </p>
+      <div v-if="errorMessage" class="text-negative text-caption q-mt-xs">
+        {{ errorMessage }}
+      </div>
+    </div>
     <div v-if="!disable" class="flex justify-end q-gutter-x-sm">
       <!-- 修改按鈕 - 只在 selector 沒有顯示時顯示 -->
       <q-btn 
@@ -81,6 +86,18 @@ const showSelector = ref(false);
 const loading = ref(false);
 const options = ref([]);
 
+// 驗證方法
+const errorMessage = ref(null);
+const validate = async () => {
+  if (isEmpty(model.value.id)) {
+    errorMessage.value = messages.requiredInput();
+    return false;
+  } else {
+    errorMessage.value = null;
+    return true;
+  }
+};
+
 // 顯示 q-select 輸入框
 const showSelectorInput = () => {
   showSelector.value = true;
@@ -127,6 +144,9 @@ const filterFn = (val, update) => {
 };
 
 const model = defineModel();
+defineExpose({
+  validate,
+})
 </script>
 
 <style lang="scss" scoped>
