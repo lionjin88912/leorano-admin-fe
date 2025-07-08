@@ -542,7 +542,7 @@ const doCancel = () => {
     isCancelPrice: true,
     data: {
       type: 'customized-order',
-      orderNumber: model.value.order_number
+      orderNumber: orderId
     }
   });
 }
