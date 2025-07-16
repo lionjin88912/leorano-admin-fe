@@ -12,6 +12,14 @@
     </template>
     <template #form>
       <q-form ref="form">
+        <InfoRow ref="memberSectionRef" title="訂購人" class="scroll-margin">
+          <template v-slot:caption>
+            <span class="text-negative q-ml-xs">*</span>
+          </template>
+          <div class="q-my-md">
+            <UserSelector ref="userSelectorRef" v-model="model.member" label="訂購人" :required="true" :disable="isClose" />
+          </div>
+        </InfoRow>
         <InfoRow ref="mainSectionRef" title="訂單資訊" class="scroll-margin">
           <template v-slot:caption>
             <q-badge :color="booking_way.color" class="q-ml-sm" outline>
@@ -126,14 +134,6 @@
             <q-btn label="新增收入/支出" color="primary" @click="addFinance" outline />
           </div>
         </InfoRow>
-        <InfoRow ref="memberSectionRef" title="訂購人" class="scroll-margin">
-          <template v-slot:caption>
-            <span class="text-negative q-ml-xs">*</span>
-          </template>
-          <div class="q-my-md">
-            <UserSelector ref="userSelectorRef" v-model="model.member" label="訂購人" :required="true" :disable="isClose" />
-          </div>
-        </InfoRow>
         <InfoRow ref="attachedSectionRef" title="附件" class="scroll-margin">
           <div class="q-my-md">
             <uploader v-if="!isClose" btn-text="新增附件" title="新增附件" :accept="accept" @handleUpload="handleUpload" outline />
@@ -164,12 +164,6 @@
           </div>
         </InfoRow>
         <InfoRow ref="voucherSectionRef" title="憑證資訊" class="scroll-margin">
-          <div class="q-mt-md q-mb-lg">
-            <div class="text-bold q-mt-md q-mb-sm">憑證編號</div>
-            <div class="row q-col-gutter-sm">
-              <q-input v-model="model.voucher" label="憑證編號" class="col-3" :disable="isClose" dense outlined />
-            </div>
-          </div>  
           <div class="row q-col-gutter-sm q-mb-sm q-mt-none">
             <label class="col-3 text-subtitle2">標題</label>
             <div class="col text-subtitle2">資料</div>
@@ -210,8 +204,8 @@
             <div class="text-grey-7">{{ model.title }}</div>
           </div>
           <div class="flex q-mt-sm">
-            <div class="text-bold text-grey-9 q-mr-sm">訂單編號</div>
-            <div class="text-grey-7">{{ model.order_number }}</div>
+            <div class="text-bold text-grey-9 q-mr-sm">確認編號</div>
+            <div class="text-grey-7">{{ model.booking_confirm_code }}</div>
           </div>
           <div class="flex q-mt-sm">
             <div class="text-bold text-grey-9 q-mr-sm">訂單金額</div>
@@ -448,19 +442,24 @@ const rules = computed(() => {
     ],
     exchange_rate: [
       val => !isEmpty(val) || messages.requiredInput(),
-      val => isNumberDigit(val, 4, 2) || `${messages.invalidInteger(4)}，${messages.invalidDecimal(2)}`
+      val => isNumberDigit(val, 4) || `${messages.invalidInteger(4)}`
     ]
   }
 });
 
 /* tab, section Start */
+const memberSectionRef = ref(null)
 const mainSectionRef = ref(null)
 const profitSectionRef = ref(null)
 const financeSectionRef = ref(null)
-const memberSectionRef = ref(null)
 const attachedSectionRef = ref(null)
 const voucherSectionRef = ref(null)
 const tabs = ref([
+  {
+    name: 'member',
+    label: '訂購人',
+    ref: memberSectionRef
+  },
   {
     name: 'main',
     label: '訂單資訊',
@@ -475,11 +474,6 @@ const tabs = ref([
     name: 'finance',
     label: '收入/支出',
     ref: financeSectionRef
-  },
-  {
-    name: 'member',
-    label: '訂購人',
-    ref: memberSectionRef
   },
   {
     name: 'attached',

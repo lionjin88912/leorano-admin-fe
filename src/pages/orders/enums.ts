@@ -84,7 +84,7 @@ export const subOrderColumns: TableColumn = [
   {
     name: 'booking_code',
     classes: 'td-code',
-    label: '確認/取消/憑證編號',
+    label: '確認/取消編號',
     align: 'left',
   },
   {
@@ -247,7 +247,7 @@ export const customizedColumns: TableColumn = [
   },
   {
     name: 'voucher_cancel_code',
-    label: '憑證編號/取消編號',
+    label: '確認編號/取消編號',
     align: 'left',
   },
   {
