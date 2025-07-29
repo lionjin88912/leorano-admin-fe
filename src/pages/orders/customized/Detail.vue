@@ -93,9 +93,29 @@
         </InfoRow>
         <InfoRow ref="profitSectionRef" title="利潤" class="scroll-margin">
           <div class="q-mt-md q-mb-lg">
-            <div class="text-bold q-mt-md q-mb-sm">實際利潤</div>
+            <div class="flex items-center justify-between q-mt-md q-mb-sm">
+              <div class="text-bold">實際利潤</div>
+              <div class="flex items-center q-gutter-sm">
+                <q-toggle v-if="!isClose" 
+                          v-model="autoCalculateMode" 
+                          label="自動同步" 
+                          color="primary" 
+                          size="sm" />
+              </div>
+            </div>
             <div class="row q-col-gutter-sm">
-              <InputCurrencyPrice v-model="model.final_profit" label="利潤" class="col-4" :rules="rules.profit" :disable="isClose" />
+              <InputCurrencyPrice v-model:currency="finalProfitCurrency" 
+                                  v-model:price="finalProfitAmount"
+                                  label="利潤" 
+                                  class="col-4" 
+                                  :rules="rules.profit" 
+                                  :disable="isClose || autoCalculateMode" />
+              <div class="col-8 flex items-center">
+                <div class="text-grey-6 q-ml-md">
+                  收入/支出小計：{{ getNumberFormat(financeSum) }} USD
+                  <span v-if="autoCalculateMode" class="text-primary q-ml-sm">(自動同步)</span>
+                </div>
+              </div>
             </div>
           </div>
         </InfoRow>
@@ -333,6 +353,7 @@ let route = useRoute();
 
 const orderId = Number(route.params.orderNumber);
 const isNewOrder = ref(true);
+const autoCalculateMode = ref(true);
 
 const filter = reactive({
   member_id: 0
@@ -401,7 +422,7 @@ const model = ref<Order>({
   currency: 'USD',
 	deleted_at: null,
   end_date: '',
-  final_profit: '',
+  final_profit: 'USD',
 	finance: [],
   id: null,
   member: {
@@ -702,6 +723,44 @@ const financeSum = computed(() => {
   }, 0);
 });
 /* 訂單收入支出表格 End */
+
+/* 自動計算利潤 Start */
+// 處理利潤的貨幣和金額分離
+const finalProfitCurrency = computed({
+  get: () => model.value.final_profit ? model.value.final_profit.slice(0, 3) : 'USD',
+  set: (val) => {
+    const amount = finalProfitAmount.value || '';
+    model.value.final_profit = val + amount;
+  }
+});
+
+const finalProfitAmount = computed({
+  get: () => model.value.final_profit ? model.value.final_profit.slice(3) : '',
+  set: (val) => {
+    const currency = finalProfitCurrency.value || 'USD';
+    model.value.final_profit = currency + val;
+  }
+});
+
+// 監聽自動計算模式和 finance 變化
+watch([() => autoCalculateMode.value, () => model.value.finance], ([autoMode, finance]) => {
+  if (autoMode) {
+    finalProfitAmount.value = financeSum.value.toString();
+  }
+}, { deep: true });
+
+// 監聽自動計算模式切換
+watch(autoCalculateMode, (newValue) => {
+  if (newValue) {
+    finalProfitAmount.value = financeSum.value.toString();
+    $q.notify({
+      type: 'info',
+      message: '已開啟自動計算模式，利潤將自動同步收入/支出小計',
+      position: 'top'
+    });
+  }
+});
+/* 自動計算利潤 End */
 
 /* 支單列表 Start */
 const payments = computed(() => {
