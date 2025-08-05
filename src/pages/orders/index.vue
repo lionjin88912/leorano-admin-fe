@@ -120,10 +120,6 @@
                         {{ data }}
                       </span>
                     </div>
-                    <div v-else-if="element.voucher">
-                      <q-icon name="o_confirmation_number" size="1.2em" class="q-mr-xs" />
-                      <span>{{ element.voucher }}</span>
-                    </div>
                   </div>
                   <div class="td-date">
                     <div>{{ getDateStringNoTz(element.start_date, 'YYYY-MM-DD') }} ~ </div>

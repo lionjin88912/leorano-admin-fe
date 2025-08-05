@@ -12,6 +12,14 @@
     </template>
     <template #form>
       <q-form ref="form">
+        <InfoRow ref="memberSectionRef" title="訂購人" class="scroll-margin">
+          <template v-slot:caption>
+            <span class="text-negative q-ml-xs">*</span>
+          </template>
+          <div class="q-my-md">
+            <UserSelector ref="userSelectorRef" v-model="model.member" label="訂購人" :required="true" :disable="isClose" />
+          </div>
+        </InfoRow>
         <InfoRow ref="mainSectionRef" title="訂單資訊" class="scroll-margin">
           <template v-slot:caption>
             <q-badge :color="booking_way.color" class="q-ml-sm" outline>
@@ -85,9 +93,29 @@
         </InfoRow>
         <InfoRow ref="profitSectionRef" title="利潤" class="scroll-margin">
           <div class="q-mt-md q-mb-lg">
-            <div class="text-bold q-mt-md q-mb-sm">實際利潤</div>
+            <div class="flex items-center justify-between q-mt-md q-mb-sm">
+              <div class="text-bold">實際利潤</div>
+              <div class="flex items-center q-gutter-sm">
+                <q-toggle v-if="!isClose" 
+                          v-model="autoCalculateMode" 
+                          label="自動同步" 
+                          color="primary" 
+                          size="sm" />
+              </div>
+            </div>
             <div class="row q-col-gutter-sm">
-              <InputCurrencyPrice v-model="model.final_profit" label="利潤" class="col-4" :rules="rules.profit" :disable="isClose" />
+              <InputCurrencyPrice v-model:currency="finalProfitCurrency" 
+                                  v-model:price="finalProfitAmount"
+                                  label="利潤" 
+                                  class="col-4" 
+                                  :rules="rules.profit" 
+                                  :disable="isClose || autoCalculateMode" />
+              <div class="col-8 flex items-center">
+                <div class="text-grey-6 q-ml-md">
+                  收入/支出小計：{{ getNumberFormat(financeSum) }} USD
+                  <span v-if="autoCalculateMode" class="text-primary q-ml-sm">(自動同步)</span>
+                </div>
+              </div>
             </div>
           </div>
         </InfoRow>
@@ -132,12 +160,6 @@
           </div>
         </InfoRow>
         <InfoRow ref="voucherSectionRef" title="憑證資訊" class="scroll-margin">
-          <div class="q-mt-md q-mb-lg">
-            <div class="text-bold q-mt-md q-mb-sm">憑證編號</div>
-            <div class="row q-col-gutter-sm">
-              <q-input v-model="model.voucher" label="憑證編號" class="col-3" :disable="isClose" dense outlined />
-            </div>
-          </div>  
           <div class="row q-col-gutter-sm q-mb-sm q-mt-none">
             <label class="col-3 text-subtitle2">標題</label>
             <div class="col text-subtitle2">資料</div>
@@ -178,8 +200,8 @@
             <div class="text-grey-7">{{ model.title }}</div>
           </div>
           <div class="flex q-mt-sm">
-            <div class="text-bold text-grey-9 q-mr-sm">訂單編號</div>
-            <div class="text-grey-7">{{ model.order_number }}</div>
+            <div class="text-bold text-grey-9 q-mr-sm">確認編號</div>
+            <div class="text-grey-7">{{ model.booking_confirm_code }}</div>
           </div>
           <div class="flex q-mt-sm">
             <div class="text-bold text-grey-9 q-mr-sm">訂單金額</div>
@@ -293,6 +315,7 @@ let route = useRoute();
 
 const orderId = Number(route.params.orderNumber);
 const isNewOrder = ref(true);
+const autoCalculateMode = ref(true);
 
 const filter = reactive({
   member_id: 0
@@ -361,7 +384,7 @@ const model = ref<Order>({
   currency: 'USD',
 	deleted_at: null,
   end_date: '',
-  final_profit: '',
+  final_profit: 'USD',
 	finance: [],
   id: null,
   member: {
@@ -393,18 +416,33 @@ const rules = computed(() => {
   return {
     required: [
       val => !isEmpty(val) || messages.requiredInput()
+    ],
+    profit: [
+      val => isNumberDigit(val, null, 2) || messages.invalidDecimal(2)
+    ],
+    finance_amount: [
+      val => isNumberDigit(val, null, 2) || messages.invalidDecimal(2)
+    ],
+    exchange_rate: [
+      val => !isEmpty(val) || messages.requiredInput(),
+      val => isNumberDigit(val, 4) || `${messages.invalidInteger(4)}`
     ]
   }
 });
 
 /* tab, section Start */
+const memberSectionRef = ref(null)
 const mainSectionRef = ref(null)
 const profitSectionRef = ref(null)
 const financeSectionRef = ref(null)
-const memberSectionRef = ref(null)
 const attachedSectionRef = ref(null)
 const voucherSectionRef = ref(null)
 const tabs = ref([
+  {
+    name: 'member',
+    label: '訂購人',
+    ref: memberSectionRef
+  },
   {
     name: 'main',
     label: '訂單資訊',
@@ -419,11 +457,6 @@ const tabs = ref([
     name: 'finance',
     label: '收入/支出',
     ref: financeSectionRef
-  },
-  {
-    name: 'member',
-    label: '訂購人',
-    ref: memberSectionRef
   },
   {
     name: 'attached',
@@ -486,7 +519,7 @@ const doCancel = () => {
     isCancelPrice: true,
     data: {
       type: 'customized-order',
-      orderNumber: model.value.order_number
+      orderNumber: orderId
     }
   });
 }
@@ -616,10 +649,96 @@ const deleteQuestion = (index: number) => {
 }
 /* 編輯訂單問題欄位 End */
 
+/* 編輯訂單收入支出 Start */
+const metaStore = useMetaStore();
+const addFinance = async () => {
+  model.value.finance.push({
+    type: 'revenue',
+    title: '',
+    currency: 'TWD',
+    amount: '',
+    exchange_rate: _.round(await metaStore.getExchangeRate('TWD', 'USD'), 2),
+    updated_at: GetLocalTime(new Date()),
+	});
+}
+const changeCurrency = async (finance: finance) => {
+  finance.exchange_rate = _.round(await metaStore.getExchangeRate(finance.currency, 'USD'), 2);
+}
+function deleteFinance (index: number) {
+  model.value.finance.splice(index, 1);
+}
+/* 編輯訂單收入支出 End */
+
+/* 訂單收入支出表格 Start */
+const financeUSD = computed(() => {
+  return model.value.finance.map((d) => {
+    return Number(d.amount) * Number(d.exchange_rate);
+  });
+});
+const financeSum = computed(() => {
+  return model.value.finance.reduce((acc, cur) => {
+    if (cur.type === 'revenue') {
+      return acc + Number(cur.amount) * Number(cur.exchange_rate);
+    } else {
+      return acc - Number(cur.amount) * Number(cur.exchange_rate);
+    }
+  }, 0);
+});
+/* 訂單收入支出表格 End */
+
+/* 自動計算利潤 Start */
+// 處理利潤的貨幣和金額分離
+const finalProfitCurrency = computed({
+  get: () => model.value.final_profit ? model.value.final_profit.slice(0, 3) : 'USD',
+  set: (val) => {
+    const amount = finalProfitAmount.value || '';
+    model.value.final_profit = val + amount;
+  }
+});
+
+const finalProfitAmount = computed({
+  get: () => model.value.final_profit ? model.value.final_profit.slice(3) : '',
+  set: (val) => {
+    const currency = finalProfitCurrency.value || 'USD';
+    model.value.final_profit = currency + val;
+  }
+});
+
+// 監聽自動計算模式和 finance 變化
+watch([() => autoCalculateMode.value, () => model.value.finance], ([autoMode, finance]) => {
+  if (autoMode) {
+    finalProfitAmount.value = financeSum.value.toString();
+  }
+}, { deep: true });
+
+// 監聽自動計算模式切換
+watch(autoCalculateMode, (newValue) => {
+  if (newValue) {
+    finalProfitAmount.value = financeSum.value.toString();
+    $q.notify({
+      type: 'info',
+      message: '已開啟自動計算模式，利潤將自動同步收入/支出小計',
+      position: 'top'
+    });
+  }
+});
+/* 自動計算利潤 End */
+
+/* 支單列表 Start */
+const payments = computed(() => {
+  return model.value.finance.map((d, index) => ({
+    index,
+    ...d
+  })).filter((d) => d.type === 'expense');
+});
+/* 支單列表 End */
+
 /* 新增/編輯訂單 Start */
 const form = ref();
+const userSelectorRef = ref();
 const validate = async () => {
-  return await form.value.validate();
+  await form.value.validate();
+  return  await userSelectorRef.value.validate();
 }
 
 const cancelEdit = () => {

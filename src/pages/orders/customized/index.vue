@@ -33,8 +33,8 @@
       <template #body-cell-voucher_cancel_code="{ row }">
         <q-td>
           <div v-if="row.voucher" class="flex no-wrap">
-            <div class="q-pr-sm text-bold">憑證編號</div>
-            <div class="text-primary">{{ row.voucher }}</div>
+            <div class="q-pr-sm text-bold">確認編號</div>
+            <div class="text-primary">{{ row.booking_confirm_code }}</div>
           </div>
           <div v-if="row.cancel_number" class="flex no-wrap">
             <div class="q-pr-sm text-bold">取消編號</div>

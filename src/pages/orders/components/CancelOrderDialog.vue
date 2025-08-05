@@ -9,7 +9,6 @@
         </q-card-section>
         <q-card-section class="q-gutter-y-sm">
           <div class="message q-pb-md">{{ state.message }}</div>
-          <q-input v-if="state.isConfirmCode" type="text" label="取消編號" v-model="state.confirmCode" :outlined="outlined" dense />
           <InputCurrencyPrice v-if="state.isCancelPrice" v-model="state.cancelPrice" label="退款金額" />
           <q-input type="textarea" v-model="state.confirmText" label="取消原因" :outlined="outlined" :rules="rules.confirmText" :rows="5" :max-rows="10" maxlength="100" counter dense />
         </q-card-section>

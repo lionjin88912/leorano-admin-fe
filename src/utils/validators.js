@@ -118,6 +118,7 @@ const isMatch = (a, b) => {
 const isNumberDigit = (val, intPlace = null, decimalPlace = null) => {
   let expression = '^-?[0-9]';
 
+
   // 整數
   if (intPlace !== null) {
     expression += `{0,${intPlace}}`
@@ -127,8 +128,12 @@ const isNumberDigit = (val, intPlace = null, decimalPlace = null) => {
 
   // 小數
   let hasDecimal = val.toString().includes('.');
-  if (hasDecimal && decimalPlace !== null) {
-    expression += `\\.?[0-9]{0,${decimalPlace}}`;
+  if (hasDecimal) {
+    if (decimalPlace !== null) {
+      expression += `\\.[0-9]{0,${decimalPlace}}`
+    } else {
+      expression += '\\.[0-9]*'
+    }
   }
 
   expression += '$';
