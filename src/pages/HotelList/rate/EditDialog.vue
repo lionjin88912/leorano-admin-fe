@@ -284,7 +284,7 @@ const getLangModel = computed(() => {
 })
 
 // 監聽語系切換，保存當前編輯的資料
-watch(state.currentLocale, (newVal, oldVal) => {
+watch(() => state.currentLocale.value, (newVal, oldVal) => {
   if (oldVal && langForm.value) {
     // 保存之前語系的編輯資料
     const currentData = langForm.value.getModel();
