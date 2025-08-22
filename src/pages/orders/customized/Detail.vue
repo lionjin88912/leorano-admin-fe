@@ -743,23 +743,19 @@ const finalProfitAmount = computed({
 });
 
 // 監聽自動計算模式和 finance 變化
-watch([() => autoCalculateMode.value, () => model.value.finance], ([autoMode, finance]) => {
+watch([autoCalculateMode, () => model.value.finance], ([autoMode], [oldAutoMode]) => {
   if (autoMode) {
     finalProfitAmount.value = financeSum.value.toString();
+    // 當模式剛被開啟時，顯示提示
+    if (!oldAutoMode) {
+      $q.notify({
+        type: 'info',
+        message: '已開啟自動計算模式，利潤將自動同步收入/支出小計',
+        position: 'top'
+      });
+    }
   }
 }, { deep: true });
-
-// 監聽自動計算模式切換
-watch(autoCalculateMode, (newValue) => {
-  if (newValue) {
-    finalProfitAmount.value = financeSum.value.toString();
-    $q.notify({
-      type: 'info',
-      message: '已開啟自動計算模式，利潤將自動同步收入/支出小計',
-      position: 'top'
-    });
-  }
-});
 /* 自動計算利潤 End */
 
 /* 支單列表 Start */

@@ -197,7 +197,8 @@ onBeforeMount(() => {
 
 onMounted(async () => {
   console.log("bookingStore.state", bookingStore.state);
-  const { res } = await to(getHotelSearchPlan(bookingStore.state.hotelName.id, {
+  
+  const [err, res] = await to(getHotelSearchPlan(bookingStore.state.hotelName.id, {
     from: bookingStore.state.checkinDuration.from,
     to: bookingStore.state.checkinDuration.to,
     num_of_adults: bookingStore.state.adults,
@@ -207,8 +208,26 @@ onMounted(async () => {
     lang: 'zh-TW',
     notify: 0
   }))
+  
+  if (err) {
+    console.error('取得訂房詳情失敗:', err);
+    $q.notify({
+      type: 'negative',
+      message: '無法取得訂房資訊，請重新查詢'
+    });
+    router.push({ name: 'HotelOrderSearch' });
+    return;
+  }
+  
   if (res?.code === 0) {
     data.value = res.data
+  } else {
+    console.error('訂房詳情回應異常:', res);
+    $q.notify({
+      type: 'negative',
+      message: '訂房資訊載入失敗，請重新查詢'
+    });
+    router.push({ name: 'HotelOrderSearch' });
   }
 })
 
@@ -265,10 +284,21 @@ const getPriceText = priceStr => {
 };
 const $q = useQuasar();
 const formRef = ref();
-const onSubmit = () => {
+const onSubmit = async () => {
   $q.loading.show();
-  formRef.value.validate().then(async success => {
+  try {
+    const success = await formRef.value.validate();
     if (success) {
+      // 🔧 檢查必要的訂房資訊
+      if (!data.value || !data.value.book_code) {
+        $q.notify({
+          type: 'negative',
+          message: '訂房資訊遺失，請重新查詢酒店方案'
+        });
+        router.push({ name: 'HotelOrderSearch' });
+        return;
+      }
+
       const [err, res] = await to(createHotelOrder({
         book_code: data.value.book_code,
         traveller_info: {
@@ -288,16 +318,58 @@ const onSubmit = () => {
         },
         is_booking_for_other: false
       }));
+
+      // 🔧 處理 API 錯誤
+      if (err) {
+        console.error('訂房 API 錯誤:', err);
+        if (err.status === 403) {
+          $q.notify({
+            type: 'negative',
+            message: '權限不足或訂房資訊已過期，請重新查詢'
+          });
+          router.push({ name: 'HotelOrderSearch' });
+        } else if (err.status >= 400 && err.status < 500) {
+          $q.notify({
+            type: 'negative',
+            message: err.data?.message || '請求資料有誤，請檢查填寫資訊'
+          });
+        } else {
+          $q.notify({
+            type: 'negative',
+            message: '訂房失敗，請稍後再試'
+          });
+        }
+        return;
+      }
+
+      // 🔧 檢查回應資料
+      if (!res || !res.data || !res.data.order_id) {
+        $q.notify({
+          type: 'negative',
+          message: '訂房回應異常，請聯繫客服確認'
+        });
+        return;
+      }
+
       router.push({ name: "HotelOrderDetail", params: { orderNumber: res.data.order_id } });
     } else {
       const errorEl = document.querySelector('.q-field--error');
-      window.scrollTo({
-        top: errorEl.getBoundingClientRect().top + window.pageYOffset - 100,
-        behavior: 'smooth'
-      });
+      if (errorEl) {
+        window.scrollTo({
+          top: errorEl.getBoundingClientRect().top + window.pageYOffset - 100,
+          behavior: 'smooth'
+        });
+      }
     }
-  })
-  $q.loading.hide();
+  } catch (error) {
+    console.error('訂房系統錯誤:', error);
+    $q.notify({
+      type: 'negative',
+      message: '系統發生錯誤，請稍後再試'
+    });
+  } finally {
+    $q.loading.hide();
+  }
 }
 </script>
 

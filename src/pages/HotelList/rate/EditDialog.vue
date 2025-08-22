@@ -67,6 +67,9 @@ import { getDateString } from 'src/utils/helpers';
 
 const to = require('await-to-js').default
 
+// 支援的語系常數
+const SUPPORTED_LANGUAGES = ['zh-TW', 'zh-CN'];
+
 const emit = defineEmits(['updated'])
 const props = defineProps({
   hotelData: Object
@@ -116,7 +119,7 @@ const reloadModel = async (id) => {
     state.model.langs = [];
   }
   
-  ['zh-TW', 'zh-CN'].forEach(lang => {
+  SUPPORTED_LANGUAGES.forEach(lang => {
     if (!state.model.langs.find(d => d.lang === lang)) {
       state.model.langs.push({ lang, name: '', desc: '' });
     }
@@ -134,10 +137,7 @@ const createEmptyModel = () => {
     tags: [],
     summary: null,
     desc: null,
-    langs: [
-      { lang: 'zh-TW', name: '', desc: '' },
-      { lang: 'zh-CN', name: '', desc: '' }
-    ]
+    langs: SUPPORTED_LANGUAGES.map(lang => ({ lang, name: '', desc: '' }))
   }
 }
 
@@ -284,16 +284,16 @@ const getLangModel = computed(() => {
 })
 
 // 監聽語系切換，保存當前編輯的資料
-watch(() => state.currentLocale, (newLocale, oldLocale) => {
-  if (oldLocale && langForm.value) {
+watch(state.currentLocale, (newVal, oldVal) => {
+  if (oldVal && langForm.value) {
     // 保存之前語系的編輯資料
     const currentData = langForm.value.getModel();
-    const oldLangIndex = state.model.langs.findIndex(d => d.lang === oldLocale.value);
+    const oldLangIndex = state.model.langs.findIndex(d => d.lang === oldVal);
     if (oldLangIndex >= 0) {
       state.model.langs[oldLangIndex] = { ...state.model.langs[oldLangIndex], ...currentData };
     }
   }
-}, { deep: true })
+})
 
 defineExpose({
   show
