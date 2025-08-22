@@ -57,7 +57,7 @@
 </template>
 
 <script setup>
-import { ref, computed, reactive } from 'vue'
+import { ref, computed, reactive, watch } from 'vue'
 import { useQuasar } from 'quasar';
 import { EditMode, localeOptions } from 'src/pages/enums';
 import { GetHotelRate, CreateHotelRate, UpdateHotelRate, UpdateHotelRateLang } from 'src/api';
@@ -110,6 +110,17 @@ const reloadModel = async (id) => {
   state.model.bedType = res.data.tags.find(d => d.tag_type_id === 3);
   state.model.views = res.data.tags.filter(d => d.tag_type_id === 10);
   state.model.amenities = res.data.tags.filter(d => d.tag_type_id === 2);
+
+  // 確保語系資料結構正確並補充缺少的語系
+  if (!Array.isArray(state.model.langs)) {
+    state.model.langs = [];
+  }
+  
+  ['zh-TW', 'zh-CN'].forEach(lang => {
+    if (!state.model.langs.find(d => d.lang === lang)) {
+      state.model.langs.push({ lang, name: '', desc: '' });
+    }
+  });
 }
 
 const createEmptyModel = () => {
@@ -123,7 +134,10 @@ const createEmptyModel = () => {
     tags: [],
     summary: null,
     desc: null,
-    langs: {}
+    langs: [
+      { lang: 'zh-TW', name: '', desc: '' },
+      { lang: 'zh-CN', name: '', desc: '' }
+    ]
   }
 }
 
@@ -162,29 +176,103 @@ const doMainSubmit = async () => {
     console.error('CreateHotelRate error:', err);
     return;
   }
-  state.visible = false;
-  reloadModel(res.data.id);
-  emit('updated');
+  
+  // 如果是新建模式，切換到編輯模式並保持對話框開啟，讓用戶可以繼續編輯語系
+  if (state.mode === EditMode.New) {
+    state.mode = EditMode.Edit;
+    state.title = '編輯房價資料';
+    await reloadModel(res.data.id);
+    $q.notify({
+      type: 'positive',
+      message: '房價基本資料已保存，現在可以編輯語系設定'
+    });
+  } else {
+    // 編輯模式下保存基本資料後關閉對話框
+    state.visible = false;
+    reloadModel(res.data.id);
+    emit('updated');
+  }
 }
 
 const doLangSubmit = async () => {
+  // 先驗證基本資料表單
+  if (!await mainForm.value.validate()) {
+    console.warn("房價基本資料表單驗證未通過");
+    $q.notify({
+      type: 'negative',
+      message: '請先完整填寫房價基本資料'
+    });
+    state.currentTab = 'main'; // 切換到基本資料頁面
+    return;
+  }
+  
+  // 再驗證語系表單
   if (!await langForm.value.validate()) {
-    console.warn("表單驗證未通過");
+    console.warn("語系資料表單驗證未通過");
     return;
   }
-  const locale = state.currentLocale.value;
-  const data = langForm.value.getModel();
-  // console.log("langSubmit:", data);
+  
+  // 更新當前編輯的語系資料到 model 中
+  const currentData = langForm.value.getModel();
+  const currentLangIndex = state.model.langs.findIndex(d => d.lang === state.currentLocale.value);
+  if (currentLangIndex >= 0) {
+    state.model.langs[currentLangIndex] = { ...state.model.langs[currentLangIndex], ...currentData };
+  }
+  
   $q.loading.show();
-  const [err, res] = await to(UpdateHotelRateLang(state.model.id, locale, data));
-  $q.loading.hide();
-
-  if (err) {
-    console.error('Update Lang error:', err);
-    return;
+  
+  try {
+    // 1. 先保存基本資料
+    const mainData = mainForm.value.getModel();
+    const mainApi = isEdit.value ? UpdateHotelRate(mainData.id, mainData) : CreateHotelRate(mainData);
+    const [mainErr, mainRes] = await to(mainApi);
+    
+    if (mainErr) {
+      console.error('保存基本資料失敗:', mainErr);
+      $q.notify({
+        type: 'negative',
+        message: '房價基本資料保存失敗'
+      });
+      return;
+    }
+    
+    // 2. 再保存所有語系資料
+    const rateId = mainRes.data.id;
+    const langPromises = state.model.langs.map(langData => 
+      UpdateHotelRateLang(rateId, langData.lang, langData)
+    );
+    
+    const langResults = await Promise.allSettled(langPromises);
+    
+    // 檢查語系保存結果
+    const langErrors = langResults.filter(result => result.status === 'rejected');
+    
+    if (langErrors.length > 0) {
+      console.error('部分語系資料保存失敗:', langErrors);
+      $q.notify({
+        type: 'warning',
+        message: `基本資料已保存，但語系資料保存失敗 (${langErrors.length}/${langResults.length})`
+      });
+    } else {
+      $q.notify({
+        type: 'positive',
+        message: '房價基本資料和所有語系資料已成功保存'
+      });
+    }
+    
+    state.visible = false;
+    reloadModel(rateId);
+    emit('updated');
+    
+  } catch (error) {
+    console.error('保存過程發生錯誤:', error);
+    $q.notify({
+      type: 'negative',
+      message: '保存失敗，請重試'
+    });
+  } finally {
+    $q.loading.hide();
   }
-  reloadModel(state.model.id);
-  emit('updated');
 }
 
 const getMainModel = computed(() => {
@@ -192,8 +280,20 @@ const getMainModel = computed(() => {
 })
 const getLangModel = computed(() => {
   const langData = state.model.langs.find(d => d.lang === state.currentLocale.value);
-  return langData || createEmptyModel();
+  return langData || { lang: state.currentLocale.value, name: '', desc: '' };
 })
+
+// 監聽語系切換，保存當前編輯的資料
+watch(() => state.currentLocale, (newLocale, oldLocale) => {
+  if (oldLocale && langForm.value) {
+    // 保存之前語系的編輯資料
+    const currentData = langForm.value.getModel();
+    const oldLangIndex = state.model.langs.findIndex(d => d.lang === oldLocale.value);
+    if (oldLangIndex >= 0) {
+      state.model.langs[oldLangIndex] = { ...state.model.langs[oldLangIndex], ...currentData };
+    }
+  }
+}, { deep: true })
 
 defineExpose({
   show
