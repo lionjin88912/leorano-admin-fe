@@ -745,7 +745,9 @@ const finalProfitAmount = computed({
 // 監聽自動計算模式和 finance 變化
 watch([autoCalculateMode, () => model.value.finance], ([autoMode], [oldAutoMode]) => {
   if (autoMode) {
-    finalProfitAmount.value = financeSum.value.toString();
+    // 四捨五入到小數點後2位，避免浮點數精度問題
+    const roundedAmount = Math.round(financeSum.value * 100) / 100;
+    finalProfitAmount.value = roundedAmount.toString();
     // 當模式剛被開啟時，顯示提示
     if (!oldAutoMode) {
       $q.notify({
