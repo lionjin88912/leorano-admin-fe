@@ -62,7 +62,6 @@ RUN cd /$WORK_HOME &&\
     yarn global add @quasar/cli && \
     quasar build
 
-
 WORKDIR /build
 
 ARG API_URL
