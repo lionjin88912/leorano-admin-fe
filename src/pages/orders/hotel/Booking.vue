@@ -14,13 +14,13 @@
         <InfoRow title="訂房資訊">
           <div class="info-field">
             <div class="info-field-label">酒店</div>
-            <div class="info-field-text">{{ bookingStore.state.hotel.display_name }}</div>
+            <div class="info-field-text">{{ bookingStore.state.hotel?.display_name || '載入中...' }}</div>
           </div>
           <div class="info-field">
             <div class="info-field-label">房型</div>
             <div class="info-field-text">
-              <p>{{ bookingStore.state.room.room_name }}</p>
-              <ul class="info-field-list">
+              <p>{{ bookingStore.state.room?.room_name || '載入中...' }}</p>
+              <ul v-if="bookingStore.state.room?.tags" class="info-field-list">
                 <li v-for="(tag, index) in bookingStore.state.room.tags" :key="`room_${index}`">{{ tag.display_note }}</li>
               </ul>
             </div>
@@ -28,20 +28,20 @@
           <div class="info-field">
             <div class="info-field-label">方案</div>
             <div class="info-field-text">
-              <p>{{ bookingStore.state.plan.display_name }}</p>
-              <ul class="info-field-list">
+              <p>{{ bookingStore.state.plan?.display_name || '載入中...' }}</p>
+              <ul v-if="bookingStore.state.plan?.tags" class="info-field-list">
                 <li v-for="(tag, index) in bookingStore.state.plan.tags" :key="`plan_${index}`">{{ tag.display_note }}</li>
               </ul>
             </div>
           </div>
           <div class="info-field">
             <div class="info-field-label">入住日期</div>
-            <div class="info-field-text">{{ bookingStore.state.checkinDuration.from }} ~ {{ bookingStore.state.checkinDuration.to }} ({{ bookingDays }} 晚)</div>
+            <div class="info-field-text">{{ bookingStore.state.checkinDuration?.from || '載入中...' }} ~ {{ bookingStore.state.checkinDuration?.to || '載入中...' }} ({{ bookingDays }} 晚)</div>
           </div>
           <div class="info-field">
             <div class="info-field-label">入住人數</div>
             <div class="info-field-text">
-              <span>{{ bookingStore.state.adults }} 大人</span>
+              <span>{{ bookingStore.state.adults || 0 }} 大人</span>
               <span v-if="bookingStore.state.kids > 0">、{{ bookingStore.state.kids }} 小孩 ({{ kidsAge }})</span>
             </div>
           </div>
@@ -49,7 +49,7 @@
       </div>
       <div class="daily-price col-12 col-md-6">
         <InfoRow title="每日房價">
-          <div class="info-field" v-for="daily in bookingStore.state.plan.daily_rate" :key="daily.date">
+          <div v-if="bookingStore.state.plan?.daily_rate" class="info-field" v-for="daily in bookingStore.state.plan.daily_rate" :key="daily.date">
             <div class="info-field-label">{{ getDateStringNoTz(daily.date, 'MM DD, YYYY') }}</div>
             <div class="info-field-text flex q-pl-sm">
               <div class="currency q-pr-xs">
@@ -60,15 +60,18 @@
               </div>
             </div>
           </div>
+          <div v-else class="info-field">
+            <div class="info-field-text">載入每日房價中...</div>
+          </div>
           <div class="flex-1 bordered-dash q-mx-lg q-my-xs"></div>
           <div class="info-field">
             <div class="info-field-label">稅金與費用</div>
             <div class="info-field-text flex q-pl-sm">
               <div class="currency q-pr-xs">
-                {{ bookingStore.state.plan.tax ? getPriceText(bookingStore.state.plan.tax).currency : 'TWD' }}
+                {{ bookingStore.state.plan?.tax ? getPriceText(bookingStore.state.plan.tax).currency : 'TWD' }}
               </div>
               <div class="price">
-                ${{ bookingStore.state.plan.tax ? getNumberFormat(getPriceText(bookingStore.state.plan.tax).price) : 0 }}
+                ${{ bookingStore.state.plan?.tax ? getNumberFormat(getPriceText(bookingStore.state.plan.tax).price) : 0 }}
               </div>
             </div>
           </div>
@@ -76,10 +79,10 @@
             <div class="info-field-label">總金額</div>
             <div class="info-field-text flex q-pl-sm">
               <div class="currency q-pr-xs">
-                {{ getPriceText(bookingStore.state.plan.local_total_price).currency }}
+                {{ bookingStore.state.plan?.local_total_price ? getPriceText(bookingStore.state.plan.local_total_price).currency : 'TWD' }}
               </div>
               <div class="price">
-                ${{ getNumberFormat(getPriceText(bookingStore.state.plan.local_total_price).price) }}
+                ${{ bookingStore.state.plan?.local_total_price ? getNumberFormat(getPriceText(bookingStore.state.plan.local_total_price).price) : 0 }}
               </div>
             </div>
           </div>
@@ -87,10 +90,10 @@
             <div class="info-field-label">參考貨幣</div>
             <div class="info-field-text flex q-pl-sm">
               <div class="currency q-pr-xs">
-                {{ getPriceText(bookingStore.state.plan.total_price).currency }}
+                {{ bookingStore.state.plan?.total_price ? getPriceText(bookingStore.state.plan.total_price).currency : 'TWD' }}
               </div>
               <div class="price">
-                ${{ getNumberFormat(getPriceText(bookingStore.state.plan.total_price).price) }}
+                ${{ bookingStore.state.plan?.total_price ? getNumberFormat(getPriceText(bookingStore.state.plan.total_price).price) : 0 }}
               </div>
             </div>
           </div>
@@ -100,9 +103,9 @@
     <InfoRow title="其他資訊">
       <div class="info-field">
         <div class="info-field-label">取消期限</div>
-        <div class="info-field-text">{{ getDateStringNoTz(bookingStore.state.plan.cancel_info.deadline, 'HH:mm MM DD, YYYY') }}</div>
+        <div class="info-field-text">{{ bookingStore.state.plan?.cancel_info?.deadline ? getDateStringNoTz(bookingStore.state.plan.cancel_info.deadline, 'HH:mm MM DD, YYYY') : '載入中...' }}</div>
       </div>
-      <div v-if="data && data.original_texts.length > 0" class="info-field">
+      <div v-if="data && data.original_texts && data.original_texts.length > 0" class="info-field">
         <div class="info-field-label">原始方案資訊</div>
         <div class="info-field-text">
           <div class="cursor-pointer q-gutter-x-xs" @click="isShowOriginalPlanInfo = !isShowOriginalPlanInfo">
@@ -185,12 +188,18 @@ import to from 'await-to-js'
 
 const bookingDays = computed(() => {
   // 用 checkinDuration.from 和 checkinDuration.to 計算出總天數
+  if (!bookingStore.state.checkinDuration?.from || !bookingStore.state.checkinDuration?.to) {
+    return 0;
+  }
   const from = new Date(bookingStore.state.checkinDuration.from)
   const to = new Date(bookingStore.state.checkinDuration.to)
   const diffTime = Math.abs(to - from)
   return Math.floor(diffTime / (1000 * 60 * 60 * 24))
 })
 const kidsAge = computed(() => {
+  if (!bookingStore.state.kidsAge || !Array.isArray(bookingStore.state.kidsAge)) {
+    return '';
+  }
   return bookingStore.state.kidsAge.map(age => `${age}歲`).join('、')
 })
 
