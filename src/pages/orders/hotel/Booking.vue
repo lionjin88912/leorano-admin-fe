@@ -1,7 +1,15 @@
 <template>
   <div class="q-gutter-y-md">
     <BreadCrumbs class="q-pb-md"></BreadCrumbs>
-    <div v-if="Object.keys(bookingStore.state).length > 0" class="row q-col-gutter-xl">
+    
+    <!-- 載入中狀態 -->
+    <div v-if="data === null" class="flex justify-center q-py-xl">
+      <q-spinner color="primary" size="3em" />
+      <div class="q-ml-md text-body1">載入預訂資料中...</div>
+    </div>
+    
+    <!-- 資料載入完成後顯示內容 -->
+    <div v-else-if="Object.keys(bookingStore.state).length > 0" class="row q-col-gutter-xl">
       <div class="col-12 col-md-6">
         <InfoRow title="訂房資訊">
           <div class="info-field">
@@ -120,12 +128,12 @@
       <InfoRow title="入住人資訊">
         <div class="q-mt-md">
           <div class="row q-col-gutter-md">
-            <q-input v-model="form.firstName" label="名字" placeholder="須與護照相同" class="col-12 col-sm-6 col-md-3 uppercase" :rules="rules.firstName" outlined dense />
-            <q-input v-model="form.lastName" label="姓氏" placeholder="須與護照相同" class="col-12 col-sm-6 col-md-3 uppercase" :rules="rules.lastName" outlined dense />
-            <q-select v-model="form.title" :options="titleOptions" label="稱謂" class="col-12 col-sm-6 col-md-3" :rules="rules.title" outlined dense />
-            <InputPhone v-model="form.phone" class="col-12 col-sm-6 col-md-3" />
-            <q-input v-model="form.email" label="電子信箱" class="col-12 col-sm-6 col-md-3" :rules="rules.email" outlined dense />
-            <q-select v-model="form.estimated_arrival_time" :options="arrivalTimeOptions" label="預計抵達酒店時間" class="col-12 col-sm-6 col-md-3" outlined dense />
+            <q-input v-model="form.firstName" name="firstName" label="名字" placeholder="須與護照相同" class="col-12 col-sm-6 col-md-3 uppercase" :rules="rules.firstName" outlined dense />
+            <q-input v-model="form.lastName" name="lastName" label="姓氏" placeholder="須與護照相同" class="col-12 col-sm-6 col-md-3 uppercase" :rules="rules.lastName" outlined dense />
+            <q-select v-model="form.title" name="title" :options="titleOptions" label="稱謂" class="col-12 col-sm-6 col-md-3" :rules="rules.title" outlined dense />
+            <InputPhone v-model="form.phone" name="phone" class="col-12 col-sm-6 col-md-3" />
+            <q-input v-model="form.email" name="email" label="電子信箱" class="col-12 col-sm-6 col-md-3" :rules="rules.email" outlined dense />
+            <q-select v-model="form.estimated_arrival_time" name="estimated_arrival_time" :options="arrivalTimeOptions" label="預計抵達酒店時間" class="col-12 col-sm-6 col-md-3" outlined dense />
           </div>
         </div>
       </InfoRow>
@@ -140,16 +148,16 @@
       <InfoRow title="酒店會員計劃">
         <div class="q-my-md">
           <div class="row q-col-gutter-md">
-            <q-input v-model="form.loyalty_number" label="會員編號" class="col-12 col-sm-6 col-md-3" outlined dense />
+            <q-input v-model="form.loyalty_number" name="loyalty_number" label="會員編號" class="col-12 col-sm-6 col-md-3" outlined dense />
           </div>
         </div>
       </InfoRow>
       <InfoRow title="信用卡資訊">
         <div class="q-my-md">
           <div class="row q-col-gutter-md">
-            <q-input v-model="form.card_holder_name" label="持卡人姓名" placeholder="會員編號" class="col-12 col-sm-6 col-md-3 uppercase" :rules="rules.card_holder_name" outlined dense />
-            <q-input v-model="form.card_number" label="信用卡卡號" mask="#### #### #### ####" class="col-12 col-sm-6 col-md-3" :rules="rules.card_number" unmasked-value outlined dense />
-            <q-input v-model="form.expired_date" label="有限期限" mask="##/##" class="col-12 col-sm-6 col-md-3" :rules="rules.expired_date" outlined dense />
+            <q-input v-model="form.card_holder_name" name="card_holder_name" label="持卡人姓名" placeholder="會員編號" class="col-12 col-sm-6 col-md-3 uppercase" :rules="rules.card_holder_name" outlined dense />
+            <q-input v-model="form.card_number" name="card_number" label="信用卡卡號" mask="#### #### #### ####" class="col-12 col-sm-6 col-md-3" :rules="rules.card_number" unmasked-value outlined dense />
+            <q-input v-model="form.expired_date" name="expired_date" label="有限期限" mask="##/##" class="col-12 col-sm-6 col-md-3" :rules="rules.expired_date" outlined dense />
           </div>
         </div>
       </InfoRow>
@@ -197,7 +205,7 @@ onBeforeMount(() => {
 
 onMounted(async () => {
   console.log("bookingStore.state", bookingStore.state);
-  const { res } = await to(getHotelSearchPlan(bookingStore.state.hotelName.id, {
+  const [err, res] = await to(getHotelSearchPlan(bookingStore.state.hotelName.id, {
     from: bookingStore.state.checkinDuration.from,
     to: bookingStore.state.checkinDuration.to,
     num_of_adults: bookingStore.state.adults,
@@ -207,8 +215,27 @@ onMounted(async () => {
     lang: 'zh-TW',
     notify: 0
   }))
-  if (res?.code === 0) {
+  
+  if (err) {
+    console.error("API 錯誤:", err);
+    $q.notify({
+      type: 'negative',
+      message: '載入預訂資料失敗，請稍後再試',
+      position: 'top'
+    });
+    return;
+  }
+  
+  if (res?.code === 0 && res.data) {
     data.value = res.data
+    console.log("載入的預訂資料:", res.data);
+  } else {
+    console.error("API 回傳錯誤:", res);
+    $q.notify({
+      type: 'negative', 
+      message: res?.message || '載入預訂資料失敗',
+      position: 'top'
+    });
   }
 })
 
@@ -267,6 +294,18 @@ const $q = useQuasar();
 const formRef = ref();
 const onSubmit = () => {
   $q.loading.show();
+  
+  // 檢查 data 是否已載入且包含 book_code
+  if (!data.value || !data.value.book_code) {
+    $q.loading.hide();
+    $q.notify({
+      type: 'negative',
+      message: '預訂資料載入失敗，請重新整理頁面後再試',
+      position: 'top'
+    });
+    return;
+  }
+  
   formRef.value.validate().then(async success => {
     if (success) {
       const [err, res] = await to(createHotelOrder({
@@ -288,7 +327,33 @@ const onSubmit = () => {
         },
         is_booking_for_other: false
       }));
-      router.push({ name: "HotelOrderDetail", params: { orderNumber: res.data.order_id } });
+      
+      if (err) {
+        console.error("預訂提交錯誤:", err);
+        $q.notify({
+          type: 'negative',
+          message: '提交預訂失敗，請稍後再試',
+          position: 'top'
+        });
+        $q.loading.hide();
+        return;
+      }
+      
+      if (res?.code === 0 && res.data?.order_id) {
+        $q.notify({
+          type: 'positive',
+          message: '預訂成功',
+          position: 'top'
+        });
+        router.push({ name: "HotelOrderDetail", params: { orderNumber: res.data.order_id } });
+      } else {
+        console.error("預訂API回傳錯誤:", res);
+        $q.notify({
+          type: 'negative',
+          message: res?.message || '預訂失敗，請稍後再試',
+          position: 'top'
+        });
+      }
     } else {
       const errorEl = document.querySelector('.q-field--error');
       window.scrollTo({
