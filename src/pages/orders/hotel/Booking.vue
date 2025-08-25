@@ -1,4 +1,5 @@
 <template>
+  <!-- 酒店預訂表單頁面 -->
   <div class="q-gutter-y-md">
     <BreadCrumbs class="q-pb-md"></BreadCrumbs>
     <div v-if="Object.keys(bookingStore.state).length > 0" class="row q-col-gutter-xl">
