@@ -1,27 +1,18 @@
 <template>
-  <!-- 酒店預訂表單頁面 -->
   <div class="q-gutter-y-md">
     <BreadCrumbs class="q-pb-md"></BreadCrumbs>
-    
-    <!-- 載入中狀態 -->
-    <div v-if="data === null" class="flex justify-center q-py-xl">
-      <q-spinner color="primary" size="3em" />
-      <div class="q-ml-md text-body1">載入預訂資料中...</div>
-    </div>
-    
-    <!-- 資料載入完成後顯示內容 -->
-    <div v-else-if="Object.keys(bookingStore.state).length > 0" class="row q-col-gutter-xl">
+    <div v-if="Object.keys(bookingStore.state).length > 0" class="row q-col-gutter-xl">
       <div class="col-12 col-md-6">
         <InfoRow title="訂房資訊">
           <div class="info-field">
             <div class="info-field-label">酒店</div>
-            <div class="info-field-text">{{ bookingStore.state.hotel?.display_name || '載入中...' }}</div>
+            <div class="info-field-text">{{ bookingStore.state.hotel.display_name }}</div>
           </div>
           <div class="info-field">
             <div class="info-field-label">房型</div>
             <div class="info-field-text">
-              <p>{{ bookingStore.state.room?.room_name || '載入中...' }}</p>
-              <ul v-if="bookingStore.state.room?.tags" class="info-field-list">
+              <p>{{ bookingStore.state.room.room_name }}</p>
+              <ul class="info-field-list">
                 <li v-for="(tag, index) in bookingStore.state.room.tags" :key="`room_${index}`">{{ tag.display_note }}</li>
               </ul>
             </div>
@@ -29,20 +20,20 @@
           <div class="info-field">
             <div class="info-field-label">方案</div>
             <div class="info-field-text">
-              <p>{{ bookingStore.state.plan?.display_name || '載入中...' }}</p>
-              <ul v-if="bookingStore.state.plan?.tags" class="info-field-list">
+              <p>{{ bookingStore.state.plan.display_name }}</p>
+              <ul class="info-field-list">
                 <li v-for="(tag, index) in bookingStore.state.plan.tags" :key="`plan_${index}`">{{ tag.display_note }}</li>
               </ul>
             </div>
           </div>
           <div class="info-field">
             <div class="info-field-label">入住日期</div>
-            <div class="info-field-text">{{ bookingStore.state.checkinDuration?.from || '載入中...' }} ~ {{ bookingStore.state.checkinDuration?.to || '載入中...' }} ({{ bookingDays }} 晚)</div>
+            <div class="info-field-text">{{ bookingStore.state.checkinDuration.from }} ~ {{ bookingStore.state.checkinDuration.to }} ({{ bookingDays }} 晚)</div>
           </div>
           <div class="info-field">
             <div class="info-field-label">入住人數</div>
             <div class="info-field-text">
-              <span>{{ bookingStore.state.adults || 0 }} 大人</span>
+              <span>{{ bookingStore.state.adults }} 大人</span>
               <span v-if="bookingStore.state.kids > 0">、{{ bookingStore.state.kids }} 小孩 ({{ kidsAge }})</span>
             </div>
           </div>
@@ -50,7 +41,7 @@
       </div>
       <div class="daily-price col-12 col-md-6">
         <InfoRow title="每日房價">
-          <div v-if="bookingStore.state.plan?.daily_rate" class="info-field" v-for="daily in bookingStore.state.plan.daily_rate" :key="daily.date">
+          <div class="info-field" v-for="daily in bookingStore.state.plan.daily_rate" :key="daily.date">
             <div class="info-field-label">{{ getDateStringNoTz(daily.date, 'MM DD, YYYY') }}</div>
             <div class="info-field-text flex q-pl-sm">
               <div class="currency q-pr-xs">
@@ -61,18 +52,15 @@
               </div>
             </div>
           </div>
-          <div v-else class="info-field">
-            <div class="info-field-text">載入每日房價中...</div>
-          </div>
           <div class="flex-1 bordered-dash q-mx-lg q-my-xs"></div>
           <div class="info-field">
             <div class="info-field-label">稅金與費用</div>
             <div class="info-field-text flex q-pl-sm">
               <div class="currency q-pr-xs">
-                {{ bookingStore.state.plan?.tax ? getPriceText(bookingStore.state.plan.tax).currency : 'TWD' }}
+                {{ bookingStore.state.plan.tax ? getPriceText(bookingStore.state.plan.tax).currency : 'TWD' }}
               </div>
               <div class="price">
-                ${{ bookingStore.state.plan?.tax ? getNumberFormat(getPriceText(bookingStore.state.plan.tax).price) : 0 }}
+                ${{ bookingStore.state.plan.tax ? getNumberFormat(getPriceText(bookingStore.state.plan.tax).price) : 0 }}
               </div>
             </div>
           </div>
@@ -80,10 +68,10 @@
             <div class="info-field-label">總金額</div>
             <div class="info-field-text flex q-pl-sm">
               <div class="currency q-pr-xs">
-                {{ bookingStore.state.plan?.local_total_price ? getPriceText(bookingStore.state.plan.local_total_price).currency : 'TWD' }}
+                {{ getPriceText(bookingStore.state.plan.local_total_price).currency }}
               </div>
               <div class="price">
-                ${{ bookingStore.state.plan?.local_total_price ? getNumberFormat(getPriceText(bookingStore.state.plan.local_total_price).price) : 0 }}
+                ${{ getNumberFormat(getPriceText(bookingStore.state.plan.local_total_price).price) }}
               </div>
             </div>
           </div>
@@ -91,10 +79,10 @@
             <div class="info-field-label">參考貨幣</div>
             <div class="info-field-text flex q-pl-sm">
               <div class="currency q-pr-xs">
-                {{ bookingStore.state.plan?.total_price ? getPriceText(bookingStore.state.plan.total_price).currency : 'TWD' }}
+                {{ getPriceText(bookingStore.state.plan.total_price).currency }}
               </div>
               <div class="price">
-                ${{ bookingStore.state.plan?.total_price ? getNumberFormat(getPriceText(bookingStore.state.plan.total_price).price) : 0 }}
+                ${{ getNumberFormat(getPriceText(bookingStore.state.plan.total_price).price) }}
               </div>
             </div>
           </div>
@@ -104,9 +92,9 @@
     <InfoRow title="其他資訊">
       <div class="info-field">
         <div class="info-field-label">取消期限</div>
-        <div class="info-field-text">{{ bookingStore.state.plan?.cancel_info?.deadline ? getDateStringNoTz(bookingStore.state.plan.cancel_info.deadline, 'HH:mm MM DD, YYYY') : '載入中...' }}</div>
+        <div class="info-field-text">{{ getDateStringNoTz(bookingStore.state.plan.cancel_info.deadline, 'HH:mm MM DD, YYYY') }}</div>
       </div>
-      <div v-if="data && data.original_texts && data.original_texts.length > 0" class="info-field">
+      <div v-if="data && data.original_texts.length > 0" class="info-field">
         <div class="info-field-label">原始方案資訊</div>
         <div class="info-field-text">
           <div class="cursor-pointer q-gutter-x-xs" @click="isShowOriginalPlanInfo = !isShowOriginalPlanInfo">
@@ -132,12 +120,12 @@
       <InfoRow title="入住人資訊">
         <div class="q-mt-md">
           <div class="row q-col-gutter-md">
-            <q-input v-model="form.firstName" name="firstName" label="名字" placeholder="須與護照相同" class="col-12 col-sm-6 col-md-3 uppercase" :rules="rules.firstName" outlined dense />
-            <q-input v-model="form.lastName" name="lastName" label="姓氏" placeholder="須與護照相同" class="col-12 col-sm-6 col-md-3 uppercase" :rules="rules.lastName" outlined dense />
-            <q-select v-model="form.title" name="title" :options="titleOptions" label="稱謂" class="col-12 col-sm-6 col-md-3" :rules="rules.title" outlined dense />
-            <InputPhone v-model="form.phone" name="phone" class="col-12 col-sm-6 col-md-3" />
-            <q-input v-model="form.email" name="email" label="電子信箱" class="col-12 col-sm-6 col-md-3" :rules="rules.email" outlined dense />
-            <q-select v-model="form.estimated_arrival_time" name="estimated_arrival_time" :options="arrivalTimeOptions" label="預計抵達酒店時間" class="col-12 col-sm-6 col-md-3" outlined dense />
+            <q-input v-model="form.firstName" label="名字" placeholder="須與護照相同" class="col-12 col-sm-6 col-md-3 uppercase" :rules="rules.firstName" outlined dense />
+            <q-input v-model="form.lastName" label="姓氏" placeholder="須與護照相同" class="col-12 col-sm-6 col-md-3 uppercase" :rules="rules.lastName" outlined dense />
+            <q-select v-model="form.title" :options="titleOptions" label="稱謂" class="col-12 col-sm-6 col-md-3" :rules="rules.title" outlined dense />
+            <InputPhone v-model="form.phone" class="col-12 col-sm-6 col-md-3" />
+            <q-input v-model="form.email" label="電子信箱" class="col-12 col-sm-6 col-md-3" :rules="rules.email" outlined dense />
+            <q-select v-model="form.estimated_arrival_time" :options="arrivalTimeOptions" label="預計抵達酒店時間" class="col-12 col-sm-6 col-md-3" outlined dense />
           </div>
         </div>
       </InfoRow>
@@ -152,16 +140,16 @@
       <InfoRow title="酒店會員計劃">
         <div class="q-my-md">
           <div class="row q-col-gutter-md">
-            <q-input v-model="form.loyalty_number" name="loyalty_number" label="會員編號" class="col-12 col-sm-6 col-md-3" outlined dense />
+            <q-input v-model="form.loyalty_number" label="會員編號" class="col-12 col-sm-6 col-md-3" outlined dense />
           </div>
         </div>
       </InfoRow>
       <InfoRow title="信用卡資訊">
         <div class="q-my-md">
           <div class="row q-col-gutter-md">
-            <q-input v-model="form.card_holder_name" name="card_holder_name" label="持卡人姓名" placeholder="會員編號" class="col-12 col-sm-6 col-md-3 uppercase" :rules="rules.card_holder_name" outlined dense />
-            <q-input v-model="form.card_number" name="card_number" label="信用卡卡號" mask="#### #### #### ####" class="col-12 col-sm-6 col-md-3" :rules="rules.card_number" unmasked-value outlined dense />
-            <q-input v-model="form.expired_date" name="expired_date" label="有限期限" mask="##/##" class="col-12 col-sm-6 col-md-3" :rules="rules.expired_date" outlined dense />
+            <q-input v-model="form.card_holder_name" label="持卡人姓名" placeholder="會員編號" class="col-12 col-sm-6 col-md-3 uppercase" :rules="rules.card_holder_name" outlined dense />
+            <q-input v-model="form.card_number" label="信用卡卡號" mask="#### #### #### ####" class="col-12 col-sm-6 col-md-3" :rules="rules.card_number" unmasked-value outlined dense />
+            <q-input v-model="form.expired_date" label="有限期限" mask="##/##" class="col-12 col-sm-6 col-md-3" :rules="rules.expired_date" outlined dense />
           </div>
         </div>
       </InfoRow>
@@ -189,18 +177,12 @@ import to from 'await-to-js'
 
 const bookingDays = computed(() => {
   // 用 checkinDuration.from 和 checkinDuration.to 計算出總天數
-  if (!bookingStore.state.checkinDuration?.from || !bookingStore.state.checkinDuration?.to) {
-    return 0;
-  }
   const from = new Date(bookingStore.state.checkinDuration.from)
   const to = new Date(bookingStore.state.checkinDuration.to)
   const diffTime = Math.abs(to - from)
   return Math.floor(diffTime / (1000 * 60 * 60 * 24))
 })
 const kidsAge = computed(() => {
-  if (!bookingStore.state.kidsAge || !Array.isArray(bookingStore.state.kidsAge)) {
-    return '';
-  }
   return bookingStore.state.kidsAge.map(age => `${age}歲`).join('、')
 })
 
@@ -215,7 +197,7 @@ onBeforeMount(() => {
 
 onMounted(async () => {
   console.log("bookingStore.state", bookingStore.state);
-  const [err, res] = await to(getHotelSearchPlan(bookingStore.state.hotelName.id, {
+  const { res } = await to(getHotelSearchPlan(bookingStore.state.hotelName.id, {
     from: bookingStore.state.checkinDuration.from,
     to: bookingStore.state.checkinDuration.to,
     num_of_adults: bookingStore.state.adults,
@@ -225,27 +207,8 @@ onMounted(async () => {
     lang: 'zh-TW',
     notify: 0
   }))
-  
-  if (err) {
-    console.error("API 錯誤:", err);
-    $q.notify({
-      type: 'negative',
-      message: '載入預訂資料失敗，請稍後再試',
-      position: 'top'
-    });
-    return;
-  }
-  
-  if (res?.code === 0 && res.data) {
+  if (res?.code === 0) {
     data.value = res.data
-    console.log("載入的預訂資料:", res.data);
-  } else {
-    console.error("API 回傳錯誤:", res);
-    $q.notify({
-      type: 'negative', 
-      message: res?.message || '載入預訂資料失敗',
-      position: 'top'
-    });
   }
 })
 
@@ -304,18 +267,6 @@ const $q = useQuasar();
 const formRef = ref();
 const onSubmit = () => {
   $q.loading.show();
-  
-  // 檢查 data 是否已載入且包含 book_code
-  if (!data.value || !data.value.book_code) {
-    $q.loading.hide();
-    $q.notify({
-      type: 'negative',
-      message: '預訂資料載入失敗，請重新整理頁面後再試',
-      position: 'top'
-    });
-    return;
-  }
-  
   formRef.value.validate().then(async success => {
     if (success) {
       const [err, res] = await to(createHotelOrder({
@@ -337,33 +288,7 @@ const onSubmit = () => {
         },
         is_booking_for_other: false
       }));
-      
-      if (err) {
-        console.error("預訂提交錯誤:", err);
-        $q.notify({
-          type: 'negative',
-          message: '提交預訂失敗，請稍後再試',
-          position: 'top'
-        });
-        $q.loading.hide();
-        return;
-      }
-      
-      if (res?.code === 0 && res.data?.order_id) {
-        $q.notify({
-          type: 'positive',
-          message: '預訂成功',
-          position: 'top'
-        });
-        router.push({ name: "HotelOrderDetail", params: { orderNumber: res.data.order_id } });
-      } else {
-        console.error("預訂API回傳錯誤:", res);
-        $q.notify({
-          type: 'negative',
-          message: res?.message || '預訂失敗，請稍後再試',
-          position: 'top'
-        });
-      }
+      router.push({ name: "HotelOrderDetail", params: { orderNumber: res.data.order_id } });
     } else {
       const errorEl = document.querySelector('.q-field--error');
       window.scrollTo({
