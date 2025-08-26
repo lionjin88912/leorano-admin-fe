@@ -31,9 +31,9 @@
               <div class="text-bold">取消資訊</div>
               <div class="q-mt-sm">
                 <div class="row q-col-gutter-sm">
-                  <q-input v-model="model.deleted_at" label="取消時間" mask="####-##-##" class="col-4" :disable="isClose" dense outlined readonly />
-                  <q-input v-model="model.cancel_confirm_code" label="取消編號" class="col-4" :disable="isClose" dense outlined />
-                  <InputCurrencyPrice v-model="model.cancel_price" label="退款金額" class="col-4" :disable="isClose" />
+                  <q-input v-model="model.deleted_at" label="取消時間" mask="####-##-##" class="col-6 col-sm-4" :disable="isClose" dense outlined readonly />
+                  <q-input v-model="model.cancel_confirm_code" label="取消編號" class="col-6 col-sm-4" :disable="isClose" dense outlined />
+                  <InputCurrencyPrice v-model="model.cancel_price" label="退款金額" class="col-6 col-sm-4" :disable="isClose" />
                   <q-input type="textarea" v-model="model.cancel_reason" label="取消原因" class="col-12" :disable="isClose" dense outlined autogrow />
                 </div>
               </div>
@@ -48,29 +48,29 @@
                   </div>
                 </template>
               </q-input>
-              <q-input v-if="!isNewOrder" v-model="model.created_at" label="訂單日期" mask="####-##-##" class="col-4" dense outlined readonly />
-              <q-input v-if="!isNewOrder" v-model="model.order_number" label="訂單編號" class="col-4" dense outlined readonly />
-              <q-select v-if="!isNewOrder" v-model="model.status" :options="orderStatusOptions" label="訂單狀態" class="col-4" :disable="isClose" emit-value map-options dense outlined>
+              <q-input v-if="!isNewOrder" v-model="model.created_at" label="訂單日期" mask="####-##-##" class="col-6 col-sm-4" dense outlined readonly />
+              <q-input v-if="!isNewOrder" v-model="model.order_number" label="訂單編號" class="col-6 col-sm-4" dense outlined readonly />
+              <q-select v-if="!isNewOrder" v-model="model.status" :options="orderStatusOptions" label="訂單狀態" class="col-6 col-sm-4" :disable="isClose" emit-value map-options dense outlined>
                 <template v-slot:selected-item="scope">
                   <div :class="`text-${scope.opt.color}`">{{ scope.opt.label }}</div>
                 </template>
               </q-select>
-              <q-select v-model="model.type" :options="orderTypeOptions" label="訂單類型" class="col-4" @update:model-value="changeOrderType" :disable="isClose" emit-value map-options dense outlined />
-              <q-input v-model="model.booking_confirm_code" label="確認編號" class="col-4" :disable="isClose" dense outlined />
+              <q-select v-model="model.type" :options="orderTypeOptions" label="訂單類型" class="col-6 col-sm-4" @update:model-value="changeOrderType" :disable="isClose" emit-value map-options dense outlined />
+              <q-input v-model="model.booking_confirm_code" label="確認編號" class="col-6 col-sm-4" :disable="isClose" dense outlined />
             </div>
             <div class="text-bold q-mt-md q-mb-sm">訂單金額</div>
             <div class="row q-col-gutter-sm">
-              <InputCurrencyPrice v-model:currency="model.currency" v-model:price="model.price" label="原幣" class="col-4" :disable="isClose" />
-              <InputCurrencyPrice v-model:price="model.usd_price" label="美金" class="col-4" :disable="isClose" currencyReadonly />
+              <InputCurrencyPrice v-model:currency="model.currency" v-model:price="model.price" label="原幣" class="col-6 col-sm-4" :disable="isClose" />
+              <InputCurrencyPrice v-model:price="model.usd_price" label="美金" class="col-6 col-sm-4" :disable="isClose" currencyReadonly />
             </div>
             <div class="text-bold q-mt-md q-mb-sm">旅客行程</div>
             <div class="row q-col-gutter-sm">
-              <q-select v-if="!isNewOrder" v-model="model.schedule_status" :options="orderScheduleStatusOptions" label="狀態" class="col-4" :disable="isClose" emit-value map-options dense outlined>
+              <q-select v-if="!isNewOrder" v-model="model.schedule_status" :options="orderScheduleStatusOptions" label="狀態" class="col-6 col-sm-4" :disable="isClose" emit-value map-options dense outlined>
                 <template v-slot:selected-item="scope">
                   <div :class="`text-${scope.opt.color}`">{{ scope.opt.label }}</div>
                 </template>
               </q-select>
-              <q-field class="col-4 cursor-pointer" label="使用日期" :stack-label="duration.from ? true : false" outlined dense>
+              <q-field class="col-6 col-sm-4 cursor-pointer" label="使用日期" :stack-label="duration.from ? true : false" outlined dense>
                 <template #default>
                   <DatePicker :date="duration" :range="true" @updated="(val) => {duration.from = val.from; duration.to = val.to}">
                   </DatePicker>
@@ -79,7 +79,7 @@
                   {{ duration.from }}
                 </template>
               </q-field>
-              <q-field class="col-4 cursor-pointer" label="結束日期" :stack-label="duration.from ? true : false" outlined dense>
+              <q-field class="col-6 col-sm-4 cursor-pointer" label="結束日期" :stack-label="duration.from ? true : false" outlined dense>
                 <template #default>
                   <DatePicker :date="duration" :range="true" @updated="(val) => {duration.from = val.from; duration.to = val.to}">
                   </DatePicker>
@@ -93,45 +93,41 @@
         </InfoRow>
         <InfoRow ref="profitSectionRef" title="利潤" class="scroll-margin">
           <div class="q-mt-md q-mb-lg">
-            <div class="text-bold q-mt-md q-mb-sm">實際利潤</div>
+            <div class="flex items-center justify-between q-mt-md q-mb-sm">
+              <div class="text-bold">實際利潤</div>
+              <div class="flex items-center q-gutter-sm">
+                <q-toggle v-if="!isClose" 
+                          v-model="autoCalculateMode" 
+                          label="自動同步" 
+                          color="primary" 
+                          size="sm" />
+              </div>
+            </div>
             <div class="row q-col-gutter-sm">
-              <InputCurrencyPrice v-model="model.final_profit" label="利潤" class="col-4" :rules="rules.profit" :disable="isClose" />
+              <InputCurrencyPrice v-model:currency="finalProfitCurrency" 
+                                  v-model:price="finalProfitAmount"
+                                  label="利潤" 
+                                  class="col-4" 
+                                  :rules="rules.profit" 
+                                  :disable="isClose || autoCalculateMode" />
+              <div class="col-8 flex items-center">
+                <div class="text-grey-6 q-ml-md">
+                  收入/支出小計：{{ getNumberFormat(financeSum) }} USD
+                  <span v-if="autoCalculateMode" class="text-primary q-ml-sm">(自動同步)</span>
+                </div>
+              </div>
             </div>
           </div>
         </InfoRow>
         <InfoRow ref="financeSectionRef" title="收入/支出" class="scroll-margin">
-          <div class="finance-list text-bold flex q-col-gutter-sm q-mb-sm q-mt-none">
-            <div class="item-badge">項目</div>
-            <div class="col">名稱 <span class="text-negative">*</span></div>
-            <div class="item-price">金額</div>
-            <div class="item-rate">匯率 <span class="text-negative">*</span></div>
-            <div class="item-text">金額 USD</div>
-            <div v-if="!isClose" class="item-delete text-center">刪除</div>
-          </div>
-          <div v-for="(finance, index) in model.finance" :key="index" class="finance-list flex items-start no-wrap q-col-gutter-x-sm q-mb-sm">
-            <q-select v-model="finance.type" :options="customizedOrderFinanceOptions" class="item-badge" :disable="isClose" emit-value map-options dense outlined>
-              <template v-slot:selected-item="scope">
-                <q-badge :color="scope.opt.color" class="q-mr-xs" outline>
-                  {{ scope.opt.label }}
-                </q-badge>
-              </template>
-            </q-select>
-            <q-input v-model="finance.title" class="col" :rules="rules.required" :disable="isClose" dense outlined />
-            <InputCurrencyPrice v-model:currency="finance.currency" v-model:price="finance.amount" class="item-price" @update:currency="changeCurrency(finance)" :rules="rules.finance_amount" :disable="isClose" />
-            <q-input v-model="finance.exchange_rate" class="item-rate" :rules="rules.exchange_rate" :disable="isClose" dense outlined />
-            <q-input v-model="financeUSD[index]" class="item-text" :disable="isClose" dense outlined readonly />
-            <div v-if="!isClose" class="item-delete text-center">
-              <q-btn icon="delete" color="negative" class="full-height" @click="deleteFinance(index)" flat />
-            </div>
-          </div>
-          <q-separator />
-          <div class="finance-list text-bold flex items-center q-col-gutter-x-sm q-mt-sm">
-            <div class="col text-right">小計</div>
-            <div class="item-text text-h6 text-right">{{ getNumberFormat(financeSum) }}</div>
-            <div v-if="!isClose" class="item-delete"></div>
-          </div>
-          <div v-if="!isClose" class="q-my-md row justify-center">
-            <q-btn label="新增收入/支出" color="primary" @click="addFinance" outline />
+          <FinanceList v-model="model.finance" :disable="isClose" />
+        </InfoRow>
+        <InfoRow ref="memberSectionRef" title="訂購人" class="scroll-margin">
+          <template v-slot:caption>
+            <span class="text-negative q-ml-xs">*</span>
+          </template>
+          <div class="q-my-md">
+            <UserSelector v-model="model.member" label="訂購人" :required="true" :disable="isClose" />
           </div>
         </InfoRow>
         <InfoRow ref="attachedSectionRef" title="附件" class="scroll-margin">
@@ -217,21 +213,6 @@
           </div>
         </q-card-section>
       </q-card>
-      <q-card v-if="0" class="q-mt-md" flat bordered>
-        <q-card-section class="bg-grey-2">
-          <div class="text-subtitle1 text-bold">支單</div>
-        </q-card-section>
-        <q-card-section>
-          <div v-for="payment in payments" :key="payment.index" class="flex justify-between items-center q-py-xs">
-            <div class="q-mt-xs">
-              <span class="text-bold text-grey-9 q-mr-sm">{{ payment.title }}</span>
-              <span class="text-grey-7"> USD {{ financeUSD[payment.index] }}</span>
-            </div>
-            <router-link v-if="financeUSD[payment.index] == 300" :to="`/accounting/payment/${202500001}`" class="text-primary">202500001</router-link>
-            <q-badge v-else label="產生支單" class="q-py-xs cursor-pointer q-ml-sm" />
-          </div>
-        </q-card-section>
-      </q-card>
       <q-card class="q-mt-md" flat bordered>
         <q-card-section class="bg-grey-2">
           <div class="flex items-center justify-between">
@@ -303,7 +284,7 @@
 import { useQuasar } from 'quasar';
 import { ref, reactive, watch, onMounted, computed, toValue } from 'vue'
 import { router } from 'src/router';
-import { orderStatusOptions, orderBookingWayOptions, orderTypeOptions, orderScheduleStatusOptions, defaultQuestions, customizedOrderFinanceOptions} from '../enums';
+import { orderStatusOptions, orderBookingWayOptions, orderTypeOptions, orderScheduleStatusOptions, defaultQuestions, financeOptions} from '../enums';
 import { getCustomizedOrder, createCustomizedOrder, updateCustomizedOrder, deleteCustomizedOrder, closeCustomizedOrder, RequestUploadAttachedFile, RequestFile, createCustomizedReward, sendCustomizedReward, deleteCustomizedReward, createCustomizedCredit, sendCustomizedCredit, deleteCustomizedCredit, getCustomizedOrderVoucher } from 'src/api';
 import { getDateString, getNumberFormat, GetLocalTime } from 'src/utils/helpers';
 import { isEmpty, isNumberDigit, messages } from 'src/utils/validators';
@@ -321,7 +302,8 @@ import uploader from 'components/uploader.vue';
 import Alert from 'src/components/dialog/Alert.vue'
 import Confirm from 'src/components/dialog/Confirm.vue'
 import CancelOrderDialog from '../components/CancelOrderDialog.vue';
-import FinanceDialog from '../components/FinanceDialog.vue';
+import FinanceList from '../components/FinanceList.vue';
+import PaymentCard from '../components/PaymentCard.vue';
 import AddRewardDialog from '../components/AddRewardDialog.vue';
 import AddCreditDialog from '../components/AddCreditDialog.vue';
 import axios from 'axios'
@@ -333,6 +315,7 @@ let route = useRoute();
 
 const orderId = Number(route.params.orderNumber);
 const isNewOrder = ref(true);
+const autoCalculateMode = ref(true);
 
 const filter = reactive({
   member_id: 0
@@ -401,7 +384,7 @@ const model = ref<Order>({
   currency: 'USD',
 	deleted_at: null,
   end_date: '',
-  final_profit: '',
+  final_profit: 'USD',
 	finance: [],
   id: null,
   member: {
@@ -496,7 +479,7 @@ onMounted(async () => {
 			model.value = order;
 			setDuration();
 			isNewOrder.value = false;
-			meta.parentPath = `/orders/booking/${model.value.parent}`;
+			meta.parentPath = `/orders/booking/${model.value.parent}/main`;
 			meta.parentTitle = model.value.parent;
 		}
 	}
@@ -703,6 +686,42 @@ const financeSum = computed(() => {
 });
 /* 訂單收入支出表格 End */
 
+/* 自動計算利潤 Start */
+// 處理利潤的貨幣和金額分離
+const finalProfitCurrency = computed({
+  get: () => model.value.final_profit ? model.value.final_profit.slice(0, 3) : 'USD',
+  set: (val) => {
+    const amount = finalProfitAmount.value || '';
+    model.value.final_profit = val + amount;
+  }
+});
+
+const finalProfitAmount = computed({
+  get: () => model.value.final_profit ? model.value.final_profit.slice(3) : '',
+  set: (val) => {
+    const currency = finalProfitCurrency.value || 'USD';
+    model.value.final_profit = currency + val;
+  }
+});
+
+// 監聽自動計算模式和 finance 變化
+watch([autoCalculateMode, () => model.value.finance], ([autoMode], [oldAutoMode]) => {
+  if (autoMode) {
+    // 四捨五入到小數點後2位，避免浮點數精度問題
+    const roundedAmount = Math.round(financeSum.value * 100) / 100;
+    finalProfitAmount.value = roundedAmount.toString();
+    // 當模式剛被開啟時，顯示提示
+    if (!oldAutoMode) {
+      $q.notify({
+        type: 'info',
+        message: '已開啟自動計算模式，利潤將自動同步收入/支出小計',
+        position: 'top'
+      });
+    }
+  }
+}, { deep: true });
+/* 自動計算利潤 End */
+
 /* 支單列表 Start */
 const payments = computed(() => {
   return model.value.finance.map((d, index) => ({
@@ -755,9 +774,9 @@ const addOrder = async () => {
 	$q.loading.hide();
 }
 const saveOrder = async () => {
-	$q.loading.show();
 	let valid = await validate();
 	if (valid) {
+	  $q.loading.show();
 		const [err, res]: [any, any] = await to(updateCustomizedOrder(orderId, {
       attached: model.value.attached,
       booking_confirm_code: model.value.booking_confirm_code,
@@ -776,13 +795,17 @@ const saveOrder = async () => {
       usd_price: model.value.usd_price,
       voucher_number: model.value.voucher
     }));
-	} else {
-		window.scrollTo({
-			top: 0,
-			behavior: 'smooth'
-		});
+	  $q.loading.hide();
+    if (err) {
+      console.error('save order error:', err);
+      return;
+    }
+    let order = await getData();
+    if (order) {
+      model.value = order;
+      setDuration();
+    }
 	}
-	$q.loading.hide();
 }
 /* 新增/編輯訂單 End */
 
@@ -940,23 +963,6 @@ const onDeleteCreditConfirm = async (data:object) => {
 /* Credits End */
 </script>
 <style lang="scss" scoped>
-.finance-list {
-  .item-badge {
-    width: 100px;
-  }
-  .item-price {
-    width: 180px;
-  }
-  .item-rate {
-    width: 100px;
-  }
-  .item-text {
-    width: 90px;
-  }
-  .item-delete {
-    width: 60px;
-  }
-}
 .point-list {
   .point-add-info {
     font-size: 0.8rem;

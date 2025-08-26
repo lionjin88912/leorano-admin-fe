@@ -65,7 +65,7 @@ const onFilter = (val, update, abort) => {
 
 <style lang="scss" scoped>
 .currency {
-  width: 85px;
+  width: 80px;
   &:deep(.q-field__control) {
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;

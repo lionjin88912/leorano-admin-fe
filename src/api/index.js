@@ -152,6 +152,47 @@ export const refundMemberOrder = (orderNumber, data) =>
   baseService.delete(`/order/membership/${orderNumber}/refund`, { data })
 // 訂單對帳管理
 export const getAccountingList = ({type, ...data}) => baseService.get(`/accounting/${type}`, { params: data })
+// 支單
+// export const getPaymentList = (data) => baseService.get('/payment', { params: data })
+export const getPaymentList = (data) => {
+  return new Promise((resolve, reject) => {
+    resolve({
+      code: 0,
+      msg: 'success',
+      data: [{
+        created_at: '2025-04-18T07:59:57.959Z',
+        expense_amount: 'USD 100.00',
+        is_paid: true,
+        order_id: 57,
+        order_number: 'C25032702474691',
+        paid_amount: 'USD 100.00',
+        paid_at: '2025-04-20T07:59:57.959Z',
+        parent: 'C25032702461510',
+        payment_number: '2504180002',
+        payment_title: '2025-01-10 訂金'
+      },
+      {
+        created_at: '2025-04-18T08:10:57.959Z',
+        expense_amount: 'USD 100.00',
+        is_paid: false,
+        order_id: 33,
+        order_number: 'H24112907185188-uat',
+        paid_amount: '',
+        paid_at: null,
+        parent: 'C25032702461510',
+        payment_number: '2504180003',
+        payment_title: '2025-01-10 頭款',
+      }],
+      paging: {
+        "limit": 10,
+        "page": 1,
+        "sort": "payment_number desc",
+        "total_rows": 2,
+        "total_pages": 1
+      }
+    })
+  })
+}
 // 報表
 export const getMonthGMV = (year, month) => baseService.get(`/report/monthGMV/${year}/${month}`)
 export const getGrossMargin = (year, month) => baseService.get(`/report/grossMargin/${year}/${month}`)

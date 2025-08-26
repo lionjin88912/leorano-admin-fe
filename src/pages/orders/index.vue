@@ -392,7 +392,7 @@ const changeParent = async (event) => {
 const goDetail = (order, type) => {
   switch (type) {
     case 'parent':
-      router.push({ name: 'OrderDetail', params: { orderNumber: order.order_number } });
+      router.push({ name: 'OrderDetail', params: { orderNumber: order.order_number, tab: 'main' } });
       break;
     case 'online':
       router.push({ name: 'HotelOrderDetail', params: { orderNumber: order.order_number } });
@@ -513,7 +513,7 @@ doSearch();
     min-width: 200px;
   }
   .filter-select {
-    min-width: 100px;
+    min-width: 120px;
   }
   .filter-keyword-type {
     :deep(.q-field__control) {
