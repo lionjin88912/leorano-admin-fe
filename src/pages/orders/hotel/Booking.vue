@@ -1,5 +1,4 @@
 <template>
-  <!-- 酒店預訂表單頁面 -->
   <div class="q-gutter-y-md">
     <BreadCrumbs class="q-pb-md"></BreadCrumbs>
     
