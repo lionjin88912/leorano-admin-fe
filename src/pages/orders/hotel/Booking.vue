@@ -1,47 +1,58 @@
 <template>
   <div class="q-gutter-y-md">
     <BreadCrumbs class="q-pb-md"></BreadCrumbs>
-    <div v-if="Object.keys(bookingStore.state).length > 0" class="row q-col-gutter-xl">
+    <!-- 載入狀態 -->
+    <div v-if="loading" class="q-pa-md text-center">
+      <q-spinner size="50px" />
+      <div class="q-mt-md">載入飯店詳情...</div>
+    </div>
+    <!-- 錯誤狀態 -->
+    <div v-else-if="error" class="q-pa-md text-center">
+      <q-icon name="error" size="50px" color="negative" />
+      <div class="q-mt-md text-negative">{{ error }}</div>
+    </div>
+    <!-- 正常顯示狀態 -->
+    <div v-else-if="Object.keys(bookingStore.state).length > 0 && bookingStore.state.hotel" class="row q-col-gutter-xl">
       <div class="col-12 col-md-6">
         <InfoRow title="訂房資訊">
           <div class="info-field">
             <div class="info-field-label">酒店</div>
-            <div class="info-field-text">{{ bookingStore.state.hotel.display_name }}</div>
+            <div class="info-field-text">{{ bookingStore.state.hotel?.display_name || 'Unknown Hotel' }}</div>
           </div>
           <div class="info-field">
             <div class="info-field-label">房型</div>
             <div class="info-field-text">
-              <p>{{ bookingStore.state.room.room_name }}</p>
+              <p>{{ bookingStore.state.room?.room_name || 'Unknown Room' }}</p>
               <ul class="info-field-list">
-                <li v-for="(tag, index) in bookingStore.state.room.tags" :key="`room_${index}`">{{ tag.display_note }}</li>
+                <li v-for="(tag, index) in (bookingStore.state.room?.tags || [])" :key="`room_${index}`">{{ tag.display_note }}</li>
               </ul>
             </div>
           </div>
           <div class="info-field">
             <div class="info-field-label">方案</div>
             <div class="info-field-text">
-              <p>{{ bookingStore.state.plan.display_name }}</p>
+              <p>{{ bookingStore.state.plan?.display_name || 'Unknown Plan' }}</p>
               <ul class="info-field-list">
-                <li v-for="(tag, index) in bookingStore.state.plan.tags" :key="`plan_${index}`">{{ tag.display_note }}</li>
+                <li v-for="(tag, index) in (bookingStore.state.plan?.tags || [])" :key="`plan_${index}`">{{ tag.display_note }}</li>
               </ul>
             </div>
           </div>
           <div class="info-field">
             <div class="info-field-label">入住日期</div>
-            <div class="info-field-text">{{ bookingStore.state.checkinDuration.from }} ~ {{ bookingStore.state.checkinDuration.to }} ({{ bookingDays }} 晚)</div>
+            <div class="info-field-text">{{ bookingStore.state.checkinDuration?.from || '' }} ~ {{ bookingStore.state.checkinDuration?.to || '' }} ({{ bookingDays }} 晚)</div>
           </div>
           <div class="info-field">
             <div class="info-field-label">入住人數</div>
             <div class="info-field-text">
-              <span>{{ bookingStore.state.adults }} 大人</span>
-              <span v-if="bookingStore.state.kids > 0">、{{ bookingStore.state.kids }} 小孩 ({{ kidsAge }})</span>
+              <span>{{ bookingStore.state.adults || 0 }} 大人</span>
+              <span v-if="(bookingStore.state.kids || 0) > 0">、{{ bookingStore.state.kids }} 小孩 ({{ kidsAge }})</span>
             </div>
           </div>
         </InfoRow>
       </div>
       <div class="daily-price col-12 col-md-6">
         <InfoRow title="每日房價">
-          <div class="info-field" v-for="daily in bookingStore.state.plan.daily_rate" :key="daily.date">
+          <div class="info-field" v-for="daily in (bookingStore.state.plan?.daily_rate || [])" :key="daily.date">
             <div class="info-field-label">{{ getDateStringNoTz(daily.date, 'MM DD, YYYY') }}</div>
             <div class="info-field-text flex q-pl-sm">
               <div class="currency q-pr-xs">
@@ -57,10 +68,10 @@
             <div class="info-field-label">稅金與費用</div>
             <div class="info-field-text flex q-pl-sm">
               <div class="currency q-pr-xs">
-                {{ bookingStore.state.plan.tax ? getPriceText(bookingStore.state.plan.tax).currency : 'TWD' }}
+                {{ bookingStore.state.plan?.tax ? getPriceText(bookingStore.state.plan.tax).currency : 'TWD' }}
               </div>
               <div class="price">
-                ${{ bookingStore.state.plan.tax ? getNumberFormat(getPriceText(bookingStore.state.plan.tax).price) : 0 }}
+                ${{ bookingStore.state.plan?.tax ? getNumberFormat(getPriceText(bookingStore.state.plan.tax).price) : 0 }}
               </div>
             </div>
           </div>
@@ -68,10 +79,10 @@
             <div class="info-field-label">總金額</div>
             <div class="info-field-text flex q-pl-sm">
               <div class="currency q-pr-xs">
-                {{ getPriceText(bookingStore.state.plan.local_total_price).currency }}
+                {{ bookingStore.state.plan?.local_total_price ? getPriceText(bookingStore.state.plan.local_total_price).currency : 'TWD' }}
               </div>
               <div class="price">
-                ${{ getNumberFormat(getPriceText(bookingStore.state.plan.local_total_price).price) }}
+                ${{ bookingStore.state.plan?.local_total_price ? getNumberFormat(getPriceText(bookingStore.state.plan.local_total_price).price) : 0 }}
               </div>
             </div>
           </div>
@@ -79,10 +90,10 @@
             <div class="info-field-label">參考貨幣</div>
             <div class="info-field-text flex q-pl-sm">
               <div class="currency q-pr-xs">
-                {{ getPriceText(bookingStore.state.plan.total_price).currency }}
+                {{ bookingStore.state.plan?.total_price ? getPriceText(bookingStore.state.plan.total_price).currency : 'USD' }}
               </div>
               <div class="price">
-                ${{ getNumberFormat(getPriceText(bookingStore.state.plan.total_price).price) }}
+                ${{ bookingStore.state.plan?.total_price ? getNumberFormat(getPriceText(bookingStore.state.plan.total_price).price) : 0 }}
               </div>
             </div>
           </div>
@@ -92,9 +103,9 @@
     <InfoRow title="其他資訊">
       <div class="info-field">
         <div class="info-field-label">取消期限</div>
-        <div class="info-field-text">{{ getDateStringNoTz(bookingStore.state.plan.cancel_info.deadline, 'HH:mm MM DD, YYYY') }}</div>
+        <div class="info-field-text">{{ bookingStore.state.plan?.cancel_info?.deadline ? getDateStringNoTz(bookingStore.state.plan.cancel_info.deadline, 'HH:mm MM DD, YYYY') : 'N/A' }}</div>
       </div>
-      <div v-if="data && data.original_texts.length > 0" class="info-field">
+      <div v-if="data && data.original_texts && data.original_texts.length > 0" class="info-field">
         <div class="info-field-label">原始方案資訊</div>
         <div class="info-field-text">
           <div class="cursor-pointer q-gutter-x-xs" @click="isShowOriginalPlanInfo = !isShowOriginalPlanInfo">
@@ -116,7 +127,9 @@
         </div>
       </div>
     </InfoRow>
-    <q-form ref="formRef" class="q-gutter-y-md">
+    <!-- 載入、錯誤或無資料時不顯示表單 -->
+    <div v-if="!loading && !error && Object.keys(bookingStore.state).length > 0 && bookingStore.state.hotel">
+      <q-form ref="formRef" class="q-gutter-y-md">
       <InfoRow title="入住人資訊">
         <div class="q-mt-md">
           <div class="row q-col-gutter-md">
@@ -157,6 +170,12 @@
         <q-btn label="預定" color="primary" class="q-px-lg" @click="onSubmit" />
       </div>
     </q-form>
+    </div>
+    <!-- 無資料狀態 -->
+    <div v-else-if="!loading && !error" class="q-pa-md text-center">
+      <q-icon name="info" size="50px" color="info" />
+      <div class="q-mt-md">沒有可用的飯店資料</div>
+    </div>
   </div>
 </template>
 
@@ -177,18 +196,27 @@ import to from 'await-to-js'
 
 const bookingDays = computed(() => {
   // 用 checkinDuration.from 和 checkinDuration.to 計算出總天數
+  if (!bookingStore.state.checkinDuration?.from || !bookingStore.state.checkinDuration?.to) {
+    return 0;
+  }
   const from = new Date(bookingStore.state.checkinDuration.from)
   const to = new Date(bookingStore.state.checkinDuration.to)
   const diffTime = Math.abs(to - from)
   return Math.floor(diffTime / (1000 * 60 * 60 * 24))
 })
 const kidsAge = computed(() => {
+  if (!bookingStore.state.kidsAge || bookingStore.state.kidsAge.length === 0) {
+    return '';
+  }
   return bookingStore.state.kidsAge.map(age => `${age}歲`).join('、')
 })
 
 const data = ref(null)
+const loading = ref(false)
+const error = ref('')
 const bookingStore = useBookingStore()
 const isShowOriginalPlanInfo = ref(false);
+
 onBeforeMount(() => {
   if (Object.keys(bookingStore.state).length === 0) {
     router.back();
@@ -197,18 +225,57 @@ onBeforeMount(() => {
 
 onMounted(async () => {
   console.log("bookingStore.state", bookingStore.state);
-  const { res } = await to(getHotelSearchPlan(bookingStore.state.hotelName.id, {
-    from: bookingStore.state.checkinDuration.from,
-    to: bookingStore.state.checkinDuration.to,
-    num_of_adults: bookingStore.state.adults,
-    children: bookingStore.state.kidsAge,
-    plan_code: bookingStore.state.plan.plan_code,
-    currency: 'TWD',
-    lang: 'zh-TW',
-    notify: 0
-  }))
-  if (res?.code === 0) {
-    data.value = res.data
+  
+  // 檢查必要的資料是否存在
+  if (!bookingStore.state.hotelName?.id) {
+    error.value = '缺少飯店資訊，無法載入詳細資料';
+    return;
+  }
+  
+  try {
+    loading.value = true;
+    error.value = '';
+    
+    const [err, res] = await to(getHotelSearchPlan(bookingStore.state.hotelName.id, {
+      from: bookingStore.state.checkinDuration?.from,
+      to: bookingStore.state.checkinDuration?.to,
+      num_of_adults: bookingStore.state.adults || 1,
+      children: bookingStore.state.kidsAge || [],
+      plan_code: bookingStore.state.plan?.plan_code,
+      currency: 'TWD',
+      lang: 'zh-TW',
+      notify: 0
+    }));
+    
+    if (err) {
+      console.error('API 調用失敗:', err);
+      error.value = '無法載入飯店詳細資料，請稍後再試';
+      return;
+    }
+    
+    if (res?.code === 0 && res.data) {
+      data.value = res.data;
+      // 更新 bookingStore 中的資料以確保一致性
+      if (res.data.hotel) {
+        bookingStore.state.hotel = { 
+          ...bookingStore.state.hotel, 
+          ...res.data.hotel 
+        };
+      }
+      if (res.data.plan) {
+        bookingStore.state.plan = { 
+          ...bookingStore.state.plan, 
+          ...res.data.plan 
+        };
+      }
+    } else {
+      error.value = res?.message || '資料格式不正確';
+    }
+  } catch (apiError) {
+    console.error('API 調用異常:', apiError);
+    error.value = '載入過程中發生錯誤，請稍後再試';
+  } finally {
+    loading.value = false;
   }
 })
 
@@ -258,6 +325,12 @@ const rules = computed(() => {
 });
 
 const getPriceText = priceStr => {
+  if (!priceStr || typeof priceStr !== 'string' || priceStr.length < 4) {
+    return {
+      currency: 'TWD',
+      price: '0'
+    };
+  }
   return {
     currency: priceStr.slice(0, 3),
     price: priceStr.slice(3)
