@@ -64,6 +64,7 @@
 <script setup>
 import { useQuasar } from 'quasar';
 import { ref, computed, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 import { useMetaStore } from "src/stores/meta";
 import { getOrderParent, updateOrderParent } from 'src/api'
 import { isEmpty, isNumberDigit, messages } from 'src/utils/validators';
@@ -71,8 +72,10 @@ import { financeOptions, financeCateOptions } from '../enums';
 import { getNumberFormat, GetLocalTime } from 'src/utils/helpers';
 import InputCurrencyPrice from 'src/components/InputCurrencyPrice.vue';
 import to from 'await-to-js';
+import _ from 'lodash';
 
 const $q = useQuasar();
+const router = useRouter();
 const props = defineProps({
   orderNumber: {
     type: String,
@@ -109,59 +112,16 @@ const getData = async () => {
     console.error("getOrderParent error:", err);
     return;
   }
-  res.data.finance = [
-      {
-        "id": 1,
-        "type": "revenue",
-        "cate": "other",
-        "order_number": "C25032702461510",
-        "title": "客人付款",
-        "amount": 10800,
-        "is_post": false,
-        "currency": "TWD",
-        "exchange_rate": 0.03,
-        "ticket_number": ""
-      },
-      {
-        "id": 2,
-        "type": "expense",
-        "cate": "other",
-        "order_number": "C25032702461510",
-        "title": "已付款",
-        "amount": 300,
-        "is_post": true,
-        "currency": "USD",
-        "exchange_rate": 1,
-        "ticket_number": "2504180002"
-      },
-      {
-        "id": 3,
-        "type": "expense",
-        "cate": "other",
-        "order_number": "C25032702474691",
-        "title": "已產生支單，未付款",
-        "amount": 1000.22,
-        "is_post": false,
-        "currency": "USD",
-        "exchange_rate": 1,
-        "ticket_number": "2504180003"
-      },
-      {
-        "id": 4,
-        "type": "expense",
-        "cate": "other",
-        "order_number": "C25032702461510",
-        "title": "未產生支單",
-        "amount": "",
-        "is_post": false,
-        "currency": "USD",
-        "exchange_rate": 1,
-        "ticket_number": ""
-      }
-    ]
+  
   model.value = res.data;
+  if (model.value.finance == null) {
+    model.value.finance = [];
+  }
   if (model.value.todo == null) {
     model.value.todo = [];
+  }
+  if (model.value.subs == null) {
+    model.value.subs = [];
   }
   $q.loading.hide();
 }
@@ -173,6 +133,7 @@ const saveOrder = async () => {
   $q.loading.show();
   const [err, res] = await to(updateOrderParent(model.value.order_number, {
     name: model.value.name,
+    finance: model.value.finance,
     subs: selectedSubOrder.value,
     todo: model.value.todo
   }));
@@ -184,7 +145,11 @@ const saveOrder = async () => {
 }
 
 /* 訂單選項 Start */
+const selectedSubOrder = computed(() => model.value?.subs?.map((d) => d.order_number) || []);
 const orderOptions = computed(() => {
+  if (!model.value || !model.value.subs) {
+    return [{ value: props.orderNumber, label: props.orderNumber }];
+  }
   return [
     { value: props.orderNumber, label: props.orderNumber },
     ...model.value.subs.map((d) => {
@@ -204,7 +169,7 @@ const addFinance = async () => {
     id: '',
     type: 'revenue',
     cate: 'other',
-    order: props.orderNumber,
+    order_number: props.orderNumber,
     title: '',
     currency: 'TWD',
     amount: '',
@@ -223,6 +188,7 @@ function deleteFinance (index) {
 
 // 換算美金
 const financeUSD = computed(() => {
+  if (!model.value?.finance) return [];
   return model.value.finance.map((d) => {
     return Number(d.amount) * Number(d.exchange_rate);
   });
@@ -230,6 +196,7 @@ const financeUSD = computed(() => {
 
 // 小計金額
 const financeSum = computed(() => {
+  if (!model.value?.finance) return 0;
   return model.value.finance.reduce((acc, cur) => {
     if (cur.type === 'revenue') {
       return acc + Number(cur.amount) * Number(cur.exchange_rate);
