@@ -484,33 +484,21 @@ const addPriceInfo = async (subOrder) => {
     
     if (!isCustomizedOrder) {
       // 酒店訂單：呼叫酒店訂單詳細 API
-      console.log('酒店訂單資料:', subOrder);
       const [err, res] = await to(getHotelOrder(subOrder.order_number));
       if (!err && res) {
         detailData = res.data || res;
-        console.log('酒店訂單詳細資料:', detailData);
-      } else {
-        console.log('酒店訂單 API 呼叫失敗:', err);
       }
     } else {
       // 客製訂單：使用數字 id 作為參數
-      console.log('客製訂單資料:', subOrder);
-      
       if (subOrder.id) {
-        console.log('使用 id 呼叫客製訂單 API:', subOrder.id);
         const [err, res] = await to(getCustomizedOrder(subOrder.id));
         if (!err && res) {
           detailData = res.data || res;
-          console.log('客製訂單詳細資料:', detailData);
           // 客製訂單使用 currency 和 price 欄位
           if (detailData && detailData.price && detailData.currency) {
             detailData.total_price = `${detailData.currency}${detailData.price}`;
           }
-        } else {
-          console.log('客製訂單 API 呼叫失敗:', err);
         }
-      } else {
-        console.log('客製訂單缺少 id 欄位');
       }
     }
 
@@ -518,9 +506,7 @@ const addPriceInfo = async (subOrder) => {
     if (detailData && detailData.total_price) {
       subOrder.total_price = detailData.total_price;
       subOrder.usd_total_price = await getUsdTotalPrice(subOrder);
-      console.log(`訂單 ${subOrder.order_number} 金額資訊更新:`, subOrder.total_price, subOrder.usd_total_price);
     } else {
-      console.log(`訂單 ${subOrder.order_number} 沒有金額資訊`);
       // 如果沒有金額資訊，設定空白值
       subOrder.total_price = '';
       subOrder.usd_total_price = '';
