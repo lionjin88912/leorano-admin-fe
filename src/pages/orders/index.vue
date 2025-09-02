@@ -511,11 +511,6 @@ const addPriceInfo = async (subOrder) => {
 
     // 如果成功獲取到詳細資料，更新訂單金額資訊
     if (detailData && detailData.total_price) {
-      }
-    }
-
-    // 如果成功獲取到詳細資料，更新訂單金額資訊
-    if (detailData && detailData.total_price) {
       subOrder.total_price = detailData.total_price;
       subOrder.usd_total_price = await getUsdTotalPrice(subOrder);
       console.log(`訂單 ${subOrder.order_number} 金額資訊更新:`, subOrder.total_price, subOrder.usd_total_price);
