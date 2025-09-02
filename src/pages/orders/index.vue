@@ -479,22 +479,27 @@ const addPriceInfo = async (subOrder) => {
     // 根據訂單類型呼叫相應的 API 獲取詳細資訊
     let detailData = null;
     
-    if (subOrder.type === 'hotel') {
+    // 根據訂單號判斷類型：C開頭是客製訂單，其他是酒店訂單
+    const isCustomizedOrder = subOrder.order_number && subOrder.order_number.startsWith('C');
+    
+    if (!isCustomizedOrder) {
       // 酒店訂單：呼叫酒店訂單詳細 API
+      console.log('酒店訂單資料:', subOrder);
       const [err, res] = await to(getHotelOrder(subOrder.order_number));
       if (!err && res) {
-        // 檢查回應結構，可能是 res.data 或直接是 res
         detailData = res.data || res;
+        console.log('酒店訂單詳細資料:', detailData);
+      } else {
+        console.log('酒店訂單 API 呼叫失敗:', err);
       }
-    } else if (subOrder.type === 'customized') {
-      // 客製訂單：使用數字 id 作為參數（根據 API 定義）
+    } else {
+      // 客製訂單：使用數字 id 作為參數
       console.log('客製訂單資料:', subOrder);
       
       if (subOrder.id) {
         console.log('使用 id 呼叫客製訂單 API:', subOrder.id);
         const [err, res] = await to(getCustomizedOrder(subOrder.id));
         if (!err && res) {
-          // 檢查回應結構，可能是 res.data 或直接是 res
           detailData = res.data || res;
           console.log('客製訂單詳細資料:', detailData);
           // 客製訂單使用 currency 和 price 欄位
