@@ -487,12 +487,22 @@ const addPriceInfo = async (subOrder) => {
         detailData = res.data || res;
       }
     } else if (subOrder.type === 'customized') {
-      // 客製訂單：呼叫客製訂單詳細 API
-      const [err, res] = await to(getCustomizedOrder(subOrder.id || subOrder.order_number));
+      // 客製訂單：先嘗試使用 order_number，再嘗試使用 id
+      console.log('客製訂單資料:', subOrder);
+      
+      let [err, res] = await to(getCustomizedOrder(subOrder.order_number));
+      
+      // 如果使用 order_number 失敗，且有 id，則嘗試使用 id
+      if (err && subOrder.id) {
+        console.log('使用 order_number 失敗，嘗試使用 id:', subOrder.id);
+        [err, res] = await to(getCustomizedOrder(subOrder.id));
+      }
+      
       if (!err && res) {
         // 檢查回應結構，可能是 res.data 或直接是 res
         detailData = res.data || res;
-        // 客製訂單的金額欄位可能叫 price 而不是 total_price
+        console.log('客製訂單詳細資料:', detailData);
+        // 客製訂單使用 currency 和 price 欄位
         if (detailData && detailData.price && detailData.currency) {
           detailData.total_price = `${detailData.currency}${detailData.price}`;
         }
@@ -503,7 +513,9 @@ const addPriceInfo = async (subOrder) => {
     if (detailData && detailData.total_price) {
       subOrder.total_price = detailData.total_price;
       subOrder.usd_total_price = await getUsdTotalPrice(subOrder);
+      console.log(`訂單 ${subOrder.order_number} 金額資訊更新:`, subOrder.total_price, subOrder.usd_total_price);
     } else {
+      console.log(`訂單 ${subOrder.order_number} 沒有金額資訊`);
       // 如果沒有金額資訊，設定空白值
       subOrder.total_price = '';
       subOrder.usd_total_price = '';
