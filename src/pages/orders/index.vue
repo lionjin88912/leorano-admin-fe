@@ -157,7 +157,7 @@
 import { useQuasar, SessionStorage } from 'quasar';
 import { ref, reactive, watch, computed } from 'vue'
 import { router } from 'src/router'
-import { getOrderList, changeOrderParent } from 'src/api'
+import { getOrderList, changeOrderParent, getHotelOrder, getCustomizedOrder } from 'src/api'
 import { orderColumns, subOrderColumns, orderBookingWayOptions, orderTypeOptions, orderStatusOptions, hotelOrderStatusOptions } from './enums';
 import DatePicker from 'src/components/DatePicker.vue'
 import BreadCrumbs from 'src/components/BreadCrumbs.vue';
@@ -329,13 +329,24 @@ const doExcelExport = async () => {
   $q.loading.show({ message: "導出Excel資料" });
   let datas = [];
   await loadExportData(datas, 1);
+  
+  // 為每個子訂單添加金額資訊
+  const flatSubOrders = datas.map(d => d.subs).flat();
+  console.log('準備處理訂單數量:', flatSubOrders.length);
+  
+  for (let i = 0; i < flatSubOrders.length; i++) {
+    const subOrder = flatSubOrders[i];
+    console.log(`處理訂單 ${i + 1}/${flatSubOrders.length}: ${subOrder.order_number} (${subOrder.type})`);
+    await addPriceInfo(subOrder);
+  }
+  
   $q.loading.hide();
 
   // 整理資料
   const headers = [
     "訂單日期", "訂單類型", "訂單名稱", "預定方式", "訂單編號",
-    "確認編號", "取消編號", "憑證編號", "開始時間", "結束時間", "訂單狀態", "訂購人",
-    "訂購人Email"
+    "確認編號", "取消編號", "憑證編號", "開始時間", "結束時間", "訂單狀態",
+    "訂單金額(原幣)", "訂單金額", "訂購人", "訂購人Email"
   ]
   let excelDatas = datas.map(d => d.subs).flat().map(d => {
     return [
@@ -346,10 +357,12 @@ const doExcelExport = async () => {
       d.order_number,
       (d.booking_confirm_code || []).join(','),
       (d.cancel_confirm_code || []).join(','),
-      d.voucher,
+      d.voucher || '',
       getDateStringNoTz(d.start_date, 'YYYY-MM-DD'),
       getDateStringNoTz(d.end_date, 'YYYY-MM-DD'),
       hotelOrderStatusOptions.find(s => s.value === d.status.toLowerCase())?.label,
+      d.total_price ? `${d.total_price.slice(0, 3)} ${getNumberFormat(d.total_price.slice(3))}` : '',
+      d.usd_total_price || '',
       `${d.user.first_name} ${d.user.last_name}`,
       d.user.email
     ]
@@ -359,7 +372,7 @@ const doExcelExport = async () => {
   const wsCols = [
     { wpx: 120 }, { wpx: 120 }, { wpx: 120 }, { wpx: 80 }, { wpx: 100 },
     { wpx: 160 }, { wpx: 80 }, { wpx: 80 }, { wpx: 100 }, { wpx: 100 }, { wpx: 120 },
-    { wpx: 200 },
+    { wpx: 120 }, { wpx: 120 }, { wpx: 120 }, { wpx: 200 },
   ]
   ws['!cols'] = wsCols;
   ws['!rows'] = excelDatas.map(d => { return { hpx: 20 } });
@@ -452,6 +465,55 @@ const getUsdTotalPrice = async (row) => {
   const rate = await metaStore.getExchangeRate(origCurrency, targetCurrency)
   const targetPrice = _.round(amount * rate, 2)
   return `${targetCurrency} ${getNumberFormat(targetPrice)}`
+}
+
+// 根據訂單類型獲取金額資訊
+const addPriceInfo = async (subOrder) => {
+  try {
+    // 如果已經有 total_price，直接計算美金金額
+    if (subOrder.total_price) {
+      subOrder.usd_total_price = await getUsdTotalPrice(subOrder);
+      return;
+    }
+
+    // 根據訂單類型呼叫相應的 API 獲取詳細資訊
+    let detailData = null;
+    
+    if (subOrder.type === 'hotel') {
+      // 酒店訂單：呼叫酒店訂單詳細 API
+      const [err, res] = await to(getHotelOrder(subOrder.order_number));
+      if (!err && res) {
+        // 檢查回應結構，可能是 res.data 或直接是 res
+        detailData = res.data || res;
+      }
+    } else if (subOrder.type === 'customized') {
+      // 客製訂單：呼叫客製訂單詳細 API
+      const [err, res] = await to(getCustomizedOrder(subOrder.id || subOrder.order_number));
+      if (!err && res) {
+        // 檢查回應結構，可能是 res.data 或直接是 res
+        detailData = res.data || res;
+        // 客製訂單的金額欄位可能叫 price 而不是 total_price
+        if (detailData && detailData.price && detailData.currency) {
+          detailData.total_price = `${detailData.currency}${detailData.price}`;
+        }
+      }
+    }
+
+    // 如果成功獲取到詳細資料，更新訂單金額資訊
+    if (detailData && detailData.total_price) {
+      subOrder.total_price = detailData.total_price;
+      subOrder.usd_total_price = await getUsdTotalPrice(subOrder);
+    } else {
+      // 如果沒有金額資訊，設定空白值
+      subOrder.total_price = '';
+      subOrder.usd_total_price = '';
+    }
+  } catch (error) {
+    console.warn(`無法獲取訂單 ${subOrder.order_number} 的金額資訊:`, error);
+    // 設定預設值避免匯出時出現 undefined
+    subOrder.total_price = '';
+    subOrder.usd_total_price = '';
+  }
 }
 
 watch(filter, (newVal) => {
