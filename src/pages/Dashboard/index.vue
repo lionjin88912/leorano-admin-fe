@@ -2,7 +2,14 @@
   <div>
     <p class="q-mb-md">昨日會員新增人數：<span class="text-h6">{{ getNumberFormat(yesterDayMember) }}</span> 人</p>
     <h6 class="q-mb-sm">近 7 天入住酒店訂單</h6>
-    <q-table :rows="hotelOrderList" :columns="columns" :pagination="pagination" :rows-per-page-options="pagination.perPage" class="data-table">
+    <q-table 
+      :rows="hotelOrderList" 
+      :columns="columns" 
+      :pagination="pagination" 
+      :rows-per-page-options="pagination.perPage" 
+      class="data-table"
+      binary-state-sort
+      no-data-label="無訂單資料">
       <template v-slot:body-cell-order_number="props">
         <q-td class="link" @click="goDetail(props.row.order_number)">
           {{ props.row.order_number }}
@@ -24,6 +31,8 @@ import to from 'await-to-js'
 const pagination = ref({
   rowsPerPage: 10,
   perPage: [10, 20, 50],
+  sortBy: 'checkin',
+  descending: false
 })
 
 onMounted(async () => {
@@ -54,7 +63,12 @@ const getHotelOrderLastWeek = async () => {
     console.error(err)
     return
   }
-  hotelOrderList.value = res.data
+  // 按入住日期排序，越近的日期在最上面
+  hotelOrderList.value = res.data.sort((a, b) => {
+    const dateA = new Date(a.checkin)
+    const dateB = new Date(b.checkin)
+    return dateA - dateB // 升序排列，讓越近的日期在最前面
+  })
 }
 /* 近 7 天入住酒店訂單 End */
 

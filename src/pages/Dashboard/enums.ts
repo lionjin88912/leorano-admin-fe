@@ -3,8 +3,10 @@ import { getDateStringNoTz } from 'src/utils/helpers'
 interface ColumnStruct {
   name: string
   label: string
-  field?: string | ((row: { updated_at: string }) => string) | any
+  field?: string | ((row: any) => string) | any
+  format?: (val: string) => string
   align: 'center' | 'left' | 'right'
+  sortable?: boolean
 }
 type TableColumn = ColumnStruct[]
 
@@ -18,8 +20,10 @@ export const columns: TableColumn = [
   {
     name: 'checkin',
     label: '入住日期',
-    field: (row: any) => getDateStringNoTz(row.checkin, 'YYYY-MM-DD'),
+    field: 'checkin',
+    format: (val: string) => getDateStringNoTz(val, 'YYYY-MM-DD'),
     align: 'left',
+    sortable: true,
   },
   {
     name: 'hotel_name',
