@@ -105,11 +105,15 @@
           <q-input class="col" outlined dense readonly v-model="model.lng" />
           <div class="col-12 q-mt-md">
             <q-responsive :ratio="16 / 9">
-              <GMapMap ref="gmapRef" :center="center" :zoom="16" :options="mapOptions" map-type-id="terrain" class="gmap">
-                <GMapMarker :key="index" v-for="(m, index) in markers" :position="m.position" :clickable="true"
-                  :draggable="false">
-                </GMapMarker>
-              </GMapMap>
+              <LeafletMap 
+                ref="lmapRef" 
+                :center="center" 
+                :zoom="16" 
+                :markers="markers"
+                :draggable-marker="false"
+                height="100%"
+                class="gmap"
+              />
             </q-responsive>
           </div>
         </div>
@@ -134,6 +138,7 @@ import selectCountry from 'src/components/selectCountry.vue';
 import selectCity from 'src/components/selectCity.vue';
 import TimePicker from 'components/TimePicker.vue';
 import SelectTag from 'src/components/dialog/SelectTag.vue';
+import LeafletMap from 'src/components/LeafletMap.vue';
 import { TagType } from 'src/pages/enums';
 
 const props = defineProps({
@@ -148,19 +153,11 @@ const props = defineProps({
   }
 });
 
-const gmapRef = ref();
+const lmapRef = ref();
 const formRef = ref();
 const selectTagRef = ref();
 const showDialogAmenities = ref(false);
 const model: any = ref({});
-const tpName = ref(null); // inject('tpName')
-const tpAddress = ref(null); // inject('tpAddress')
-const mapOptions = {
-  mapTypeControl: false,
-  streetViewControl: false,
-  rotateControl: false,
-  fullscreenControl: false,
-};
 
 const rules = computed(() => {
   return {
@@ -221,20 +218,24 @@ const getGeo = async () => {
     console.warn('stop get map position: no address or no geo data');
     return;
   }
-  // &city=${geo.city}&country=${geo.country}
+  
   const [err, res] = await to(
-    axios.get(
-      `https://maps.googleapis.com/maps/api/geocode/json?language=en&address=${address}&key=AIzaSyCkbldNUJ9kFFzQQWm-fVibY2qP7iFVUek`,
-    ),
+    axios.get(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}&limit=1&accept-language=en`),
   );
 
   if (err) {
     console.error('getGeo error:', err);
     return;
   }
-  let result = res.data.results[0].geometry.location;
-  model.value.lat = result.lat;
-  model.value.lng = result.lng;
+  
+  if (!res.data || res.data.length === 0) {
+    console.warn('No geocoding results found');
+    return;
+  }
+  
+  let result = res.data[0];
+  model.value.lat = parseFloat(result.lat);
+  model.value.lng = parseFloat(result.lon);
 };
 
 const center = computed(() => {
