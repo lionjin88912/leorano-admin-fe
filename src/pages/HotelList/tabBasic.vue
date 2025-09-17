@@ -90,21 +90,18 @@
               </template>
             </q-field>
           </div>
-          <GMapMap ref="gmap" :center="center" :zoom="16" map-type-id="terrain" class="gmap q-mt-md" @click="onMapClick">
-            <GMapMarker
-              :key="index"
-              v-for="(m, index) in markers"
-              :position="m.position"
-              :clickable="true"
-              :draggable="true"
-              @dragend="onMarkerDragged"
-              @click="onMarkerClick($event, index)"
-            >
-              <GMapInfoWindow :opened="isOpenMarker(index)" :closeclick="true" @closeclick="currentMarkerIndex = null">
-                {{ m.title }}
-              </GMapInfoWindow>
-            </GMapMarker>
-          </GMapMap>
+          <LeafletMap 
+            ref="lmap" 
+            :center="center" 
+            :zoom="16" 
+            :markers="markers"
+            :draggable-marker="true"
+            height="400px"
+            class="gmap q-mt-md" 
+            @click="onMapClick"
+            @marker-dragged="onMarkerDragged"
+            @marker-click="onMarkerClick"
+          />
         </div>
         <div class="col-xs-12 col-sm-5 col-md-4">
           <div class="text-bold text-grey-9">其他資訊</div>
@@ -214,6 +211,8 @@ import { isEmpty, messages } from 'src/utils/validators';
 import _ from 'lodash';
 import * as helpers from 'src/utils/helpers';
 
+import LeafletMap from 'src/components/LeafletMap.vue';
+
 const to = require('await-to-js').default;
 
 const emit = defineEmits(['handleUpdate']);
@@ -224,8 +223,7 @@ const props = defineProps({
 });
 
 const $q = useQuasar();
-const gmap = ref();
-const apiKey = 'AIzaSyCkbldNUJ9kFFzQQWm-fVibY2qP7iFVUek';
+const lmap = ref();
 const formRef = ref();
 const MediaRef = ref(null);
 const selectTagRef = ref();
@@ -341,9 +339,8 @@ const getAddress = async (lat, lng) => {
     console.log('stop get address: no lat or lng infomation');
     return;
   }
-  const latlng = `${lat},${lng}`;
   const [err, res] = await to(
-    axios.get(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${latlng}&language=${lang.value.lang}&key=${apiKey}`),
+    axios.get(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&accept-language=${lang.value.lang || 'zh-TW'}`),
   );
 
   if (err) {
@@ -351,7 +348,7 @@ const getAddress = async (lat, lng) => {
     return;
   }
   // console.log('getAddress:', res.data)
-  return res.data.results[0].formatted_address;
+  return res.data.display_name;
 };
 
 const getGeo = async () => {
@@ -361,41 +358,39 @@ const getGeo = async () => {
     console.warn('stop get map position: no address or no geo data');
     return;
   }
+  
+  const searchQuery = `${address}, ${geo.city}, ${geo.country}`;
   const [err, res] = await to(
-    axios.get(
-      `https://maps.googleapis.com/maps/api/geocode/json?language=en&address=${address}&city=${geo.city}&country=${geo.country}&key=${apiKey}`,
-    ),
+    axios.get(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchQuery)}&limit=1&accept-language=en`),
   );
 
   if (err) {
     console.error('getGeo error:', err);
     return;
   }
-  let result = res.data.results[0].geometry.location;
-  data.value.lat = result.lat;
-  data.value.lng = result.lng;
+  
+  if (!res.data || res.data.length === 0) {
+    console.warn('No geocoding results found');
+    return;
+  }
+  
+  let result = res.data[0];
+  data.value.lat = parseFloat(result.lat);
+  data.value.lng = parseFloat(result.lon);
   center.value = {
-    lat: result.lat,
-    lng: result.lng,
+    lat: parseFloat(result.lat),
+    lng: parseFloat(result.lon),
   };
 
   markers.value = [
     {
       position: {
-        lat: result.lat,
-        lng: result.lng,
+        lat: parseFloat(result.lat),
+        lng: parseFloat(result.lon),
       },
       title: data.value.name,
     },
   ];
-};
-
-const isOpenMarker = (index) => {
-  if (!currentMarkerIndex.value) {
-    return false;
-  }
-  const open = currentMarkerIndex.value === String(index);
-  return open;
 };
 
 const handleSubmit = async () => {
@@ -477,8 +472,7 @@ const onMapClick = async (e) => {
 };
 
 const onMarkerClick = async (e, markerIndex) => {
-  const map = await gmap.value.$mapPromise;
-  map.setCenter({
+  lmap.value.setCenter({
     lat: e.latLng.lat(),
     lng: e.latLng.lng(),
   });

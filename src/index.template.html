@@ -6,11 +6,11 @@
     <%= productName %>
   </title>
   <meta http-equiv="Content-Security-Policy" content="default-src 'self';
-      connect-src 'self' * http://localhost:8087 http://admin.uat.leorano.actinc.io http://admin.stage.leorano.actinc.io https://admin.roartrips.com http://admin.stage.leorano.actinc.io https://admin-api.roartrips.com https://maps.googleapis.com http://admin-api.stage.leorano.actinc.io http://admin-api.uat.leorano.actinc.io http://admin-api.uat.leorano.actinc.io:8087 ;
-      script-src 'self' * 'unsafe-eval' 'unsafe-inline' https://maps.googleapis.com;
+      connect-src 'self' * http://localhost:8087 http://admin.uat.leorano.actinc.io http://admin.stage.leorano.actinc.io https://admin.roartrips.com http://admin.stage.leorano.actinc.io https://admin-api.roartrips.com https://nominatim.openstreetmap.org http://admin-api.stage.leorano.actinc.io http://admin-api.uat.leorano.actinc.io http://admin-api.uat.leorano.actinc.io:8087 ;
+      script-src 'self' * 'unsafe-eval' 'unsafe-inline' https://cdnjs.cloudflare.com;
       style-src 'self' * 'unsafe-inline' https://fonts.googleapis.com;
       font-src 'self' * data: https://fonts.gstatic.com;
-      img-src 'self' * data: blob: https://maps.gstatic.com https://maps.googleapis.com https://ca.slack-edge.com https://leorano-uat.s3.ap-northeast-1.amazonaws.com https://leorano-stage.s3.ap-northeast-1.amazonaws.com https://leorano-local.s3.ap-northeast-1.amazonaws.com
+      img-src 'self' * data: blob: https://tile.openstreetmap.org https://a.tile.openstreetmap.org https://b.tile.openstreetmap.org https://c.tile.openstreetmap.org https://cdnjs.cloudflare.com https://ca.slack-edge.com https://leorano-uat.s3.ap-northeast-1.amazonaws.com https://leorano-stage.s3.ap-northeast-1.amazonaws.com https://leorano-local.s3.ap-northeast-1.amazonaws.com
        https://media.iceportal.com https://travelport.leonardocontentcloud.com https://static-new.lhw.com/;
       frame-src 'self' *;">
 
