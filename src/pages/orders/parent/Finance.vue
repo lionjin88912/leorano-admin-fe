@@ -29,7 +29,7 @@
         <q-select v-model="finance.order_number" :options="orderOptions" class="item-order" :disable="finance.is_post || isClosed" emit-value map-options dense outlined />
         <q-input v-model="finance.title" class="col" :rules="rules.required" :disable="finance.is_post || isClosed" dense outlined />
         <InputCurrencyPrice v-model:currency="finance.currency" v-model:price="finance.amount" class="item-price" @update:currency="changeCurrency(finance)" :rules="rules.finance_amount" :disable="finance.is_post || isClosed" />
-        <q-input v-model="finance.exchange_rate" class="item-rate" :rules="rules.exchange_rate" :disable="finance.is_post || isClosed" dense outlined />
+        <q-input v-model.number="finance.exchange_rate" class="item-rate" :rules="rules.exchange_rate" :disable="finance.is_post || isClosed" dense outlined />
         <q-input v-model="financeUSD[index]" class="item-rate" :disable="finance.is_post || isClosed" dense outlined readonly />
         <div class="item-ticket text-center">
           <div v-if="finance.type == 'expense'">
