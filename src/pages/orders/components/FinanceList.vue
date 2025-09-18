@@ -19,7 +19,7 @@
     <q-select v-model="finance.cate" :options="financeCateOptions[finance.type]" class="item-cate" :disable="finance.is_paid || disable" emit-value map-options dense outlined />
     <q-input v-model="finance.title" class="col" :rules="rules.required" :disable="finance.is_paid || disable" dense outlined />
     <InputCurrencyPrice v-model:currency="finance.currency" v-model:price="finance.amount" class="item-price" @update:currency="changeCurrency(finance)" :rules="rules.finance_amount" :disable="finance.is_paid || disable" />
-    <q-input v-model="finance.exchange_rate" class="item-rate" :rules="rules.exchange_rate" :disable="finance.is_paid || disable" dense outlined />
+    <q-input v-model.number="finance.exchange_rate" class="item-rate" :rules="rules.exchange_rate" :disable="finance.is_paid || disable" dense outlined />
     <q-input v-model="financeUSD[index]" class="item-text" :disable="finance.is_paid || disable" dense outlined readonly />
     <div v-if="!disable" class="item-delete text-center">
       <q-btn v-if="finance.payment_number == ''" icon="delete" color="negative" class="full-height q-px-sm" @click="deleteFinance(index)" flat />

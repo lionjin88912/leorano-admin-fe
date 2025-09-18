@@ -11,7 +11,7 @@
     <q-select v-model="finance.cate" :options="financeCateOptions['expense']" class="col-2" :disable="disable" emit-value map-options dense outlined />
     <q-input v-model="finance.title" class="col-5" :rules="rules.required" :disable="disable" dense outlined />
     <InputCurrencyPrice v-model:currency="finance.currency" v-model:price="finance.amount" class="col-2" @update:currency="changeCurrency(finance)" :rules="rules.finance_amount" :disable="disable" />
-    <q-input v-model="finance.exchange_rate" class="col-1" :rules="rules.exchange_rate" :disable="disable" dense outlined />
+    <q-input v-model.number="finance.exchange_rate" class="col-1" :rules="rules.exchange_rate" :disable="disable" dense outlined />
     <q-input v-model="financeUSD[index]" class="col" :disable="disable" dense outlined readonly />
     <div v-if="mode !== 'edit' && !disable" class="item-delete text-center">
       <q-btn icon="delete" color="negative" class="full-height q-px-sm" @click="deleteFinance(index)" flat />
