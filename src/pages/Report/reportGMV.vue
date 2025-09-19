@@ -150,7 +150,7 @@ const series = computed(() => [
     data: Object.keys(datas.value[5]).filter(key => key.startsWith('month')).map(key => datas.value[5][key])
   },
   {
-    name: 'Commission',
+    name: 'Profit',
     type: 'bar',
     data: Object.keys(datas.value[6]).filter(key => key.startsWith('month')).map(key => datas.value[6][key])
   }

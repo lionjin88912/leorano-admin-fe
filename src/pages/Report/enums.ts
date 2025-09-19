@@ -253,8 +253,8 @@ export const gmvDefaultData = [
     label: '營業額 (USD)'
   },
   {
-    group: 'Commission',
-    label: '金額 (USD)'
+    group: 'Profit',
+    label: '利潤 (USD)'
   }
 ]
 
