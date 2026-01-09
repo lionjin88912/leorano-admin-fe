@@ -38,7 +38,6 @@
           label="TP Hotel Code *"
           :rules="rules.hotelCode"
           outlined
-          readonly
           dense
         />
       </div>

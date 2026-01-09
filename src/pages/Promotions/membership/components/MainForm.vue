@@ -37,7 +37,7 @@
       </q-field>
       <div class="flex-1">
         <q-field class="cursor-pointer q-pr-md" style="min-width: 220px;" label="有效期限 *" :stack-label="dateStackLabel"
-          :rules="rules.dateRange" :disable="!isEditable" :error="dateError" :error-message="dateErrorMessage"
+          :rules="rules.dateRange" :disable="!isDateEditable" :error="dateError" :error-message="dateErrorMessage"
           hide-bottom-space lazy-rules outlined dense>
           <template #default>
             <DatePicker :date="duration" :range="true" @updated="onDateRangeSelected"></DatePicker>
@@ -131,6 +131,11 @@ const onMembershipChanged = (value: any) => {
 
 const isEditable = computed(() => {
   return !props.isEdit || (!model.value.start_date || isDateBefore(getDateStringNoTz(new Date(), 'YYYY-MM-DD'), duration.value.from))
+})
+
+// 有效期限永遠可編輯
+const isDateEditable = computed(() => {
+  return true
 })
 
 const unitEditable = computed(() => {
