@@ -72,8 +72,9 @@
               hide-bottom-space
             >
               <template #append>
-                <q-icon class="cursor-pointer" name="location_on" color="red-9" size="32px" @click.prevent="getGeo" />
-                <q-tooltip>定位</q-tooltip>
+                <q-spinner v-if="isLocating" color="red-9" size="32px" />
+                <q-icon v-else class="cursor-pointer" name="location_on" color="red-9" size="32px" @click.prevent="getGeo()" />
+                <q-tooltip v-if="!isLocating">定位</q-tooltip>
               </template>
             </q-input>
             <q-field label="酒店座標" class="col-12 location-field" stack-label outlined dense readonly hide-hint hide-bottom-space>
@@ -227,6 +228,7 @@ const formRef = ref();
 const MediaRef = ref(null);
 const selectTagRef = ref();
 const maxPicAmount = ref(5);
+const isLocating = ref(false);
 const lang = ref({
   hotel_id: '',
   hotel_code: '',
@@ -335,61 +337,107 @@ const onCopy = async (text) => {
 
 const getAddress = async (lat, lng) => {
   if (!lat || !lng) {
-    console.log('stop get address: no lat or lng infomation');
     return;
   }
   const [err, res] = await to(
-    axios.get(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&accept-language=${lang.value.lang || 'zh-TW'}`),
+    axios.get('https://nominatim.openstreetmap.org/reverse', {
+      params: { format: 'json', lat, lon: lng, 'accept-language': lang.value.lang || 'zh-TW' },
+      timeout: 10000,
+    }),
   );
 
   if (err) {
     console.error('getAddress error:', err);
     return;
   }
-  // console.log('getAddress:', res.data)
   return res.data.display_name;
 };
 
-const getGeo = async () => {
-  const address = lang.value.address || data.value.address;
-
-  if (!address || !geo.country) {
-    console.warn('stop get map position: no address or no geo data');
-    return;
-  }
-  
-  const searchQuery = `${address}, ${geo.city}, ${geo.country}`;
+const queryNominatim = async (q) => {
   const [err, res] = await to(
-    axios.get(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchQuery)}&limit=1&accept-language=en`),
+    axios.get('https://nominatim.openstreetmap.org/search', {
+      params: { format: 'json', q, limit: 1, 'accept-language': 'en' },
+      timeout: 10000,
+    }),
   );
+  if (err) throw err;
+  if (!res.data || res.data.length === 0) return null;
+  return res.data[0];
+};
 
-  if (err) {
-    console.error('getGeo error:', err);
+// silent=true 時不跳 notify (給 watcher 自動觸發用，避免每次切語言/載入都跳訊息)
+const getGeo = async (silent = false) => {
+  if (isLocating.value) return;
+
+  const name = (lang.value.name || data.value.name || '').trim();
+  const address = (lang.value.address || data.value.address || '').trim();
+  const cityName = geo.city;
+  const countryName = geo.country;
+
+  if (!name && !address) {
+    if (!silent) {
+      $q.notify({ type: 'warning', position: 'top', timeout: 2500, message: '請先填寫酒店名稱或地址' });
+    }
     return;
   }
-  
-  if (!res.data || res.data.length === 0) {
-    console.warn('No geocoding results found');
-    return;
-  }
-  
-  let result = res.data[0];
-  data.value.lat = parseFloat(result.lat);
-  data.value.lng = parseFloat(result.lon);
-  center.value = {
-    lat: parseFloat(result.lat),
-    lng: parseFloat(result.lon),
-  };
 
-  markers.value = [
-    {
-      position: {
-        lat: parseFloat(result.lat),
-        lng: parseFloat(result.lon),
-      },
-      title: data.value.name,
-    },
-  ];
+  // Nominatim 對 POI/地標查詢比街道地址精準很多 → 先用 name，最後 fallback 到 address
+  const queries = [];
+  if (name) {
+    queries.push(name);
+    if (cityName || countryName) {
+      queries.push([name, cityName, countryName].filter(Boolean).join(', '));
+    }
+  }
+  if (address) {
+    if (cityName || countryName) {
+      queries.push([address, cityName, countryName].filter(Boolean).join(', '));
+    }
+    queries.push(address);
+  }
+
+  isLocating.value = true;
+  try {
+    let hit = null;
+    for (const q of queries) {
+      try {
+        hit = await queryNominatim(q);
+        if (hit) break;
+      } catch (e) {
+        console.error('getGeo error:', e);
+        if (!silent) {
+          $q.notify({
+            type: 'negative', position: 'top', timeout: 3000,
+            message: '定位服務暫無回應，請稍後再試或直接拖曳地圖標記',
+          });
+        }
+        return;
+      }
+    }
+
+    if (!hit) {
+      if (!silent) {
+        $q.notify({
+          type: 'warning', position: 'top', timeout: 3000,
+          message: '查無此地址座標，請拖曳地圖標記或直接調整位置',
+        });
+      }
+      return;
+    }
+
+    const lat = _.round(parseFloat(hit.lat), 7);
+    const lng = _.round(parseFloat(hit.lon), 7);
+    data.value.lat = lat;
+    data.value.lng = lng;
+    center.value = { lat, lng };
+    markers.value = [{ position: { lat, lng }, title: data.value.name }];
+
+    if (!silent) {
+      $q.notify({ type: 'positive', position: 'top', timeout: 1500, message: '定位成功' });
+    }
+  } finally {
+    isLocating.value = false;
+  }
 };
 
 const handleSubmit = async () => {
@@ -511,7 +559,7 @@ watch(
   () => props.propsLang,
   () => {
     lang.value = props.propsLang;
-    getGeo();
+    getGeo(true);
   },
 );
 
@@ -525,7 +573,7 @@ watch(
     geo.country = data.value.country;
     shareLink.value = `https://app.leorano.com/discover/hotel?id=${data.value.hotel_id}&start=14&end=15`;
 
-    getGeo();
+    getGeo(true);
 
     for (let key in data.value['media_slider']) {
       const item = data.value['media_slider'][key];
