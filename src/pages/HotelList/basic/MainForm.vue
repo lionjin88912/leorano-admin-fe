@@ -101,7 +101,12 @@
           </q-input>
         </div>
         <div class="col-12 row q-gutter-x-md">
-          <label class="col-12 custom-form_label">酒店座標 (可手動輸入或拖曳地圖標記)</label>
+          <label class="col-12 custom-form_label">酒店座標 (可從 Google Maps 貼上、手動輸入或拖曳地圖標記)</label>
+          <div class="col-12 q-mb-sm flex q-gutter-sm items-center">
+            <q-btn dense outline color="primary" icon="search" label="在 Google Maps 找此飯店" @click="openGoogleMapsSearch" />
+            <q-btn dense unelevated color="primary" icon="content_paste" label="從剪貼簿貼上座標" @click="pasteCoordsFromClipboard" />
+            <span class="text-grey-6 text-caption">在 Google Maps 找到位置後，複製網址再點貼上</span>
+          </div>
           <q-input class="col" outlined dense type="number" v-model.number="model.lat" label="緯度" :rules="rules.lat" hide-bottom-space />
           <q-input class="col" outlined dense type="number" v-model.number="model.lng" label="經度" :rules="rules.lng" hide-bottom-space />
           <div class="col-12 q-mt-md">
@@ -320,6 +325,71 @@ const onMarkerDragged = (e: any) => {
   if (!e?.latLng) return;
   model.value.lat = _.round(e.latLng.lat(), 7);
   model.value.lng = _.round(e.latLng.lng(), 7);
+};
+
+// 從各種 Google Maps URL 格式擷取座標
+// 支援: /place/.../@lat,lng,zoom/, /search/.../@lat,lng/, /@lat,lng/, ?ll=lat,lng, ?q=lat,lng
+const extractGoogleMapsCoords = (text: string) => {
+  if (!text) return null;
+  const atMatch = text.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
+  if (atMatch) return { lat: parseFloat(atMatch[1]), lng: parseFloat(atMatch[2]) };
+  const llMatch = text.match(/[?&](?:ll|q)=(-?\d+\.\d+),(-?\d+\.\d+)/);
+  if (llMatch) return { lat: parseFloat(llMatch[1]), lng: parseFloat(llMatch[2]) };
+  return null;
+};
+
+const openGoogleMapsSearch = () => {
+  const name = (model.value.name || '').trim();
+  const address = (model.value.address || '').trim();
+  const query = [name, address].filter(Boolean).join(' ');
+  if (!query) {
+    $q.notify({ type: 'warning', position: 'top', timeout: 2500, message: '請先填寫酒店名稱或地址' });
+    return;
+  }
+  window.open(`https://www.google.com/maps/search/${encodeURIComponent(query)}`, '_blank', 'noopener,noreferrer');
+};
+
+const pasteCoordsFromClipboard = async () => {
+  let text: string;
+  try {
+    text = await navigator.clipboard.readText();
+  } catch (e) {
+    $q.notify({
+      type: 'warning', position: 'top', timeout: 4000,
+      message: '無法讀取剪貼簿，請改用 Cmd+V 貼到緯度欄位手動輸入',
+    });
+    return;
+  }
+
+  if (!text) {
+    $q.notify({ type: 'warning', position: 'top', timeout: 2500, message: '剪貼簿是空的，請先複製 Google Maps 網址' });
+    return;
+  }
+
+  // 短網址 (沒座標) - 提示使用者改用網址列複製
+  if (/maps\.app\.goo\.gl|goo\.gl\/maps/.test(text)) {
+    $q.notify({
+      type: 'warning', position: 'top', timeout: 5000,
+      message: '短網址無法解析，請從 Google Maps 網址列複製完整網址（網址中要看得到 @數字,數字 那種）',
+    });
+    return;
+  }
+
+  const coords = extractGoogleMapsCoords(text);
+  if (!coords) {
+    $q.notify({
+      type: 'warning', position: 'top', timeout: 4000,
+      message: '剪貼簿不是 Google Maps 網址，請先到 Google Maps 找到位置再複製網址',
+    });
+    return;
+  }
+
+  model.value.lat = _.round(coords.lat, 7);
+  model.value.lng = _.round(coords.lng, 7);
+  $q.notify({
+    type: 'positive', position: 'top', timeout: 2000,
+    message: `已套用座標 (${model.value.lat}, ${model.value.lng})`,
+  });
 };
 
 // 座標未設定/被清空時不要把地圖跳到 (0,0)（大西洋）；維持 LeafletMap 的台北 101 預設
