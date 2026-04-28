@@ -70,25 +70,9 @@
               outlined
               dense
               hide-bottom-space
-            >
-              <template #append>
-                <q-spinner v-if="isLocating" color="red-9" size="32px" />
-                <q-icon v-else class="cursor-pointer" name="location_on" color="red-9" size="32px" @click.prevent="getGeo()" />
-                <q-tooltip v-if="!isLocating">定位</q-tooltip>
-              </template>
-            </q-input>
-            <q-field label="酒店座標" class="col-12 location-field" stack-label outlined dense readonly hide-hint hide-bottom-space>
-              <template v-slot:control>
-                <div class="flex-1 items-center justify-around">
-                  <div class="text-grey-9">
-                    緯度 <span class="text-grey-6">{{ data.lat }}</span>
-                  </div>
-                  <div class="text-grey-9">
-                    經度 <span class="text-grey-6">{{ data.lng }}</span>
-                  </div>
-                </div>
-              </template>
-            </q-field>
+            />
+            <q-input class="col-6 col-md-4" outlined dense type="number" v-model.number="data.lat" label="緯度 *" :rules="rules.lat" hide-bottom-space />
+            <q-input class="col-6 col-md-4" outlined dense type="number" v-model.number="data.lng" label="經度 *" :rules="rules.lng" hide-bottom-space />
             <div class="col-12 flex q-gutter-sm items-center">
               <q-btn dense outline color="primary" icon="search" label="在 Google Maps 找此飯店" @click="openGoogleMapsSearch" />
               <q-btn dense unelevated color="primary" icon="content_paste" label="從剪貼簿貼上座標" @click="pasteCoordsFromClipboard" />
@@ -233,7 +217,6 @@ const formRef = ref();
 const MediaRef = ref(null);
 const selectTagRef = ref();
 const maxPicAmount = ref(5);
-const isLocating = ref(false);
 const lang = ref({
   hotel_id: '',
   hotel_code: '',
@@ -246,7 +229,6 @@ const lang = ref({
   rawIsUpdated: false,
   lang: '',
 });
-const center = ref({ lat: 0, lng: 0 });
 const data = ref({
   id: 0,
   is_virtuoso_hotel: false,
@@ -259,12 +241,36 @@ const data = ref({
   phone: '',
   fax: '',
 });
+
+// 緯度合法且非 0
+const isValidLat = (v) => {
+  const n = parseFloat(v);
+  return !isNaN(n) && n !== 0 && n >= -90 && n <= 90;
+};
+// 經度合法且非 0
+const isValidLng = (v) => {
+  const n = parseFloat(v);
+  return !isNaN(n) && n !== 0 && n >= -180 && n <= 180;
+};
+
+// 座標未設定/被清空時不要把地圖跳到 (0,0)（大西洋）；維持台北 101 預設
+const TAIPEI_DEFAULT = { lat: 25.0330, lng: 121.5654 };
+
+const center = computed(() => {
+  if (!isValidLat(data.value.lat) || !isValidLng(data.value.lng)) return TAIPEI_DEFAULT;
+  return { lat: parseFloat(data.value.lat), lng: parseFloat(data.value.lng) };
+});
+
+const markers = computed(() => {
+  if (!isValidLat(data.value.lat) || !isValidLng(data.value.lng)) return [];
+  return [{ position: { lat: parseFloat(data.value.lat), lng: parseFloat(data.value.lng) }, title: data.value.name }];
+});
+
 const chooseMedia = ref({});
 const geo = reactive({
   city: '',
   country: '',
 });
-const markers = ref([]);
 const shareLink = ref();
 const currentMarkerIndex = ref(null);
 const hotelBenefitTagType = {
@@ -356,93 +362,6 @@ const getAddress = async (lat, lng) => {
     return;
   }
   return res.data.display_name;
-};
-
-const queryNominatim = async (q) => {
-  const [err, res] = await to(
-    axios.get('https://nominatim.openstreetmap.org/search', {
-      params: { format: 'json', q, limit: 1, 'accept-language': 'en' },
-      timeout: 10000,
-    }),
-  );
-  if (err) throw err;
-  if (!res.data || res.data.length === 0) return null;
-  return res.data[0];
-};
-
-// silent=true 時不跳 notify (給 watcher 自動觸發用，避免每次切語言/載入都跳訊息)
-const getGeo = async (silent = false) => {
-  if (isLocating.value) return;
-
-  const name = (lang.value.name || data.value.name || '').trim();
-  const address = (lang.value.address || data.value.address || '').trim();
-  const cityName = geo.city;
-  const countryName = geo.country;
-
-  if (!name && !address) {
-    if (!silent) {
-      $q.notify({ type: 'warning', position: 'top', timeout: 2500, message: '請先填寫酒店名稱或地址' });
-    }
-    return;
-  }
-
-  // Nominatim 對 POI/地標查詢比街道地址精準很多 → 先用 name，最後 fallback 到 address
-  const queries = [];
-  if (name) {
-    queries.push(name);
-    if (cityName || countryName) {
-      queries.push([name, cityName, countryName].filter(Boolean).join(', '));
-    }
-  }
-  if (address) {
-    if (cityName || countryName) {
-      queries.push([address, cityName, countryName].filter(Boolean).join(', '));
-    }
-    queries.push(address);
-  }
-
-  isLocating.value = true;
-  try {
-    let hit = null;
-    for (const q of queries) {
-      try {
-        hit = await queryNominatim(q);
-        if (hit) break;
-      } catch (e) {
-        console.error('getGeo error:', e);
-        if (!silent) {
-          $q.notify({
-            type: 'negative', position: 'top', timeout: 3000,
-            message: '定位服務暫無回應，請稍後再試或直接拖曳地圖標記',
-          });
-        }
-        return;
-      }
-    }
-
-    if (!hit) {
-      if (!silent) {
-        $q.notify({
-          type: 'warning', position: 'top', timeout: 3000,
-          message: '查無此地址座標，請拖曳地圖標記或直接調整位置',
-        });
-      }
-      return;
-    }
-
-    const lat = _.round(parseFloat(hit.lat), 7);
-    const lng = _.round(parseFloat(hit.lon), 7);
-    data.value.lat = lat;
-    data.value.lng = lng;
-    center.value = { lat, lng };
-    markers.value = [{ position: { lat, lng }, title: data.value.name }];
-
-    if (!silent) {
-      $q.notify({ type: 'positive', position: 'top', timeout: 1500, message: '定位成功' });
-    }
-  } finally {
-    isLocating.value = false;
-  }
 };
 
 const handleSubmit = async () => {
@@ -594,13 +513,9 @@ const pasteCoordsFromClipboard = async () => {
     return;
   }
 
-  const lat = _.round(coords.lat, 7);
-  const lng = _.round(coords.lng, 7);
-  data.value.lat = lat;
-  data.value.lng = lng;
-  center.value = { lat, lng };
-  markers.value = [{ position: { lat, lng }, title: data.value.name }];
-  $q.notify({ type: 'positive', position: 'top', timeout: 2000, message: `已套用座標 (${lat}, ${lng})` });
+  data.value.lat = _.round(coords.lat, 7);
+  data.value.lng = _.round(coords.lng, 7);
+  $q.notify({ type: 'positive', position: 'top', timeout: 2000, message: `已套用座標 (${data.value.lat}, ${data.value.lng})` });
 };
 
 const rules = computed(() => {
@@ -613,6 +528,8 @@ const rules = computed(() => {
     country: [(val) => !isEmpty(val) || messages.requiredInput()],
     city: [(val) => !isEmpty(val) || messages.requiredInput()],
     address: [(val) => !isEmpty(val) || messages.requiredInput()],
+    lat: [(val) => isValidLat(val) || '請設定有效的緯度'],
+    lng: [(val) => isValidLng(val) || '請設定有效的經度'],
   };
 });
 
@@ -627,7 +544,6 @@ watch(
   () => props.propsLang,
   () => {
     lang.value = props.propsLang;
-    getGeo(true);
   },
 );
 
@@ -641,7 +557,6 @@ watch(
     geo.country = data.value.country;
     shareLink.value = `https://app.leorano.com/discover/hotel?id=${data.value.hotel_id}&start=14&end=15`;
 
-    getGeo(true);
 
     for (let key in data.value['media_slider']) {
       const item = data.value['media_slider'][key];

@@ -92,13 +92,7 @@
             <span v-if="tpAddress" class="q-pl-sm text-grey-6">tp: {{ tpAddress }}</span>
             <span v-else class="q-pl-sm text-grey-6">tp: xxxx</span>
           </label>
-          <q-input outlined dense v-model="model.address" :rules="rules.address">
-            <template #append>
-              <q-spinner v-if="isLocating" color="red-9" size="32px" />
-              <q-icon v-else class="cursor-pointer" name="location_on" color="red-9" size="32px" @click.prevent="getGeo" />
-              <q-tooltip v-if="!isLocating">定位</q-tooltip>
-            </template>
-          </q-input>
+          <q-input outlined dense v-model="model.address" :rules="rules.address" />
         </div>
         <div class="col-12 row q-gutter-x-md">
           <label class="col-12 custom-form_label">酒店座標 (可從 Google Maps 貼上、手動輸入或拖曳地圖標記)</label>
@@ -137,8 +131,6 @@
 
 <script setup lang="ts">
 import { ref, computed, watchEffect } from 'vue';
-import axios from 'axios';
-import to from 'await-to-js';
 import _ from 'lodash';
 import { useQuasar } from 'quasar';
 import { isEmpty, messages } from 'src/utils/validators.js';
@@ -168,7 +160,6 @@ const lmapRef = ref();
 const formRef = ref();
 const selectTagRef = ref();
 const showDialogAmenities = ref(false);
-const isLocating = ref(false);
 const model: any = ref({});
 
 // 緯度合法且非 0
@@ -213,7 +204,6 @@ const setCountry = (opt: any) => {
     return;
   }
   model.value.country = opt.id;
-  model.value.country_name = opt.name;
   model.value.localCurrency = opt.currency_name;
 };
 
@@ -222,7 +212,6 @@ const setCity = (opt: any) => {
     return;
   }
   model.value.city = opt.id;
-  model.value.city_name = opt.name;
 };
 
 const showTagSelect = () => {
@@ -236,83 +225,6 @@ const showTagSelect = () => {
 const onTagSelected = ({ selection }: any) => {
   // console.log('onTagSelected:', selection);
   model.value.amenities = selection;
-};
-
-const queryNominatim = async (q: string) => {
-  const [err, res] = await to(
-    axios.get('https://nominatim.openstreetmap.org/search', {
-      params: { format: 'json', q, limit: 1, 'accept-language': 'en' },
-      timeout: 10000,
-    }),
-  );
-  if (err) throw err;
-  if (!res.data || res.data.length === 0) return null;
-  return res.data[0];
-};
-
-const getGeo = async () => {
-  if (isLocating.value) return;
-
-  const name = (model.value.name || '').trim();
-  const address = (model.value.address || '').trim();
-  const cityName = model.value.city_name;
-  const countryName = model.value.country_name;
-
-  if (!name && !address) {
-    $q.notify({ type: 'warning', position: 'top', timeout: 2500, message: '請先填寫酒店名稱或地址' });
-    return;
-  }
-
-  // Nominatim 對 POI/地標查詢比街道地址精準很多 → 先用 name，最後 fallback 到 address
-  const queries: string[] = [];
-  if (name) {
-    queries.push(name);
-    if (cityName || countryName) {
-      queries.push([name, cityName, countryName].filter(Boolean).join(', '));
-    }
-  }
-  if (address) {
-    if (cityName || countryName) {
-      queries.push([address, cityName, countryName].filter(Boolean).join(', '));
-    }
-    queries.push(address);
-  }
-
-  isLocating.value = true;
-  try {
-    let hit = null;
-    for (const q of queries) {
-      try {
-        hit = await queryNominatim(q);
-        if (hit) break;
-      } catch (e) {
-        console.error('getGeo error:', e);
-        $q.notify({
-          type: 'negative',
-          position: 'top',
-          timeout: 3000,
-          message: '定位服務暫無回應，請稍後再試或直接拖曳地圖標記',
-        });
-        return;
-      }
-    }
-
-    if (!hit) {
-      $q.notify({
-        type: 'warning',
-        position: 'top',
-        timeout: 3000,
-        message: '查無此地址座標，請拖曳地圖標記或直接輸入經緯度',
-      });
-      return;
-    }
-
-    model.value.lat = _.round(parseFloat(hit.lat), 7);
-    model.value.lng = _.round(parseFloat(hit.lon), 7);
-    $q.notify({ type: 'positive', position: 'top', timeout: 1500, message: '定位成功' });
-  } finally {
-    isLocating.value = false;
-  }
 };
 
 const onMapClick = (e: any) => {
