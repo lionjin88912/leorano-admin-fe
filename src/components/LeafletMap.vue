@@ -49,6 +49,7 @@ const emit = defineEmits(['click', 'marker-dragged', 'marker-click'])
 const mapContainer = ref(null)
 const map = ref(null)
 const markerInstances = ref([])
+let resizeObserver = null
 
 const initMap = async () => {
   if (!mapContainer.value) {
@@ -189,6 +190,9 @@ defineExpose({
     if (map.value) {
       map.value.setView([center.lat, center.lng])
     }
+  },
+  invalidateSize: () => {
+    if (map.value) map.value.invalidateSize()
   }
 })
 
@@ -198,9 +202,22 @@ watch(() => props.markers, updateMarkers, { deep: true })
 onMounted(async () => {
   await nextTick()
   initMap()
+
+  // 監聽容器尺寸變化（dialog 開啟、tab 切換、視窗 resize 等）→ 重算瓦片，
+  // 解決地圖剛載入時瓦片只渲染一半、要拖一下才正常顯示的問題
+  if (mapContainer.value) {
+    resizeObserver = new ResizeObserver(() => {
+      if (map.value) map.value.invalidateSize()
+    })
+    resizeObserver.observe(mapContainer.value)
+  }
 })
 
 onUnmounted(() => {
+  if (resizeObserver) {
+    resizeObserver.disconnect()
+    resizeObserver = null
+  }
   if (map.value) {
     try {
       map.value.remove()
