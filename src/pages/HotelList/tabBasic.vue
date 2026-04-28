@@ -469,9 +469,11 @@ const extractGoogleMapsCoords = (text) => {
 };
 
 const openGoogleMapsSearch = () => {
-  const name = (lang.value.name || data.value.name || '').trim();
+  // 地址優先：物理位置的精確識別符，比名稱更可靠
+  // 名稱（中/英/自訂）可能讓 Google 跑到品牌的其他分店
   const address = (lang.value.address || data.value.address || '').trim();
-  const query = [name, address].filter(Boolean).join(' ');
+  const name = (lang.value.name || data.value.name || '').trim();
+  const query = address || name;
   if (!query) {
     $q.notify({ type: 'warning', position: 'top', timeout: 2500, message: '請先填寫酒店名稱或地址' });
     return;
