@@ -94,25 +94,28 @@
           </label>
           <q-input outlined dense v-model="model.address" :rules="rules.address">
             <template #append>
-              <q-icon class="cursor-pointer" name="location_on" color="red-9" size="32px" @click.prevent="getGeo" />
-              <q-tooltip>定位</q-tooltip>
+              <q-spinner v-if="isLocating" color="red-9" size="32px" />
+              <q-icon v-else class="cursor-pointer" name="location_on" color="red-9" size="32px" @click.prevent="getGeo" />
+              <q-tooltip v-if="!isLocating">定位</q-tooltip>
             </template>
           </q-input>
         </div>
         <div class="col-12 row q-gutter-x-md">
-          <label class="col-12 custom-form_label">酒店座標</label>
-          <q-input class="col" outlined dense readonly v-model="model.lat" />
-          <q-input class="col" outlined dense readonly v-model="model.lng" />
+          <label class="col-12 custom-form_label">酒店座標 (可手動輸入或拖曳地圖標記)</label>
+          <q-input class="col" outlined dense type="number" v-model.number="model.lat" label="緯度" :rules="rules.lat" hide-bottom-space />
+          <q-input class="col" outlined dense type="number" v-model.number="model.lng" label="經度" :rules="rules.lng" hide-bottom-space />
           <div class="col-12 q-mt-md">
             <q-responsive :ratio="16 / 9">
-              <LeafletMap 
-                ref="lmapRef" 
-                :center="center" 
-                :zoom="16" 
+              <LeafletMap
+                ref="lmapRef"
+                :center="center"
+                :zoom="16"
                 :markers="markers"
-                :draggable-marker="false"
+                :draggable-marker="true"
                 height="100%"
                 class="gmap"
+                @click="onMapClick"
+                @marker-dragged="onMarkerDragged"
               />
             </q-responsive>
           </div>
@@ -131,6 +134,8 @@
 import { ref, computed, watchEffect } from 'vue';
 import axios from 'axios';
 import to from 'await-to-js';
+import _ from 'lodash';
+import { useQuasar } from 'quasar';
 import { isEmpty, messages } from 'src/utils/validators.js';
 import DialogAmenities from 'src/components/DialogAmenities.vue';
 import selectBrand from 'src/components/selectBrand.vue';
@@ -153,11 +158,24 @@ const props = defineProps({
   }
 });
 
+const $q = useQuasar();
 const lmapRef = ref();
 const formRef = ref();
 const selectTagRef = ref();
 const showDialogAmenities = ref(false);
+const isLocating = ref(false);
 const model: any = ref({});
+
+// 緯度合法且非 0
+const isValidLat = (v: any) => {
+  const n = parseFloat(v);
+  return !isNaN(n) && n !== 0 && n >= -90 && n <= 90;
+};
+// 經度合法且非 0
+const isValidLng = (v: any) => {
+  const n = parseFloat(v);
+  return !isNaN(n) && n !== 0 && n >= -180 && n <= 180;
+};
 
 const rules = computed(() => {
   return {
@@ -169,6 +187,8 @@ const rules = computed(() => {
     country: [(val: any) => !isEmpty(val) || messages.requiredInput()],
     city: [(val: any) => !isEmpty(val) || messages.requiredInput()],
     address: [(val: any) => !isEmpty(val) || messages.requiredInput()],
+    lat: [(val: any) => isValidLat(val) || '請設定有效的緯度（點定位、拖曳地圖或手動輸入）'],
+    lng: [(val: any) => isValidLng(val) || '請設定有效的經度（點定位、拖曳地圖或手動輸入）'],
     // postalCode: [(val: any) => !isEmpty(val) || messages.requiredInput()],
   };
 });
@@ -188,6 +208,7 @@ const setCountry = (opt: any) => {
     return;
   }
   model.value.country = opt.id;
+  model.value.country_name = opt.name;
   model.value.localCurrency = opt.currency_name;
 };
 
@@ -196,6 +217,7 @@ const setCity = (opt: any) => {
     return;
   }
   model.value.city = opt.id;
+  model.value.city_name = opt.name;
 };
 
 const showTagSelect = () => {
@@ -211,47 +233,108 @@ const onTagSelected = ({ selection }: any) => {
   model.value.amenities = selection;
 };
 
-const getGeo = async () => {
-  const address = model.value.address;
-
-  if (!address) {
-    console.warn('stop get map position: no address or no geo data');
-    return;
-  }
-  
+const queryNominatim = async (q: string) => {
   const [err, res] = await to(
-    axios.get(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}&limit=1&accept-language=en`),
+    axios.get('https://nominatim.openstreetmap.org/search', {
+      params: { format: 'json', q, limit: 1, 'accept-language': 'en' },
+      timeout: 10000,
+    }),
   );
-
-  if (err) {
-    console.error('getGeo error:', err);
-    return;
-  }
-  
-  if (!res.data || res.data.length === 0) {
-    console.warn('No geocoding results found');
-    return;
-  }
-  
-  let result = res.data[0];
-  model.value.lat = parseFloat(result.lat);
-  model.value.lng = parseFloat(result.lon);
+  if (err) throw err;
+  if (!res.data || res.data.length === 0) return null;
+  return res.data[0];
 };
 
+const getGeo = async () => {
+  if (isLocating.value) return;
+
+  const name = (model.value.name || '').trim();
+  const address = (model.value.address || '').trim();
+  const cityName = model.value.city_name;
+  const countryName = model.value.country_name;
+
+  if (!name && !address) {
+    $q.notify({ type: 'warning', position: 'top', timeout: 2500, message: '請先填寫酒店名稱或地址' });
+    return;
+  }
+
+  // Nominatim 對 POI/地標查詢比街道地址精準很多 → 先用 name，最後 fallback 到 address
+  const queries: string[] = [];
+  if (name) {
+    queries.push(name);
+    if (cityName || countryName) {
+      queries.push([name, cityName, countryName].filter(Boolean).join(', '));
+    }
+  }
+  if (address) {
+    if (cityName || countryName) {
+      queries.push([address, cityName, countryName].filter(Boolean).join(', '));
+    }
+    queries.push(address);
+  }
+
+  isLocating.value = true;
+  try {
+    let hit = null;
+    for (const q of queries) {
+      try {
+        hit = await queryNominatim(q);
+        if (hit) break;
+      } catch (e) {
+        console.error('getGeo error:', e);
+        $q.notify({
+          type: 'negative',
+          position: 'top',
+          timeout: 3000,
+          message: '定位服務暫無回應，請稍後再試或直接拖曳地圖標記',
+        });
+        return;
+      }
+    }
+
+    if (!hit) {
+      $q.notify({
+        type: 'warning',
+        position: 'top',
+        timeout: 3000,
+        message: '查無此地址座標，請拖曳地圖標記或直接輸入經緯度',
+      });
+      return;
+    }
+
+    model.value.lat = _.round(parseFloat(hit.lat), 7);
+    model.value.lng = _.round(parseFloat(hit.lon), 7);
+    $q.notify({ type: 'positive', position: 'top', timeout: 1500, message: '定位成功' });
+  } finally {
+    isLocating.value = false;
+  }
+};
+
+const onMapClick = (e: any) => {
+  if (!e?.latLng) return;
+  model.value.lat = _.round(e.latLng.lat(), 7);
+  model.value.lng = _.round(e.latLng.lng(), 7);
+};
+
+const onMarkerDragged = (e: any) => {
+  if (!e?.latLng) return;
+  model.value.lat = _.round(e.latLng.lat(), 7);
+  model.value.lng = _.round(e.latLng.lng(), 7);
+};
+
+// 座標未設定/被清空時不要把地圖跳到 (0,0)（大西洋）；維持 LeafletMap 的台北 101 預設
+const TAIPEI_DEFAULT = { lat: 25.0330, lng: 121.5654 };
+
 const center = computed(() => {
-  return {
-    lat: model.value.lat || 0,
-    lng: model.value.lng || 0,
-  };
+  if (!isValidLat(model.value.lat) || !isValidLng(model.value.lng)) return TAIPEI_DEFAULT;
+  return { lat: parseFloat(model.value.lat), lng: parseFloat(model.value.lng) };
 });
 
 const markers = computed(() => {
+  if (!isValidLat(model.value.lat) || !isValidLng(model.value.lng)) return [];
   return [
     {
-      position: {
-        lat: model.value.lat || 0,
-        lng: model.value.lng || 0,
-      },
+      position: { lat: parseFloat(model.value.lat), lng: parseFloat(model.value.lng) },
       title: model.value.name,
     },
   ];
@@ -289,8 +372,8 @@ const getModel = () => {
     phone: model.value.phone,
     fax: model.value.fax,
     is_virtuoso_hotel: model.value.isVirtuosoHotel,
-    lat: parseInt(model.value.lat),
-    lng: parseInt(model.value.lng),
+    lat: _.round(parseFloat(model.value.lat) || 0, 7),
+    lng: _.round(parseFloat(model.value.lng) || 0, 7),
     check_in_time: model.value.checkInTime,
     check_out_time: model.value.checkOutTime,
     child_age: parseInt(model.value.childAge),
