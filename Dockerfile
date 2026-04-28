@@ -59,7 +59,7 @@ ARG ENV
 ENV ENV="${ENV}"
 
 RUN cd /$WORK_HOME &&\
-    yarn global add @quasar/cli && \
+    yarn global add @quasar/cli@2.5.0 && \
     quasar build
 
 WORKDIR /build
