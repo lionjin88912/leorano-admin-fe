@@ -71,8 +71,8 @@
               dense
               hide-bottom-space
             />
-            <q-input class="col-6 col-md-4" outlined dense type="number" v-model.number="data.lat" label="緯度 *" :rules="rules.lat" hide-bottom-space />
-            <q-input class="col-6 col-md-4" outlined dense type="number" v-model.number="data.lng" label="經度 *" :rules="rules.lng" hide-bottom-space />
+            <q-input class="col-6 col-md-4" outlined dense type="number" step="any" v-model.number="data.lat" label="緯度 *" :rules="rules.lat" hide-bottom-space />
+            <q-input class="col-6 col-md-4" outlined dense type="number" step="any" v-model.number="data.lng" label="經度 *" :rules="rules.lng" hide-bottom-space />
             <div class="col-12 flex q-gutter-sm items-center">
               <q-btn dense outline color="primary" icon="search" label="在 Google Maps 找此飯店" @click="openGoogleMapsSearch" />
               <q-btn dense unelevated color="primary" icon="content_paste" label="從剪貼簿貼上座標" @click="pasteCoordsFromClipboard" />

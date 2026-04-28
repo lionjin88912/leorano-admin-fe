@@ -101,8 +101,8 @@
             <q-btn dense unelevated color="primary" icon="content_paste" label="從剪貼簿貼上座標" @click="pasteCoordsFromClipboard" />
             <span class="text-grey-6 text-caption">在 Google Maps 找到位置後，複製網址再點貼上</span>
           </div>
-          <q-input class="col" outlined dense type="number" v-model.number="model.lat" label="緯度" :rules="rules.lat" hide-bottom-space />
-          <q-input class="col" outlined dense type="number" v-model.number="model.lng" label="經度" :rules="rules.lng" hide-bottom-space />
+          <q-input class="col" outlined dense type="number" step="any" v-model.number="model.lat" label="緯度" :rules="rules.lat" hide-bottom-space />
+          <q-input class="col" outlined dense type="number" step="any" v-model.number="model.lng" label="經度" :rules="rules.lng" hide-bottom-space />
           <div class="col-12 q-mt-md">
             <q-responsive :ratio="16 / 9">
               <LeafletMap
