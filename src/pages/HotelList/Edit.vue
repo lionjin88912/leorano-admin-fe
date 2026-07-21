@@ -12,6 +12,19 @@
         <q-btn color="primary" label="API 取得最新資料" @click="updateHotelData" outline :disable="isUpdating">
           <q-spinner v-if="isUpdating" color="primary" size="sm" class="q-ml-sm" />
         </q-btn>
+        <q-btn-dropdown color="primary" outline label="更多更新方式" :disable="isUpdating">
+          <q-list>
+            <q-item clickable v-close-popup @click="updateHotelDataSmart">
+              <q-item-section avatar>
+                <q-icon name="auto_awesome" color="primary" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>智慧同步(散開日期・查 3 晚)</q-item-label>
+                <q-item-label caption>試 +21 / +45 / +75 天各查 3 晚,任一有房就同步協議價,並回報結果</q-item-label>
+              </q-item-section>
+            </q-item>
+          </q-list>
+        </q-btn-dropdown>
         <q-toggle v-model='data.is_enabled' label="上架" left-label checked-icon='check' color='green' unchecked-icon='clear'
           @click="setStatus" />
       </div>
@@ -243,6 +256,46 @@ const updateHotelData = async () => {
     icon: 'tag_faces',
     timeout: 5000
   })
+  isUpdating.value = false;
+}
+
+// 智慧同步:散開起始日 + 查 3 晚(min-stay 協議價要夠晚數才會回),
+// 並依實際回傳老實回報,而不是無腦「更新完成」。
+const updateHotelDataSmart = async () => {
+  isUpdating.value = true;
+  const DAY = 24 * 60 * 60 * 1000;
+  const now = new Date().getTime();
+  const anchors = [21, 45, 75]; // 散開起始日,避開太近(常售罄/未放價)
+  const LOS = 3;                // 查 3 晚 → 抓得到 min-stay 協議價
+
+  let windowsWithPlans = 0; // 有回方案的查詢日期數
+  let windowsWithRate = 0;  // 其中有帶協議價的查詢日期數
+  for (const a of anchors) {
+    const from = getDateString(new Date(now + a * DAY), 'YYYY-MM-DD');
+    const toDate = getDateString(new Date(now + (a + LOS) * DAY), 'YYYY-MM-DD');
+    const [err, res] = await to(getHotelSearchRoomList(data.value.hotel_id, {
+      from,
+      to: toDate,
+      num_of_adults: 2,
+      currency: 'TWD',
+      lang: 'zh-TW'
+    }))
+    if (err || !res) continue;
+    const plans = (res.data ?? []).flatMap(r => r.plans ?? []);
+    if (plans.length > 0) windowsWithPlans++;
+    if (plans.some(p => p.is_leorano_rate)) windowsWithRate++;
+  }
+
+  if (windowsWithRate > 0) {
+    $q.notify({ position: 'top', color: 'teal', icon: 'tag_faces',
+      message: `已同步,${windowsWithRate}/${anchors.length} 個查詢日期有協議價方案`, timeout: 5000 })
+  } else if (windowsWithPlans > 0) {
+    $q.notify({ position: 'top', color: 'orange', icon: 'info',
+      message: '方案已更新,但這幾個日期沒有協議價(可能未開通或需其他日期)', timeout: 6000 })
+  } else {
+    $q.notify({ position: 'top', color: 'negative', icon: 'warning',
+      message: `查無可賣房價(試了 ${anchors.length} 個日期都客滿/未開價),換日期或稍後再試`, timeout: 8000 })
+  }
   isUpdating.value = false;
 }
 </script>
